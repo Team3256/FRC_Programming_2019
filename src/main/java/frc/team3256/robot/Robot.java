@@ -2,6 +2,9 @@ package frc.team3256.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 
+/**
+ * Contains all main robot code.
+ */
 public class Robot extends TimedRobot {
     /**
      * This function is called when the robot is first started up and should be
