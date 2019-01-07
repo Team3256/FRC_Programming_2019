@@ -13,6 +13,14 @@ public class Robot extends TimedRobot {
     }
 
     /**
+     * This function is called when the robot is disabled.
+     */
+    @Override
+    public void disabledInit() {
+
+    }
+
+    /**
      * This function is called every robot packet, no matter the mode. Use
      * this for items like diagnostics that you want ran during disabled,
      * autonomous/sandstorm, teleoperated and test.
