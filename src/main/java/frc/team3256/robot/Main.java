@@ -25,6 +25,19 @@ public final class Main {
      * <p>If you change your main robot class, change the parameter type.
      */
     public static void main(String... args) {
-        RobotBase.startRobot(Robot::new);
+        if (robotExists())
+            RobotBase.startRobot(Robot::new);
+    }
+
+    /**
+     * 'cuz all robot code deserves a little humor
+     */
+    private static boolean robotExists() {
+        try {
+            Class.forName(Robot.class.getName());
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+        return true;
     }
 }
