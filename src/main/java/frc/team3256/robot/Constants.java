@@ -35,7 +35,36 @@ public class Constants {
 
 
     //Robot Constants
-    //Units are in inches, seconds, or degrees
+    //Units are in inches, seconds, or degrees                  Most Constants TBD
+    public static final double kRobotTrack = 0;
+    public static final double kScrubFactor = 1.0;
+    public static final double kWheelDiameter = 0;
+    public static final double kDriveEncoderScalingFactor = 0;
+    public static final double kElevatorPulleyDiameter = 0*Math.PI;
+    public static final double kElevatorGearRatio = 0;
+    public static final double kElevatorMaxHeight = 0; //49.5
+    public static final double kElevatorMinHeight = 0;
+    public static final double kRampRate = 0.25;
+
+
+    //Elevator Gains
+    public static final int kElevatorHoldSlot = 0;
+    public static final double kElevatorHoldP = 0;
+    public static final double kElevatorHoldI = 0;
+    public static final double kElevatorHoldD = 0;
+
+    public static final int kElevatorMotionMagicUpSlot = 1;
+    public static final double kElevatorMotionMagicUpF = 0;
+    public static final double kElevatorMotionMagicUpP = 0;
+    public static final double kElevatorMotionMagicUpI = 0;
+    public static final double kElevatorMotionMagicUpD = 0;
+
+    public static final int kElevatorMotionMagicDownSlot = 2;
+    public static final double kElevatorMotionMagicDownF = 0;
+    public static final double kElevatorMotionMagicDownP = 0;
+    public static final double kElevatorMotionMagicDownI = 0;
+    public static final double kElevatorMotionMagicDownD = 0;
+
 
     //Presets:
     public static final double kIntakeSharpIRMaxVoltage = 0;
