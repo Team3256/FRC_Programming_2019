@@ -2,7 +2,6 @@ package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
-
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 

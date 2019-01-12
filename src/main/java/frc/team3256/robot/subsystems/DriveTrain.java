@@ -38,6 +38,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
                 leftMaster.setSelectedSensorPosition(0, 0,0);
                 rightMaster.setSelectedSensorPosition(0, 0,0);
+
+                leftMaster.setInverted(true);
+                leftSlave.setInverted(true);
+
         }
 
         public void setOpenLoop(double leftPower, double rightPower) {

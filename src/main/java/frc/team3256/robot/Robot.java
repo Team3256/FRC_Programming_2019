@@ -13,9 +13,6 @@ import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.warriorlib.hardware.ADXRS453_Calibrator;
 import frc.team3256.warriorlib.loop.Looper;
 
-/**
- * Contains all main robot code.
- */
 public class Robot extends TimedRobot {
 
     Path p;
@@ -25,7 +22,10 @@ public class Robot extends TimedRobot {
     DrivePower drivePower;
     Looper enabledLooper;
     TeleopUpdater teleopUpdater;
+<<<<<<< HEAD
     ADXRS453_Calibrator gyroCalibrator;
+=======
+>>>>>>> 7ae920ed6804bb0c57761a075f77dc3c2a17e7cf
 
     /**
      * This function is called when the robot is first started up and should be
@@ -34,11 +34,16 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         enabledLooper = new Looper(1.0/200.0);
+<<<<<<< HEAD
         enabledLooper.addLoops(driveTrain, poseEstimator);
         teleopUpdater = new TeleopUpdater();
         //driveTrain.getGyro().calibrate();
         gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
 }
+=======
+        teleopUpdater = new TeleopUpdater();
+    }
+>>>>>>> 7ae920ed6804bb0c57761a075f77dc3c2a17e7cf
 
     /**
      * This function is called when the robot is disabled.
@@ -101,7 +106,11 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopPeriodic() {
+<<<<<<< HEAD
         //teleopUpdater.update();
+=======
+        teleopUpdater.update();
+>>>>>>> 7ae920ed6804bb0c57761a075f77dc3c2a17e7cf
         System.out.println("left encoder: "+driveTrain.getLeftDistance());
         System.out.println("right encoder: "+driveTrain.getRightDistance());
         System.out.println("angle "+driveTrain.getAngle());
