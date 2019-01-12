@@ -1,4 +1,4 @@
-package frc.team3256.robot;
+package frc.team3256.robot.operations;
 
 public class Constants {
 
@@ -17,12 +17,26 @@ public class Constants {
     public static final int kShifterForward = 0;
     public static final int kShifterReverse = 0;
 
+    //Pure Pursuit
+
+    public static final double robotTrack = 27; //inches
+    public static final double spacing = 6; //inches
+    public static final double kV = 0.004; // 1/max robot speed
+    public static final double kA = 0.002; //0.002
+    public static final double kP = 0; //0.01
+    public static final double a = 1;
+    public static final double b = 0.78;
+    public static final double tolerance = 0.001;
+    public static final double loopTime = 1.0/200.0; //how often Looper updates
+    public static final double maxAccel = 144; //max robot acceleration
+    public static final double maxVel = 276; //max robot velocity
+    public static final double maxVelk = 2; //generally between 1-5
 
     //CAN
-    public static final int kLeftDriveMaster = 0;
-    public static final int kLeftDriveSlave = 0;
-    public static final int kRightDriveMaster = 0;
-    public static final int kRightDriveSlave = 0;
+    public static final int kLeftDriveMaster = 4;
+    public static final int kLeftDriveSlave = 5;
+    public static final int kRightDriveMaster = 2;
+    public static final int kRightDriveSlave = 3;
     public static final int kElevatorMaster = 0;
     public static final int kElevatorSlave = 0;
 
@@ -38,8 +52,8 @@ public class Constants {
     //Units are in inches, seconds, or degrees                  Most Constants TBD
     public static final double kRobotTrack = 0;
     public static final double kScrubFactor = 1.0;
-    public static final double kWheelDiameter = 0;
-    public static final double kDriveEncoderScalingFactor = 0;
+    public static final double kWheelDiameter = 4;
+    public static final double kDriveEncoderScalingFactor = 3.0*60.0/24.0;
     public static final double kElevatorPulleyDiameter = 0*Math.PI;
     public static final double kElevatorGearRatio = 0;
     public static final double kElevatorMaxHeight = 0; //49.5

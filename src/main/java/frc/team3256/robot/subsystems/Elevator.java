@@ -4,7 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
-import frc.team3256.robot.Constants;
+import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
@@ -189,9 +189,9 @@ public class Elevator extends SubsystemBase {
         return defaultStateTransfer();
     }
 
-    private SystemState handleHome(){
-        
-    }
+    /*private SystemState handleHome(){
+
+    }*/
 
     private SystemState defaultStateTransfer(){
         SystemState rv;
