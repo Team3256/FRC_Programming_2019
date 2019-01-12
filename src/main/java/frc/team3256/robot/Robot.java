@@ -3,6 +3,7 @@ package frc.team3256.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3256.robot.math.Vector;
 import frc.team3256.robot.odometry.PoseEstimator;
+import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.operations.DrivePower;
 import frc.team3256.robot.path.Path;
@@ -10,9 +11,6 @@ import frc.team3256.robot.path.PurePursuitTracker;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.warriorlib.loop.Looper;
 
-/**
- * Contains all main robot code.
- */
 public class Robot extends TimedRobot {
 
     Path p;
@@ -21,6 +19,7 @@ public class Robot extends TimedRobot {
     DriveTrain driveTrain = DriveTrain.getInstance();
     DrivePower drivePower;
     Looper enabledLooper;
+    TeleopUpdater teleopUpdater;
 
     /**
      * This function is called when the robot is first started up and should be
@@ -29,6 +28,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         enabledLooper = new Looper(1.0/200.0);
+        teleopUpdater = new TeleopUpdater();
     }
 
     /**
@@ -92,6 +92,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopPeriodic() {
+        teleopUpdater.update();
         System.out.println("left encoder: "+driveTrain.getLeftDistance());
         System.out.println("right encoder: "+driveTrain.getRightDistance());
         System.out.println("angle "+driveTrain.getAngle());
