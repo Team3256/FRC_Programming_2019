@@ -189,9 +189,9 @@ public class Elevator extends SubsystemBase {
         return defaultStateTransfer();
     }
 
-    private SystemState handleHome(){
-        
-    }
+//    private SystemState handleHome(){
+//
+//    }
 
     private SystemState defaultStateTransfer(){
         SystemState rv;

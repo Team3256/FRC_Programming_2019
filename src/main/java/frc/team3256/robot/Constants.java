@@ -5,6 +5,7 @@ public class Constants {
     //Ports: No duplicates in each set
     //PWM
     public static final int kCargoIntakePort = 0;
+    public static final int kHatchIntakePort = 0;
     public static final int kHatchPivotPort = 0;
 
     //Solenoids
@@ -70,8 +71,9 @@ public class Constants {
     public static final double kIntakeSharpIRMaxVoltage = 0;
     public static final double kIntakeSharpIRMinVoltage = 0;
 
-    public static final double kIntakePower = 0;
-    public static final double kExhaustPower = 0;
+    public static final double kCargoIntakePower = 0;
+    public static final double kHatchIntakePower = 0;
+    public static final double kCargoExhaustPower = 0;
     public static final double kPivotUpPower = 0;
     public static final double kPivotDownPower = 0;
 

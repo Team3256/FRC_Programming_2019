@@ -1,12 +1,12 @@
 package frc.team3256.robot.subsystems;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
 import frc.team3256.robot.Constants;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
-public class Intake extends SubsystemBase {
-
-    private VictorSP cargoIntake, hatchPivot;
+public class HatchIntake extends SubsystemBase {
+    private VictorSP hatchIntake, hatchPivot;
     private DoubleSolenoid deployLeft, deployRight, deployTop;
 
     private SystemState currentState;
@@ -18,16 +18,15 @@ public class Intake extends SubsystemBase {
 
     private boolean firstRun;
 
-    private double kIntakePower = Constants.kIntakePower;
-    private double kExhaustPower = Constants.kExhaustPower;
+    private double kHatchIntakePower = Constants.kHatchIntakePower;
     private double kPivotUpPower = Constants.kPivotUpPower;
     private double kPivotDownPower = Constants.kPivotDownPower;
 
-    private static Intake instance;
+    private static HatchIntake instance;
 
     public enum SystemState {
         INTAKING,
-        EXHAUSTING,
+        DEPLOYING,
         PIVOTING_UP,
         PIVOTING_DOWN,
         IDLE
@@ -35,26 +34,32 @@ public class Intake extends SubsystemBase {
 
     public enum WantedState {
         WANTS_TO_INTAKE,
-        WANTS_TO_EXHAUST,
+        WANTS_TO_DEPLOY,
         WANTS_TO_PIVOT_UP,
         WANTS_TO_PIVOT_DOWN,
         IDLE
     }
 
-
-    private Intake(){
-        cargoIntake = new VictorSP(Constants.kCargoIntakePort);
+    private HatchIntake(){
+        hatchIntake = new VictorSP(Constants.kHatchIntakePort);
         hatchPivot = new VictorSP(Constants.kHatchPivotPort);
-
         deployLeft = new DoubleSolenoid(Constants.kDeployLeftForward, Constants.kDeployLeftReverse);
         deployRight = new DoubleSolenoid(Constants.kDeployRightForward, Constants.kDeployRightReverse);
         deployTop = new DoubleSolenoid(Constants.kDeployTopForward, Constants.kDeployTopReverse);
-
-        cargoIntake.setInverted(false); //TBD
     }
 
-    public static Intake getInstance(){
-        return instance == null ? instance = new Intake(): instance;
+    public static HatchIntake getInstance(){
+        return instance == null ? instance = new HatchIntake(): instance;
+    }
+
+    @Override
+    public void outputToDashboard() {
+
+    }
+
+    @Override
+    public void zeroSensors() {
+
     }
 
     @Override
@@ -77,42 +82,51 @@ public class Intake extends SubsystemBase {
         else wantedStateChanged = false;
 
         if(!wantedStateChanged) return;
-            SystemState newState;
-            switch(currentState) {
-                case INTAKING:
-                    newState = handleIntaking();
-                    break;
-                case EXHAUSTING:
-                    newState = handleExhausting();
-                    break;
-                case PIVOTING_UP:
-                    newState = handlePivotUp();
-                    break;
-                case PIVOTING_DOWN:
-                    newState = handlePivotDown();
-                    break;
-                case IDLE: default:
-                    newState = handleIdle();
-                    break;
-            }
-            //State Transfer
-            if (newState != currentState){
-                System.out.println("\tPREV_STATE:" + previousState + "\tCURR_STATE:" + currentState +
-                        "\tNEW_STATE:" + newState);
-                previousState = currentState;
-                currentState = newState;
-                stateChanged = true;
-            }
-            else stateChanged = false;
+
+        SystemState newState;
+        switch(currentState) {
+            case INTAKING:
+                newState = handleIntaking();
+                break;
+            case DEPLOYING:
+                newState = handleDeploying();
+                break;
+            case PIVOTING_UP:
+                newState = handlePivotUp();
+                break;
+            case PIVOTING_DOWN:
+                newState = handlePivotDown();
+                break;
+            case IDLE: default:
+                newState = handleIdle();
+                break;
+        }
+        //State Transfer
+        if (newState != currentState){
+            System.out.println("\tPREV_STATE:" + previousState + "\tCURR_STATE:" + currentState +
+                    "\tNEW_STATE:" + newState);
+            previousState = currentState;
+            currentState = newState;
+            stateChanged = true;
+        }
+        else stateChanged = false;
+
     }
 
     private SystemState handleIntaking(){
-        cargoIntake.set(kIntakePower);
+        hatchIntake.set(kHatchIntakePower);
         return defaultStateTransfer();
     }
 
-    private SystemState handleExhausting(){
-        cargoIntake.set(kExhaustPower);
+    private SystemState handleDeploying(){
+        deployHatch();
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleIdle(){
+        hatchIntake.set(0);
+        hatchPivot.set(0);
+        closeHatch();
         return defaultStateTransfer();
     }
 
@@ -126,18 +140,24 @@ public class Intake extends SubsystemBase {
         return defaultStateTransfer();
     }
 
-    private SystemState handleIdle(){
-        cargoIntake.set(0);
-        hatchPivot.set(0);
-        return defaultStateTransfer();
+    private void deployHatch(){
+        deployLeft.set(DoubleSolenoid.Value.kForward);
+        deployRight.set(DoubleSolenoid.Value.kForward);
+        deployTop.set(DoubleSolenoid.Value.kForward);
     }
 
-    private SystemState defaultStateTransfer() {
-        switch (wantedState) {
+    private void closeHatch(){
+        deployLeft.close();
+        deployRight.close();
+        deployTop.close();
+    }
+
+    private SystemState defaultStateTransfer(){
+        switch(wantedState) {
             case WANTS_TO_INTAKE:
-                return SystemState.INTAKING;
-            case WANTS_TO_EXHAUST:
-                return SystemState.EXHAUSTING;
+                return SystemState.PIVOTING_UP;
+            case WANTS_TO_DEPLOY:
+                return SystemState.DEPLOYING;
             case WANTS_TO_PIVOT_UP:
                 return SystemState.PIVOTING_UP;
             case WANTS_TO_PIVOT_DOWN:
@@ -159,16 +179,6 @@ public class Intake extends SubsystemBase {
 
     public WantedState getWantedState(){
         return wantedState;
-    }
-
-    @Override
-    public void outputToDashboard() {
-
-    }
-
-    @Override
-    public void zeroSensors() {
-
     }
 
     @Override

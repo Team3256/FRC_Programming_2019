@@ -6,7 +6,7 @@ import frc.team3256.warriorlib.subsystem.SubsystemBase;
 public class DriveTrain extends SubsystemBase implements Loop {
     @Override
     public void outputToDashboard() {
-        
+
     }
 
     @Override
