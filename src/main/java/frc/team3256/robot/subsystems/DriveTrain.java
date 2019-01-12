@@ -54,7 +54,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     @Override
     public void outputToDashboard() {
-        
+
     }
 
     @Override
