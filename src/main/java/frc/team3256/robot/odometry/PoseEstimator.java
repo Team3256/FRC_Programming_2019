@@ -4,8 +4,9 @@ package frc.team3256.robot.odometry;
 import frc.team3256.robot.math.Vector;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.warriorlib.loop.Loop;
+import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
-public class PoseEstimator implements Loop {
+public class PoseEstimator extends SubsystemBase {
 
     Vector currPos;
     DriveTrain driveTrain = DriveTrain.getInstance();
@@ -39,6 +40,16 @@ public class PoseEstimator implements Loop {
 
     @Override
     public void end(double timestamp) {
+
+    }
+
+    @Override
+    public void outputToDashboard() {
+
+    }
+
+    @Override
+    public void zeroSensors() {
 
     }
 }

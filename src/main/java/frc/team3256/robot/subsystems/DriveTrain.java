@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.SPI;
 import frc.team3256.robot.operations.Constants;
+import frc.team3256.warriorlib.hardware.ADXRS453_Gyro;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.loop.Loop;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
@@ -16,15 +17,15 @@ public class DriveTrain extends SubsystemBase implements Loop {
             private static DriveTrain instance;
             public WPI_TalonSRX leftMaster, rightMaster, leftSlave, rightSlave;//, leftSlave2, rightSlave2;
             private boolean init = false;
-            private AnalogGyro gyro;
-            private double prevVelocity = 0;
+            private ADXRS453_Gyro gyro;
 
             public static DriveTrain getInstance() {
                 return instance == null ? instance = new DriveTrain() : instance;
             }
 
     private DriveTrain() {
-                gyro = new AnalogGyro(0);
+                gyro = new ADXRS453_Gyro();
+
                 leftMaster = TalonSRXUtil.generateGenericTalon(Constants.kLeftDriveMaster);
                 leftSlave = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave, Constants.kLeftDriveMaster);
                 //leftSlave2 = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave2, Constants.kLeftDriveMaster);
@@ -34,6 +35,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
                 gyro.calibrate();
                 rightMaster.setInverted(true);
                 rightSlave.setInverted(true);
+
+                leftMaster.setSelectedSensorPosition(0, 0,0);
+                rightMaster.setSelectedSensorPosition(0, 0,0);
         }
 
         public void setOpenLoop(double leftPower, double rightPower) {
@@ -119,7 +123,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         return sensorUnitsToInches(sensorUnits*10.0);
     }
 
-    public AnalogGyro getGyro(){
+    public ADXRS453_Gyro getGyro(){
         return gyro;
     }
 
