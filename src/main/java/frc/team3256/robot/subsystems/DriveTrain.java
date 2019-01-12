@@ -34,6 +34,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
                 gyro.calibrate();
                 rightMaster.setInverted(true);
                 rightSlave.setInverted(true);
+                leftMaster.setInverted(true);
+                leftSlave.setInverted(true);
         }
 
         public void setOpenLoop(double leftPower, double rightPower) {
