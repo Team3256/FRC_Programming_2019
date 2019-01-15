@@ -43,6 +43,4 @@ public interface ControlsInterface {
     boolean hatchPresetHigh();
 
     boolean hang();
-
-
 }

@@ -15,7 +15,7 @@ public class CargoIntake extends SubsystemBase {
     private double kIntakePower = Constants.kCargoIntakePower;
     private double kExhaustPower = Constants.kCargoExhaustPower;
 
-    private CargoIntake(){
+    private CargoIntake() {
         cargoIntake = new VictorSP(Constants.kCargoIntakePort);
         cargoIntake.setInverted(false); //TBD
     }

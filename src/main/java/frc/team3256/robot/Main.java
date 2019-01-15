@@ -26,7 +26,11 @@ public final class Main {
      */
     public static void main(String... args) {
         if (robotExists())
-            RobotBase.startRobot(Robot::new);
+            work();
+    }
+
+    public static void work() {
+        RobotBase.startRobot(Robot::new);
     }
 
     /**

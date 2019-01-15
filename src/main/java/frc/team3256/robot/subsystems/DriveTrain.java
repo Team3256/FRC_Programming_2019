@@ -24,12 +24,12 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     private DriveTrain() {
-                gyro = new ADXRS450_Gyro();
-                leftMaster = TalonSRXUtil.generateGenericTalon(Constants.kLeftDriveMaster);
-                leftSlave = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave, Constants.kLeftDriveMaster);
-                //leftSlave2 = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave2, Constants.kLeftDriveMaster);
-                rightMaster = TalonSRXUtil.generateGenericTalon(Constants.kRightDriveMaster);
-                rightSlave = TalonSRXUtil.generateSlaveTalon(Constants.kRightDriveSlave, Constants.kRightDriveMaster);
+        gyro = new ADXRS450_Gyro();
+        leftMaster = TalonSRXUtil.generateGenericTalon(Constants.kLeftDriveMaster);
+        leftSlave = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave, Constants.kLeftDriveMaster);
+        //leftSlave2 = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave2, Constants.kLeftDriveMaster);
+        rightMaster = TalonSRXUtil.generateGenericTalon(Constants.kRightDriveMaster);
+        rightSlave = TalonSRXUtil.generateSlaveTalon(Constants.kRightDriveSlave, Constants.kRightDriveMaster);
 
         leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*Constants.loopTime), 0);
         rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*Constants.loopTime), 0);
@@ -50,20 +50,20 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
         leftMaster.setSensorPhase(false);
         rightMaster.setSensorPhase(false);
-                //rightSlave2 = TalonSRXUtil.generateSlaveTalon(Constants.kRightDriveSlave2, Constants.kRightDriveMaster);
-                //gyro.calibrate();
-                rightMaster.setInverted(false);
-                rightSlave.setInverted(InvertType.FollowMaster);
+        //rightSlave2 = TalonSRXUtil.generateSlaveTalon(Constants.kRightDriveSlave2, Constants.kRightDriveMaster);
+        //gyro.calibrate();
+        rightMaster.setInverted(false);
+        rightSlave.setInverted(InvertType.FollowMaster);
 
-                leftMaster.setInverted(true);
-                leftSlave.setInverted(InvertType.FollowMaster);
+        leftMaster.setInverted(true);
+        leftSlave.setInverted(InvertType.FollowMaster);
 
 
-            leftMaster.setSelectedSensorPosition(0, 0,100);
-            rightMaster.setSelectedSensorPosition(0, 0,100);
-        }
+        leftMaster.setSelectedSensorPosition(0, 0,100);
+        rightMaster.setSelectedSensorPosition(0, 0,100);
+    }
 
-        public void setOpenLoop(double leftPower, double rightPower) {
+    public void setOpenLoop(double leftPower, double rightPower) {
         if (!init){
             leftMaster.enableVoltageCompensation(false);
             rightMaster.enableVoltageCompensation(false);
