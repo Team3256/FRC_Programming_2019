@@ -2,8 +2,8 @@ package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.team3256.robot.Robot;
 import frc.team3256.robot.operations.Constants;
+import frc.team3256.warriorlib.state.RobotState;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
 public class CargoIntake extends SubsystemBase {
