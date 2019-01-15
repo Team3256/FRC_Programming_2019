@@ -34,10 +34,10 @@ public class Constants {
     public static final double maxVelk = 2; //generally between 1-5
 
     //CAN
-    public static final int kLeftDriveMaster = 4;
-    public static final int kLeftDriveSlave = 5;
-    public static final int kRightDriveMaster = 2;
-    public static final int kRightDriveSlave = 3;
+    public static final int kLeftDriveMaster = 5;
+    public static final int kLeftDriveSlave = 4;
+    public static final int kRightDriveMaster = 3;
+    public static final int kRightDriveSlave = 2;
     public static final int kElevatorMaster = 0;
     public static final int kElevatorSlave = 0;
 

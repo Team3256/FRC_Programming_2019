@@ -62,7 +62,7 @@ public class PurePursuitTracker {
             rightTargetVel = maxVelocity;
             leftTargetVel = maxVelocity * ratio;
         }
-        double rightFF = calculateFeedForward(rightTargetVel, currVel, true);
+        double rightFF = calculateFeedForward(rightTargetVel, p.robotPath.get(getClosestPointIndex(currPos) - 1).getVelocity(), true);
         double leftFF = calculateFeedForward(leftTargetVel, currVel, false);
         double rightFB = calculateFeedback(rightTargetVel, currVel);
         double leftFB = calculateFeedback(leftTargetVel, currVel);

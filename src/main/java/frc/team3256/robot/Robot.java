@@ -1,6 +1,5 @@
 package frc.team3256.robot;
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3256.robot.math.Vector;
 import frc.team3256.robot.odometry.PoseEstimator;
@@ -15,15 +14,15 @@ import frc.team3256.warriorlib.loop.Looper;
 
 public class Robot extends TimedRobot {
 
-    Path p;
-    PurePursuitTracker purePursuitTracker;
     PoseEstimator poseEstimator = new PoseEstimator(new Vector(0,0));
     DriveTrain driveTrain = DriveTrain.getInstance();
-    DrivePower drivePower;
     Looper enabledLooper;
     TeleopUpdater teleopUpdater;
+    DrivePower drivePower;
+    Path p;
+    PurePursuitTracker purePursuitTracker;
 
-    ADXRS453_Calibrator gyroCalibrator;
+    //ADXRS453_Calibrator gyroCalibrator;
 
 
     /**
@@ -35,10 +34,10 @@ public class Robot extends TimedRobot {
         enabledLooper = new Looper(1.0/200.0);
 
         enabledLooper.addLoops(driveTrain, poseEstimator);
+        //teleopUpdater = new TeleopUpdater();
+        //gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
         teleopUpdater = new TeleopUpdater();
-        //driveTrain.getGyro().calibrate();
-        gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
-        teleopUpdater = new TeleopUpdater();
+        driveTrain.getGyro().calibrate();
     }
 
     /**
@@ -69,7 +68,7 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         enabledLooper.stop();
         driveTrain.resetEncoders();
-        p = new Path(Constants.a, Constants.b, Constants.tolerance);
+        p = new Path(0,0,0);
         purePursuitTracker = new PurePursuitTracker(p, 20, 20);
         poseEstimator = PoseEstimator.getInstance();
         p.addSegment(new Vector(0,0), new Vector(0, 100));
@@ -92,7 +91,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopInit() {
-        enabledLooper.stop();
+        driveTrain.getGyro().reset();
         enabledLooper.start();
     }
 
@@ -103,9 +102,17 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         teleopUpdater.update();
-        System.out.println("left encoder: "+driveTrain.getLeftDistance());
-        System.out.println("right encoder: "+driveTrain.getRightDistance());
-        System.out.println("angle "+driveTrain.getAngle());
+        //System.out.println("left encoder: "+driveTrain.getLeftDistance());
+        //System.out.println("right encoder: "+driveTrain.getRightDistance());
+        enabledLooper.start();
+        //System.out.println("angle " + driveTrain.getGyro().getAngle());
+        //System.out.println("Connected: " + driveTrain.getGyro().isConnected());
+        /*System.out.println("right master: " + driveTrain.getRightDistance());
+        System.out.println("right slave: " + driveTrain.getRightSlaveDistance());
+        System.out.println("left master: " + driveTrain.getLeftDistance());
+        System.out.println("left slave: " + driveTrain.getLeftSlaveDistance());
+        System.out.println();*/
+        //System.out.println("vel: " + driveTrain.getVelocity());
     }
 
     /**
