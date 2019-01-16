@@ -36,9 +36,10 @@ public class Robot extends TimedRobot {
         enabledLooper = new Looper(1.0/200.0);
 
         enabledLooper.addLoops(driveTrain, poseEstimator);
-        //teleopUpdater = new TeleopUpdater();
+        teleopUpdater = new TeleopUpdater();
         //gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
         teleopUpdater = new TeleopUpdater();
+        driveTrain.getGyro().initGyro();
         driveTrain.getGyro().calibrate();
     }
 
@@ -109,11 +110,10 @@ public class Robot extends TimedRobot {
         enabledLooper.start();
         //System.out.println("angle " + driveTrain.getGyro().getAngle());
         //System.out.println("Connected: " + driveTrain.getGyro().isConnected());
-        /*System.out.println("right master: " + driveTrain.getRightDistance());
-        System.out.println("right slave: " + driveTrain.getRightSlaveDistance());
+        System.out.println("right master: " + driveTrain.getRightDistance());
         System.out.println("left master: " + driveTrain.getLeftDistance());
-        System.out.println("left slave: " + driveTrain.getLeftSlaveDistance());
-        System.out.println();*/
+        System.out.println();
+        System.out.println("gyro: " + driveTrain.getAngle());
         //System.out.println("vel: " + driveTrain.getVelocity());
     }
 

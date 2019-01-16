@@ -6,8 +6,8 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.AnalogGyro;
 import frc.team3256.robot.operations.Constants;
-import frc.team3256.warriorlib.hardware.ADXRS453_Gyro;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.loop.Loop;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
@@ -17,14 +17,15 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private static DriveTrain instance;
     public WPI_TalonSRX leftMaster, rightMaster, leftSlave, rightSlave;//, leftSlave2, rightSlave2;
     private boolean init = false;
-    private ADXRS450_Gyro gyro;
+    private AnalogGyro gyro;
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
     }
 
     private DriveTrain() {
-        gyro = new ADXRS450_Gyro();
+        gyro = new AnalogGyro(0);
+        gyro.initGyro();
         leftMaster = TalonSRXUtil.generateGenericTalon(Constants.kLeftDriveMaster);
         leftSlave = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave, Constants.kLeftDriveMaster);
         //leftSlave2 = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave2, Constants.kLeftDriveMaster);
@@ -121,7 +122,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public double getRightSlaveDistance() {
-        return sensorUnitsToInches(rightSlave.getSelectedSensorPosition());
+        return sensorUnitsToInches(rightSlave.getSelectedSensorPosition(0));
     }
 
     public double getAverageDistance(){
@@ -154,7 +155,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         return sensorUnitsToInches(sensorUnits*10.0);
     }
 
-    public ADXRS450_Gyro getGyro(){
+    public AnalogGyro getGyro(){
         return gyro;
     }
 
