@@ -1,30 +1,27 @@
 package frc.team3256.robot.operation;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 
-public class DualLogitechConfig implements ControlsInterface {
-    @Override
-    public double getThrottle() {
-        return 0;
-    }
+public class DriveConfigImplementation implements ControlsInterface {
 
-    @Override
-    public double getTurn() {
-        return 0;
-    }
+    XboxController driver = new XboxController(0);
+    //XboxController manipulator = new XboxController(1);
+
 
     @Override
-    public boolean getQuickTurn() {
-        return false;
-    }
+    public double getThrottle() { return driver.getRawAxis(1);}
 
     @Override
-    public boolean getLowGear() {
-        return false;
-    }
+    public double getTurn() { return driver.getRawAxis(4);}
 
     @Override
-    public boolean scoreCargo() {
-        return false;
-    }
+    public boolean getQuickTurn() { return false;}
+
+    @Override
+    public boolean getLowGear() { return false; }
+
+    @Override
+    public boolean scoreCargo() { return false; }
 
     @Override
     public boolean scoreHatch() {
@@ -33,16 +30,26 @@ public class DualLogitechConfig implements ControlsInterface {
 
     @Override
     public boolean getCargoIntake() {
-        return false;
+        return driver.getBButton();
     }
 
     @Override
     public boolean getHatchIntake() {
-        return false;
+        return driver.getAButton();
     }
 
     @Override
     public boolean getCargoExhaust() {
+        return false;
+    }
+
+    @Override
+    public boolean pivotHatchUp() {
+        return false;
+    }
+
+    @Override
+    public boolean pivotHatchDown() {
         return false;
     }
 

@@ -110,11 +110,13 @@ public class Robot extends TimedRobot {
         enabledLooper.start();
         //System.out.println("angle " + driveTrain.getGyro().getAngle());
         //System.out.println("Connected: " + driveTrain.getGyro().isConnected());
+
+        /*
         System.out.println("right master: " + driveTrain.getRightDistance());
         System.out.println("left master: " + driveTrain.getLeftDistance());
         System.out.println();
         System.out.println("gyro: " + driveTrain.getAngle());
-        //System.out.println("vel: " + driveTrain.getVelocity());
+        //System.out.println("vel: " + driveTrain.getVelocity());*/
     }
 
     /**

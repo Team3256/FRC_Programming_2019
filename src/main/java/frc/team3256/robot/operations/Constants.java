@@ -4,19 +4,19 @@ public class Constants {
 
     //Ports: No duplicates in each set
     //PWM
-    public static final int kCargoIntakePort = 0;
-    public static final int kHatchIntakePort = 0;
-    public static final int kHatchPivotPort = 0;
+    public static final int kCargoIntakePort = 0; //TBD
+    public static final int kHatchIntakePort = 1; //TBD
+    public static final int kHatchPivotPort = 2; //TBD
 
     //Solenoids
-    public static final int kDeployRightForward = 0;
-    public static final int kDeployRightReverse = 0;
-    public static final int kDeployLeftForward = 0;
-    public static final int kDeployLeftReverse = 0;
-    public static final int kDeployTopForward = 0;
-    public static final int kDeployTopReverse = 0;
-    public static final int kShifterForward = 0;
-    public static final int kShifterReverse = 0;
+    public static final int kDeployRightForward = 0; //TBD
+    public static final int kDeployRightReverse = 1; //TBD
+    public static final int kDeployLeftForward = 2; //TBD
+    public static final int kDeployLeftReverse = 3; //TBD
+    public static final int kDeployTopForward = 4; //TBD
+    public static final int kDeployTopReverse = 5; //TBD
+    public static final int kShifterForward = 6; //TBD
+    public static final int kShifterReverse = 7; //TBD
 
     //Pure Pursuit
 

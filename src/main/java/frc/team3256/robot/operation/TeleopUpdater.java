@@ -1,23 +1,35 @@
 package frc.team3256.robot.operation;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.robot.subsystems.DriveTrain;
-
-import frc.team3256.warriorlib.control.TeleopDriveController;
+import frc.team3256.robot.subsystems.HatchIntake;
 
 public class TeleopUpdater {
+    DriveConfigImplementation driveConfigImplementation = new DriveConfigImplementation();
     XboxController xboxController;
     DriveTrain driveTrain;
+    HatchIntake hatchIntake;
+    CargoIntake cargoIntake;
 
     public TeleopUpdater(){
         xboxController = new XboxController(0);
         driveTrain = DriveTrain.getInstance();
+        hatchIntake = HatchIntake.getInstance();
+        cargoIntake = CargoIntake.getInstance();
     }
 
     public void update(){
-        double throttle = -xboxController.getY(GenericHID.Hand.kLeft);
-        double turn = xboxController.getX(GenericHID.Hand.kRight);
+        hatchIntake.update(Timer.getFPGATimestamp());
+        cargoIntake.update(Timer.getFPGATimestamp());
+
+        //Drivetrain subsystem
+
+        //Arcade Drive
+        double throttle = driveConfigImplementation.getThrottle();
+        double turn = driveConfigImplementation.getTurn();
         if (Math.abs(throttle) <= 0.15) {
             throttle = 0;
         }
@@ -32,5 +44,7 @@ public class TeleopUpdater {
 
         if (driveTrain.leftSlave.getOutputCurrent() > 10 || driveTrain.leftSlave.getOutputCurrent() > 10)
             System.out.println("LEFT " + driveTrain.leftSlave.getOutputCurrent() + " RIGHT " + driveTrain.rightSlave.getOutputCurrent());
+
+
     }
 }

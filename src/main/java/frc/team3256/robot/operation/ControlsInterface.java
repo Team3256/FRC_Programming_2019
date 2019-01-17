@@ -26,6 +26,10 @@ public interface ControlsInterface {
 
     boolean getCargoExhaust();
 
+    boolean pivotHatchUp();
+
+    boolean pivotHatchDown();
+
     boolean manualElevatorUp();
 
     boolean manualElevatorDown();

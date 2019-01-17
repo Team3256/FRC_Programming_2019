@@ -2,6 +2,7 @@ package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
+import frc.team3256.robot.operation.DriveConfigImplementation;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.state.RobotState;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
@@ -14,6 +15,12 @@ public class HatchIntake extends SubsystemBase {
 
     private VictorSP hatchIntake, hatchPivot;
     private DoubleSolenoid deployLeft, deployRight, deployTop;
+
+    private static HatchIntake instance;
+    public static HatchIntake getInstance() {return instance == null ? instance = new HatchIntake(): instance;}
+
+    DriveConfigImplementation driveConfigImplementation = new DriveConfigImplementation();
+
 
     private HatchIntake() {
         hatchIntake = new VictorSP(Constants.kHatchIntakePort);
@@ -38,8 +45,9 @@ public class HatchIntake extends SubsystemBase {
     class IntakingState extends RobotState {
         @Override
         public RobotState update() {
-            hatchIntake.set(kHatchIntakePower);
-            return new IdleState();
+            System.out.println("Method is being updated.");
+            //hatchIntake.set(kHatchIntakePower);
+            return new UpdateControlsState();
         }
     }
 
@@ -47,7 +55,7 @@ public class HatchIntake extends SubsystemBase {
         @Override
         public RobotState update() {
             deployHatch();
-            return new IdleState();
+            return new UpdateControlsState();
         }
     }
 
@@ -55,7 +63,7 @@ public class HatchIntake extends SubsystemBase {
         @Override
         public RobotState update() {
             hatchPivot.set(kPivotUpPower);
-            return new IdleState();
+            return new UpdateControlsState();
         }
     }
 
@@ -63,7 +71,7 @@ public class HatchIntake extends SubsystemBase {
         @Override
         public RobotState update() {
             hatchPivot.set(kPivotDownPower);
-            return new IdleState();
+            return new UpdateControlsState();
         }
     }
 
@@ -73,11 +81,33 @@ public class HatchIntake extends SubsystemBase {
             hatchIntake.set(0);
             hatchPivot.set(0);
             closeHatch();
-            return new IdleState();
+            return new UpdateControlsState();
         }
     }
 
-    RobotState robotState = new IdleState();
+    class UpdateControlsState extends RobotState {
+        @Override
+        public RobotState update() {
+            // Set new states based on controls from controller
+            // e.g. on A held down, intake
+            if(driveConfigImplementation.getHatchIntake()){
+                System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                return new IntakingState();
+            }
+            else if (driveConfigImplementation.scoreHatch()){
+                return new DeployingState();
+            }
+            else if (driveConfigImplementation.pivotHatchUp()){
+                return new PivotingUp();
+            }
+            else if (driveConfigImplementation.pivotHatchDown()){
+                return new PivotingDown();
+            }
+            else{ return new IdleState(); }
+        }
+    }
+
+    RobotState robotState = new UpdateControlsState();
 
     @Override
     public void update(double timestamp) {
