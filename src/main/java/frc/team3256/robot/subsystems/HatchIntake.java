@@ -1,4 +1,4 @@
-package frc.team3256.robot.subsystems;
+/*package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
@@ -142,4 +142,4 @@ public class HatchIntake extends SubsystemBase {
     public void end(double timestamp) {
 
     }
-}
+}*/

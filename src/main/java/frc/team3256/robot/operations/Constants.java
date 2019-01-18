@@ -15,8 +15,8 @@ public class Constants {
     public static final int kDeployLeftReverse = 3; //TBD
     public static final int kDeployTopForward = 4; //TBD
     public static final int kDeployTopReverse = 5; //TBD
-    public static final int kShifterForward = 6; //TBD
-    public static final int kShifterReverse = 7; //TBD
+    public static final int kShifterForward = 1; //TBD
+    public static final int kShifterReverse = 6; //TBD
 
     //Pure Pursuit
 

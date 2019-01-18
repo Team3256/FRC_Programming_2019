@@ -7,7 +7,10 @@ import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Solenoid;
 import frc.team3256.robot.operations.Constants;
+import frc.team3256.robot.operations.DrivePower;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.loop.Loop;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
@@ -16,8 +19,14 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     private static DriveTrain instance;
     public WPI_TalonSRX leftMaster, rightMaster, leftSlave, rightSlave;//, leftSlave2, rightSlave2;
+    private DoubleSolenoid shifter;
     private boolean init = false;
     private AnalogGyro gyro;
+    static double quickStopAccumulator = 0.0; //temporary curv. drive
+    static double kQuickStopAlpha = 0.1;
+    static double kQuickStopScalar = 2.0;
+    private static final double kQuickTurnDeltaLimit = 2.0/1000.0/12.0*20.0;
+    private static double prevTurn = 0.0;
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
@@ -44,6 +53,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
         leftSlave.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*Constants.loopTime), 0);
         rightSlave.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*Constants.loopTime), 0);
 
+        shifter = new DoubleSolenoid(Constants.kShifterForward, Constants.kShifterReverse);
+
         TalonSRXUtil.configMagEncoder(leftMaster);
         TalonSRXUtil.configMagEncoder(rightMaster);
         TalonSRXUtil.configMagEncoder(leftSlave);
@@ -53,10 +64,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.setSensorPhase(false);
         //rightSlave2 = TalonSRXUtil.generateSlaveTalon(Constants.kRightDriveSlave2, Constants.kRightDriveMaster);
         //gyro.calibrate();
-        rightMaster.setInverted(false);
+        rightMaster.setInverted(true);
         rightSlave.setInverted(InvertType.FollowMaster);
 
-        leftMaster.setInverted(true);
+        leftMaster.setInverted(false);
         leftSlave.setInverted(InvertType.FollowMaster);
 
 
@@ -167,5 +178,73 @@ public class DriveTrain extends SubsystemBase implements Loop {
     public void resetGyro(){
         gyro.reset();
     }
+
+    public static DrivePower curvatureDrive(double throttle, double turn, boolean quickTurn, boolean highGear){
+        if (Math.abs(turn) <= 0.15) { //deadband
+            turn = 0;
+        }
+
+        double angularPower, overPower;
+
+                if (quickTurn){
+                    highGear = false;
+                    if (Math.abs(throttle) < 0.2){
+                        quickStopAccumulator = (1-kQuickStopAlpha)*quickStopAccumulator + kQuickStopAlpha * clamp(turn) * kQuickStopScalar;
+                    }
+                    overPower = 1.0;
+                    angularPower = turn/1.1;
+                    if (Math.abs(turn - prevTurn) > kQuickTurnDeltaLimit){
+                        //System.out.println("TURN: " + turn);
+                        //System.out.println("PREVIOUS TURN: " + prevTurn);
+                        if (turn > 0){
+                            angularPower = prevTurn + kQuickTurnDeltaLimit;
+                            //System.out.println("ANGULAR POWER: " + angularPower);
+                        }
+                        else angularPower = prevTurn - kQuickTurnDeltaLimit;
+                    }
+                }
+                else{
+                    overPower = 0.0;
+                    angularPower = Math.abs(throttle)*turn - quickStopAccumulator;
+                    if (quickStopAccumulator > 1){
+                        quickStopAccumulator -= 1;
+            }
+            else if (quickStopAccumulator < -1){
+                quickStopAccumulator += 1;
+            }
+            else{
+                quickStopAccumulator = 0.0;
+            }
+        }
+        prevTurn = turn;
+        double left = throttle + angularPower;
+        double right = throttle - angularPower;
+        if (left > 1.0){
+            right -= overPower*(left - 1.0);
+            left = 1.0;
+        }
+        else if (right > 1.0){
+            left -= overPower*(right - 1.0);
+            right = 1.0;
+        }
+        else if (left < -1.0){
+            right += overPower*(-1.0 - left);
+            left = -1.0;
+        }
+        else if (right < -1.0){
+            left += overPower*(-1.0 - right);
+            right = -1.0;
+        }
+        return new DrivePower(left, right, highGear);
+    }
+
+    public static double clamp(double val){
+        return Math.max(Math.min(val, 1.0), -1.0);
+    }
+
+    public void setHighGear(boolean highGear) {
+        shifter.set(highGear ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
+    }
+
 
 }

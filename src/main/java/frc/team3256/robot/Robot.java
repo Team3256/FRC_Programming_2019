@@ -18,7 +18,7 @@ public class Robot extends TimedRobot {
     DriveTrain driveTrain = DriveTrain.getInstance();
     Looper enabledLooper;
     TeleopUpdater teleopUpdater;
-    DrivePower drivePower;
+    //DrivePower drivePower;
     Path p;
     PurePursuitTracker purePursuitTracker;
 
@@ -39,8 +39,8 @@ public class Robot extends TimedRobot {
         teleopUpdater = new TeleopUpdater();
         //gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
         teleopUpdater = new TeleopUpdater();
-        driveTrain.getGyro().initGyro();
-        driveTrain.getGyro().calibrate();
+        /*driveTrain.getGyro().initGyro();
+        driveTrain.getGyro().calibrate();*/
     }
 
     /**
@@ -69,7 +69,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        enabledLooper.stop();
+        /*enabledLooper.stop();
         driveTrain.resetEncoders();
         p = new Path(0,0,0);
         purePursuitTracker = new PurePursuitTracker(p, 20, 20);
@@ -77,7 +77,7 @@ public class Robot extends TimedRobot {
         p.addSegment(new Vector(0,0), new Vector(0, 100));
         p.setTargetVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
         p.setCurvature();
-        enabledLooper.start();
+        enabledLooper.start();*/
     }
 
     /**
@@ -85,8 +85,8 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {
-        drivePower = purePursuitTracker.update(poseEstimator.getPose(), driveTrain.getVelocity(), driveTrain.getAngle());
-        driveTrain.setOpenLoop(drivePower.getLeft(), drivePower.getRight());
+        /*drivePower = purePursuitTracker.update(poseEstimator.getPose(), driveTrain.getVelocity(), driveTrain.getAngle());
+        driveTrain.setOpenLoop(drivePower.getLeft(), drivePower.getRight());*/
     }
 
     /**
@@ -94,7 +94,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopInit() {
-        driveTrain.getGyro().reset();
+        //driveTrain.getGyro().reset();
         enabledLooper.start();
     }
 
@@ -107,7 +107,6 @@ public class Robot extends TimedRobot {
         teleopUpdater.update();
         //System.out.println("left encoder: "+driveTrain.getLeftDistance());
         //System.out.println("right encoder: "+driveTrain.getRightDistance());
-        enabledLooper.start();
         //System.out.println("angle " + driveTrain.getGyro().getAngle());
         //System.out.println("Connected: " + driveTrain.getGyro().isConnected());
 

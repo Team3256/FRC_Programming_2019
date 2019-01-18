@@ -90,7 +90,7 @@ public class PurePursuitTracker {
 
         System.out.println("Distance Left: " + (getTotalPathDistance() - getCurrDistance(getClosestPointIndex(currPos))));
 
-        return new DrivePower(leftOutput, rightOutput);
+        return new DrivePower(leftOutput, rightOutput, false);
 //        //run right motor to right output
 //        //run left motor to left output
     }
