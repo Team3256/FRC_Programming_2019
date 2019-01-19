@@ -1,4 +1,4 @@
-/*package frc.team3256.robot.subsystems;
+package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
@@ -100,7 +100,7 @@ public class HatchIntake extends SubsystemBase {
             else if (driveConfigImplementation.pivotHatchUp()){
                 return new PivotingUp();
             }
-            else if (driveConfigImplementation.pivotHatchDown()){
+            else if (driveConfig    Implementation.pivotHatchDown()){
                 return new PivotingDown();
             }
             else{ return new IdleState(); }
@@ -142,4 +142,4 @@ public class HatchIntake extends SubsystemBase {
     public void end(double timestamp) {
 
     }
-}*/
+}
