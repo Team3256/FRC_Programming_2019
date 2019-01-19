@@ -5,8 +5,9 @@ public class Constants {
     //Ports: No duplicates in each set
     //PWM
     public static final int kCargoIntakePort = 0; //TBD
-    public static final int kHatchIntakePort = 1; //TBD
-    public static final int kHatchPivotPort = 2; //TBD
+    public static final int kCargoPivotPort = 0; //TBD
+    public static final int kCargoScoreLeftPort = 0; //TBD
+    public static final int kCargoScoreRightPort = 0; //TBD
 
     //Solenoids
     public static final int kDeployRightForward = 0; //TBD
@@ -39,7 +40,10 @@ public class Constants {
     public static final int kRightDriveMaster = 3;
     public static final int kRightDriveSlave = 2;
     public static final int kElevatorMaster = 0;
-    public static final int kElevatorSlave = 0;
+    public static final int kElevatorSlaveOne = 0;
+    public static final int kElevatorSlaveTwo = 0;
+    public static final int kElevatorSlaveThree = 0;
+    public static final int khatchPivot = 0;
 
 
     //DIO
@@ -60,6 +64,7 @@ public class Constants {
     public static final double kElevatorMaxHeight = 0; //49.5
     public static final double kElevatorMinHeight = 0;
     public static final double kRampRate = 0.25;
+    public static final double kMagEncoderTicksTalon = 4096.0;
 
 
     //Elevator Gains
@@ -85,12 +90,19 @@ public class Constants {
     public static final double kIntakeSharpIRMaxVoltage = 0;
     public static final double kIntakeSharpIRMinVoltage = 0;
 
-    public static final double kCargoIntakePower = 0;
+    //Hatch
     public static final double kHatchIntakePower = 0;
-    public static final double kCargoExhaustPower = 0;
-    public static final double kPivotUpPower = 0;
-    public static final double kPivotDownPower = 0;
+    public static final double kHatchPivotUpPower = 0;
+    public static final double kHatchPivotDownPower = 0;
 
+    //Cargo
+    public static final double kCargoIntakePower = 0;
+    public static final double kCargoExhaustPower = 0;
+    public static final double kCargoScorePower = 0;
+    public static final double kCargoPivotUpPower = 0;
+    public static final double kCargoPivotDownPower = 0;
+
+    //Elevator
     public static final double kElevatorUpManualPower = 0;
     public static final double kElevatorDownManualPower = -0;
     public static final double kElevatorUpSlowPower = 0;

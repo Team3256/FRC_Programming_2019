@@ -1,57 +1,90 @@
 package frc.team3256.robot.operation;
 
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
 import frc.team3256.robot.operations.DrivePower;
 import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.robot.subsystems.DriveTrain;
+import frc.team3256.robot.subsystems.HatchPivot;
 
 public class TeleopUpdater {
-    DriveConfigImplementation driveConfigImplementation = new DriveConfigImplementation();
-    XboxController xboxController;
-    DriveTrain driveTrain;
-    //HatchIntake hatchIntake;
-    CargoIntake cargoIntake;
+
+    private DriveConfigImplementation controls = new DriveConfigImplementation();
+
+    private DriveTrain m_drive = DriveTrain.getInstance();
+    private HatchPivot m_hatch = HatchPivot.getInstance();
+    private CargoIntake m_cargo = CargoIntake.getInstance();
     boolean highGear = true;
 
-    public TeleopUpdater(){
-        xboxController = new XboxController(0);
-        driveTrain = DriveTrain.getInstance();
-        //hatchIntake = HatchIntake.getInstance();
-        cargoIntake = CargoIntake.getInstance();
-    }
-
     public void update(){
-        //hatchIntake.update(Timer.getFPGATimestamp());
-        cargoIntake.update(Timer.getFPGATimestamp());
 
-        //Drivetrain subsystem
+        //Drive
+        double throttle = controls.getThrottle();
+        double turn = controls.getTurn();
+        boolean quickTurn = controls.getQuickTurn();
+        boolean shiftDown = controls.getLowGear();
 
-        //Arcade Drive
-        /*double throttle = driveConfigImplementation.getThrottle();
-        double turn = driveConfigImplementation.getTurn();
-        if (Math.abs(throttle) <= 0.15) {
-            throttle = 0;
-        }
-        if (Math.abs(turn) <= 0.15) {
-            turn = 0;
-        }
-        double left = throttle + turn;
-        double right = throttle - turn;
-        left = Math.max(-1, Math.min(left, 1));
-        right = Math.max(-1, Math.min(right, 1));*/
+        //Hatch
+        boolean scoreHatch = controls.scoreHatch();
+        boolean pivotHatchUp = controls.pivotHatchUp();
+        boolean pivotHatchDown = controls.pivotHatchDown();
 
-        double throttle = driveConfigImplementation.getThrottle();
-        double turn = driveConfigImplementation.getTurn();
-        boolean quickTurn = driveConfigImplementation.getQuickTurn();
+        //Cargo
+        boolean intakeCargo = controls.getCargoIntake();
+        boolean exhaustCargo = controls.getCargoExhaust();
+        boolean scoreCargo = controls.scoreCargo();
+        boolean pivotCargoUp = controls.pivotCargoUp();
+        boolean pivotCargoDown = controls.pivotCargoDown();
 
+        //Elevator
+        boolean manualElevatorUp = controls.manualElevatorUp();
+        boolean manualElevatorDown = controls.manualElevatorDown();
+        boolean cargoPresetLow = controls.cargoPresetLow();
+        boolean cargoPresetMid = controls.cargoPresetMid();
+        boolean cargoPresetHigh = controls.cargoPresetHigh();
+        boolean hatchPresetLow = controls.hatchPresetLow();
+        boolean hatchPresetMid = controls.hatchPresetMid();
+        boolean hatchPresetHigh = controls.hatchPresetHigh();
+
+        //Hanger
+        boolean hang = controls.hang();
+
+        //DriveTrain Subsystem
         DrivePower drivePower = DriveTrain.curvatureDrive(throttle, turn, quickTurn, highGear);
-        driveTrain.setHighGear(drivePower.highGear());
-        driveTrain.setOpenLoop(drivePower.getLeft(), drivePower.getRight());
+        m_drive.setHighGear(drivePower.highGear());
+        m_drive.setOpenLoop(drivePower.getLeft(), drivePower.getRight());
 
-        if (driveTrain.leftSlave.getOutputCurrent() > 10 || driveTrain.leftSlave.getOutputCurrent() > 10)
-            System.out.println("LEFT " + driveTrain.leftSlave.getOutputCurrent() + " RIGHT " + driveTrain.rightSlave.getOutputCurrent());
+        if (m_drive.leftSlave.getOutputCurrent() > 10 || m_drive.leftSlave.getOutputCurrent() > 10)
+            System.out.println("LEFT " + m_drive.leftSlave.getOutputCurrent() + " RIGHT " + m_drive.rightSlave.getOutputCurrent());
 
+
+        //CargoIntake Subsystem
+        if(intakeCargo){
+            m_cargo.setRobotState(new CargoIntake.IntakingState());
+        }
+        else if (exhaustCargo) {
+            m_cargo.setRobotState(new CargoIntake.ExhaustingState());
+        }
+        else if (scoreCargo) {
+            m_cargo.setRobotState(new CargoIntake.ScoringState());
+        }
+        else if (pivotCargoUp) {
+            m_cargo.setRobotState(new CargoIntake.PivotingUpState());
+        }
+        else if (pivotCargoDown) {
+            m_cargo.setRobotState(new CargoIntake.PivotingDownState());
+        }
+        else m_cargo.setRobotState(new CargoIntake.IdleState());
+
+        //HatchPivot Subsystem
+        if (scoreHatch){
+            m_hatch.setRobotState(new HatchPivot.DeployingState());
+        }
+        else if (pivotHatchUp){
+            m_hatch.setRobotState(new HatchPivot.PivotingUp());
+        }
+        else if (pivotHatchDown){
+            m_hatch.setRobotState(new HatchPivot.PivotingDown());
+        }
+        else m_hatch.setRobotState(new HatchPivot.IdleState());
 
     }
 }

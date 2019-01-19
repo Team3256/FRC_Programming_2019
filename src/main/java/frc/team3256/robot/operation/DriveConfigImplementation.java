@@ -26,37 +26,31 @@ public class DriveConfigImplementation implements ControlsInterface {
     public boolean getLowGear() { return false; }
 
     @Override
+    public boolean getHatchIntake() { return driver.getAButton(); }
+
+    @Override
+    public boolean scoreHatch() { return false; }
+
+    @Override
+    public boolean pivotHatchUp() { return false; }
+
+    @Override
+    public boolean pivotHatchDown() { return false; }
+
+    @Override
+    public boolean getCargoIntake() { return driver.getBButton(); }
+
+    @Override
+    public boolean getCargoExhaust() { return false; }
+
+    @Override
     public boolean scoreCargo() { return false; }
 
     @Override
-    public boolean scoreHatch() {
-        return false;
-    }
+    public boolean pivotCargoUp() { return false; }
 
     @Override
-    public boolean getCargoIntake() {
-        return driver.getBButton();
-    }
-
-    @Override
-    public boolean getHatchIntake() {
-        return driver.getAButton();
-    }
-
-    @Override
-    public boolean getCargoExhaust() {
-        return false;
-    }
-
-    @Override
-    public boolean pivotHatchUp() {
-        return false;
-    }
-
-    @Override
-    public boolean pivotHatchDown() {
-        return false;
-    }
+    public boolean pivotCargoDown() { return false; }
 
     @Override
     public boolean manualElevatorUp() {
