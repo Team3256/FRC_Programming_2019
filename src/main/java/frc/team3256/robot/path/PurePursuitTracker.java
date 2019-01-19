@@ -5,6 +5,8 @@ import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.operations.DrivePower;
 import frc.team3256.robot.operations.Range;
 
+import java.util.Optional;
+
 public class PurePursuitTracker {
 
     private Path p;
@@ -23,6 +25,7 @@ public class PurePursuitTracker {
         this.p = p;
         this.lookaheadDistance = lookaheadDistance;
         this.stopDistance = stopDistance;
+        p.initializePath();
     }
 
     private double calculateFeedForward(double targetVel, double currVel, boolean right) {
@@ -80,7 +83,7 @@ public class PurePursuitTracker {
             rightOutput = 1;
             leftOutput = ratio;
         }
-        if (getTotalPathDistance() - getCurrDistance(getClosestPointIndex(currPos)) <= stopDistance) {
+        if (p.getTotalPathDistance() - p.calculateCurrDistance(getClosestPointIndex(currPos)) <= stopDistance) {
             rightOutput = 0;
             leftOutput = 0;
         }
@@ -88,7 +91,7 @@ public class PurePursuitTracker {
         System.out.println("Right Output: " + rightOutput);
         System.out.println("Left Output: " + leftOutput);
 
-        System.out.println("Distance Left: " + (getTotalPathDistance() - getCurrDistance(getClosestPointIndex(currPos))));
+        System.out.println("Distance Left: " + (p.getTotalPathDistance() - p.calculateCurrDistance(getClosestPointIndex(currPos))));
 
         return new DrivePower(leftOutput, rightOutput, false);
 //        //run right motor to right output
@@ -112,7 +115,7 @@ public class PurePursuitTracker {
     }
 
 
-    private double calcIntersectionPoint(Vector startPoint, Vector endPoint, Vector currPos, double lookaheadDistance) {
+    private Optional<Double> calcIntersectionPoint(Vector startPoint, Vector endPoint, Vector currPos, double lookaheadDistance) {
 
         Vector d = Vector.sub(endPoint, startPoint);
         Vector f = Vector.sub(startPoint, currPos);
@@ -123,7 +126,7 @@ public class PurePursuitTracker {
         double discriminant = Math.pow(b, 2) - (4 * a * c);
 
         if (discriminant < 0 ){
-            return Double.NaN;
+            return Optional.empty();
         }
 
         else {
@@ -132,15 +135,15 @@ public class PurePursuitTracker {
             double t2 = (-b + discriminant)/(2 * a);
 
             if (t1 >= 0 && t1 <= 1) {
-                return t1;
+                return Optional.of(t1);
             }
             if (t2 >= 0 && t2 <= 1) {
-                return t2;
+                return Optional.of(t2);
             }
 
         }
 
-        return Double.NaN;
+        return Optional.empty();
     }
 
 
@@ -158,33 +161,18 @@ public class PurePursuitTracker {
 
     }
 
+
     public Vector calcVectorLookAheadPoint(Vector startPoint, Vector endPoint, Vector currPos, double lookaheadDistance) {
-        double tIntersect = calcIntersectionPoint(startPoint, endPoint, currPos, lookaheadDistance);
-        if (Double.isNaN(tIntersect)) {
-            return new Vector(Double.MAX_VALUE, Double.MAX_VALUE);
+        Optional<Double> tIntersect = calcIntersectionPoint(startPoint, endPoint, currPos, lookaheadDistance);
+        System.out.println(tIntersect);
+        if (tIntersect.isEmpty()) {
+            return p.robotPath.get(p.robotPath.size()-1);
         } else {
-            Vector vectorSegment = Vector.mult(Vector.sub(endPoint, startPoint, null).normalize(null), tIntersect);
+            Vector intersectVector = Vector.sub(endPoint, startPoint, null);
+            Vector vectorSegment = Vector.mult(intersectVector, tIntersect.get());
             Vector point = Vector.add(startPoint, vectorSegment);
             return point;
         }
-    }
-
-    private double getCurrDistance(int point) {
-        double distance = 0;
-        for (int i = point; i >= 1; i--) {
-            distance += Vector.dist(p.robotPath.get(i), p.robotPath.get(i - 1));
-        }
-
-        return distance;
-    }
-
-    private double getTotalPathDistance() {
-        double distance = 0;
-        for (int i = p.robotPath.size()-1; i >= 1; i--) {
-            distance += Vector.dist(p.robotPath.get(i), p.robotPath.get(i - 1));
-        }
-
-        return distance;
     }
 
 
