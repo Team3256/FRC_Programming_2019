@@ -100,7 +100,7 @@ public class HatchIntake extends SubsystemBase {
             else if (driveConfigImplementation.pivotHatchUp()){
                 return new PivotingUp();
             }
-            else if (driveConfig    Implementation.pivotHatchDown()){
+            else if (driveConfigImplementation.pivotHatchDown()){
                 return new PivotingDown();
             }
             else{ return new IdleState(); }
