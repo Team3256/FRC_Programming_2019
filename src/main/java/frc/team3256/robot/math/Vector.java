@@ -5,6 +5,7 @@ public class Vector {
     public double x, y, z;
     private double velocity;
     private double curvature;
+    private double distance;
 
     public Vector() {
 
@@ -16,6 +17,7 @@ public class Vector {
         this.z = z;
         velocity = 0;
         curvature = 0;
+        distance = 0;
     }
 
     public Vector(double x, double y) {
@@ -24,6 +26,7 @@ public class Vector {
         this.z = 0;
         velocity = 0;
         curvature = 0;
+        distance = 0;
     }
 
     public Vector(Vector v) {
@@ -32,6 +35,7 @@ public class Vector {
         this.z = v.z;
         this.velocity = v.velocity;
         this.curvature = v.curvature;
+        this.distance = v.distance;
     }
 
     public void set(double x, double y, double z) {
@@ -44,6 +48,14 @@ public class Vector {
         this.velocity = velocity;
     }
 
+    public void setCurvature(double curvature) {
+        this.curvature = curvature;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
     public double getVelocity() {
         return velocity;
     }
@@ -52,8 +64,8 @@ public class Vector {
         return curvature;
     }
 
-    public void setCurvature(double curvature) {
-        this.curvature = curvature;
+    public double getDistance() {
+        return distance;
     }
 
     public Vector duplicate() {
