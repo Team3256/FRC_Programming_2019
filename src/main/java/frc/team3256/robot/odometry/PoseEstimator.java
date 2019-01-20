@@ -8,16 +8,18 @@ import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
 public class PoseEstimator extends SubsystemBase {
 
-    Vector currPos;
+    Vector currPose;
+    double lastAvgDistance;
     DriveTrain driveTrain = DriveTrain.getInstance();
     static PoseEstimator instance;
 
-    public PoseEstimator(Vector v) {
-        currPos = new Vector(v);
+    private PoseEstimator(Vector v) {
+        currPose = new Vector(v);
+        lastAvgDistance = driveTrain.getAverageDistance();
     }
 
     public Vector getPose() {
-        return currPos;
+        return currPose;
     }
 
     public static PoseEstimator getInstance(){
@@ -31,11 +33,13 @@ public class PoseEstimator extends SubsystemBase {
 
     @Override
     public void update(double timestamp) {
-        double distance = driveTrain.getAverageDistance();
-        double heading = driveTrain.getAngle();
-        double updatedX = distance * Math.cos(heading);
-        double updatedY = distance * Math.sin(heading);
-        currPos = new Vector(updatedX, updatedY);
+        double distanceChange = driveTrain.getAverageDistance() - lastAvgDistance;
+        System.out.println("change: " + distanceChange);
+        double heading = Math.toRadians(driveTrain.getAngle());
+        double updatedX = distanceChange * Math.cos(heading);
+        double updatedY = distanceChange * Math.sin(heading);
+        currPose = Vector.add(currPose, new Vector(updatedX, updatedY));
+        lastAvgDistance = driveTrain.getAverageDistance();
     }
 
     @Override
