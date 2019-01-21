@@ -3,6 +3,7 @@ package frc.team3256.robot.path;
 import frc.team3256.robot.math.Vector;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.operations.DrivePower;
+import frc.team3256.robot.operations.Logger;
 import frc.team3256.robot.operations.Range;
 
 import java.util.Optional;
@@ -14,10 +15,11 @@ public class PurePursuitTracker {
     public double rightOutput = 0;
     public double prevLeftOutput = 0;
     public double prevRightOutput = 0;
-    private int lastClosestPt = 0; //index in ArrayList
+    public int lastClosestPt = 0; //index in ArrayList
     private Vector currentPose = new Vector(0, 0);
     private double lookaheadDistance;
     private double maxAccel = Constants.maxAccel;
+    Logger logger = new Logger("PurePursuitTracker");
 
     public PurePursuitTracker(Path p, double lookaheadDistance) {
         this.p = p;
@@ -78,7 +80,7 @@ public class PurePursuitTracker {
     }
 
     private double calculateRightTargetVelocity(double targetRobotVelocity, double curvature) {
-        System.out.println("trv: " + targetRobotVelocity);
+        System.out.println("target robot velocity: " + targetRobotVelocity);
         System.out.println("curvature " + curvature);
         return targetRobotVelocity * ((2 - (Constants.robotTrack * curvature)))/2;
     }

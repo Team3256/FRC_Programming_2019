@@ -12,6 +12,7 @@ public class Path {
     double spacing; //spacing between points in inches
     double a, b, tolerance;
     ArrayList<Vector> robotPath = new ArrayList<>();
+    Vector endVector = new Vector(0,0);
 
     public Path(double a, double b, double spacing, double tolerance) {
         this.a = a;
@@ -41,16 +42,14 @@ public class Path {
         injectPoints(start, end, injectTemp);
         //ArrayList<Vector> smoothTemp = smooth(injectTemp, a, b, tolerance);
         //System.out.println(smoothTemp.size());
-        if (robotPath.size() == 0) {
-            for (int i = 0; i < injectTemp.size(); i++) {
-                robotPath.add(injectTemp.get(i));
-            }
+        for (int i = 0; i < injectTemp.size(); i++) {
+            robotPath.add(injectTemp.get(i));
         }
-        else {
-            for (int i = 0; i < injectTemp.size() - 1; i++) {
-                robotPath.add(injectTemp.get(i));
-            }
-        }
+        endVector = end;
+    }
+
+    public void addLastPoint() {
+        robotPath.add(endVector);
     }
 
     //methods to transfer to make arrays -> lists and list -> arrays
@@ -89,7 +88,6 @@ public class Path {
     //methods to populate the path with more points, then to smooth the points in the path
 
     private void injectPoints(Vector startPt, Vector endPt, ArrayList<Vector> temp) {
-
         Vector vector = new Vector(Vector.sub(endPt, startPt, null));
         double num_pts_that_fit = Math.ceil(vector.norm() / spacing);
         Vector unitVector = vector.normalize(null);
@@ -98,7 +96,6 @@ public class Path {
             Vector newVector = Vector.mult(unitVector, i, null);
             temp.add(Vector.add(startPt, newVector, null));
         }
-        temp.add(endPt);
     }
 
 
@@ -176,9 +173,11 @@ public class Path {
         robotPath.get(robotPath.size() - 1).setVelocity(0);
         for (int i = robotPath.size() - 2; i >= 0; i--) {
             double distance = Vector.dist(robotPath.get(i+1), robotPath.get(i));
+            System.out.println(robotPath.get(i));
             double maxReachableVel = Math.sqrt(Math.pow(robotPath.get(i+1).getVelocity(),2) + (2 * maxAccel * distance));
+            System.out.println("max reachable velocity at point " + i + " = " + maxReachableVel);
             robotPath.get(i).setVelocity(Math.min(calculateMaxVelocity(robotPath, i, maxVel, k), maxReachableVel));
-
+            System.out.println("velocity at point " + i + " = " + robotPath.get(i).getVelocity());
         }
     }
 

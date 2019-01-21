@@ -6,6 +6,7 @@ import frc.team3256.robot.odometry.PoseEstimator;
 import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.operations.DrivePower;
+import frc.team3256.robot.operations.Logger;
 import frc.team3256.robot.path.Path;
 import frc.team3256.robot.path.PurePursuitTracker;
 import frc.team3256.robot.subsystems.DriveTrain;
@@ -22,6 +23,7 @@ public class Robot extends TimedRobot {
     DrivePower drivePower;
     Path p;
     PurePursuitTracker purePursuitTracker;
+    Logger logger = new Logger("Robot");
 
     /**
      * This function is called when the robot is first started up and should be
@@ -36,7 +38,10 @@ public class Robot extends TimedRobot {
 
         driveTrain.resetEncoders();
         p = new Path(0,0,6, 0);
-        p.addSegment(new Vector(0,0), new Vector(0, 100));
+        p.addSegment(new Vector(0,0), new Vector(0, 60));
+        p.addSegment(new Vector(0, 60), new Vector(0,100));
+        p.addSegment(new Vector(0,100), new Vector(4, 120));
+        p.addLastPoint();
         p.setTargetVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
         purePursuitTracker = new PurePursuitTracker(p, 10);
     }
@@ -71,6 +76,8 @@ public class Robot extends TimedRobot {
         enabledLooper.start();
         driveTrain.resetEncoders();
         driveTrain.resetGyro();
+        poseEstimator.resetPose();
+        purePursuitTracker.lastClosestPt = 0;
     }
 
     /**
@@ -78,7 +85,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {
-        drivePower = purePursuitTracker.update(poseEstimator.getPose(), driveTrain.getVelocity(), Math.toRadians(driveTrain.getAngle()));
+        drivePower = purePursuitTracker.update(poseEstimator.getPose(), driveTrain.getVelocity(), Math.toRadians(driveTrain.getAngle()) + (Math.PI/2) );
         driveTrain.setVelocityClosedLoop(drivePower.getLeft(), drivePower.getRight());
         System.out.println("left: " + driveTrain.getLeftDistance());
         System.out.println("right: " + driveTrain.getRightDistance());

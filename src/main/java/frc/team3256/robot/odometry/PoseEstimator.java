@@ -2,6 +2,7 @@ package frc.team3256.robot.odometry;
 
 
 import frc.team3256.robot.math.Vector;
+import frc.team3256.robot.operations.Logger;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.warriorlib.loop.Loop;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
@@ -12,6 +13,7 @@ public class PoseEstimator extends SubsystemBase {
     double lastAvgDistance;
     DriveTrain driveTrain = DriveTrain.getInstance();
     static PoseEstimator instance;
+    Logger logger = new Logger("PoseEstimator");
 
     private PoseEstimator(Vector v) {
         currPose = new Vector(v);
@@ -26,19 +28,24 @@ public class PoseEstimator extends SubsystemBase {
         return instance == null ? instance = new PoseEstimator(new Vector(0,0)) : instance;
     }
 
+    public void resetPose() {
+        lastAvgDistance = 0;
+        currPose = new Vector(0,0);
+    }
+
     @Override
     public void init(double timestamp) {
-
+        logger.moveTo("poseEstimator");
     }
 
     @Override
     public void update(double timestamp) {
         double distanceChange = driveTrain.getAverageDistance() - lastAvgDistance;
-        System.out.println("change: " + distanceChange);
-        double heading = Math.toRadians(driveTrain.getAngle());
+        double heading = Math.toRadians(driveTrain.getAngle())+(Math.PI/2);
         double updatedX = distanceChange * Math.cos(heading);
         double updatedY = distanceChange * Math.sin(heading);
         currPose = Vector.add(currPose, new Vector(updatedX, updatedY));
+        logger.log("pose", currPose.toString());
         lastAvgDistance = driveTrain.getAverageDistance();
     }
 
