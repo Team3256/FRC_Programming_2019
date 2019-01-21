@@ -1,77 +1,80 @@
 package frc.team3256.robot.subsystems;
 
-import edu.wpi.first.wpilibj.GenericHID;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.XboxController;
-import frc.team3256.robot.operation.DriveConfigImplementation;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.state.RobotState;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
 public class CargoIntake extends SubsystemBase{
 
-    XboxController xboxController = new XboxController(0);
-
-    private VictorSP cargoIntake;
-
-    private double kIntakePower = Constants.kCargoIntakePower;
-    private double kExhaustPower = Constants.kCargoExhaustPower;
+    private VictorSP cargoIntake, cargoScoreLeft, cargoScoreRight;
+    private CANSparkMax cargoPivot;
 
     private static CargoIntake instance;
     public static CargoIntake getInstance () {return instance == null ? instance = new CargoIntake(): instance;}
 
-    DriveConfigImplementation driveConfigImplementation = new DriveConfigImplementation();
-
     private CargoIntake() {
         cargoIntake = new VictorSP(Constants.kCargoIntakePort);
+        cargoScoreLeft = new VictorSP(Constants.kCargoScoreLeftPort);
+        cargoScoreRight = new VictorSP(Constants.kCargoScoreRightPort);
         cargoIntake.setInverted(false); //TBD
+        cargoPivot = new CANSparkMax(Constants.kCargoPivotPort, CANSparkMaxLowLevel.MotorType.kBrushless);
     }
 
-    class IntakingState extends RobotState {
+    public static class IntakingState extends RobotState {
         @Override
         public RobotState update() {
-            cargoIntake.set(kIntakePower);
+            CargoIntake.getInstance().cargoIntake.set(Constants.kCargoIntakePower);
 
             // Perhaps read sensor here and stop intaking
 
-            return new UpdateControlsState();
+            return new IdleState();
         }
     }
 
-    class ExhaustingState extends RobotState {
+    public static class ExhaustingState extends RobotState {
         @Override
         public RobotState update() {
-            cargoIntake.set(kExhaustPower);
-            return new UpdateControlsState();
+            CargoIntake.getInstance().cargoIntake.set(Constants.kCargoExhaustPower);
+            return new IdleState();
         }
     }
 
-    class IdleState extends RobotState {
+    public static class ScoringState extends RobotState {
         @Override
         public RobotState update() {
-            cargoIntake.set(0);
-            return new UpdateControlsState();
+            CargoIntake.getInstance().setScore(Constants.kCargoScorePower, Constants.kCargoScorePower);
+            return new IdleState();
         }
     }
 
-    class UpdateControlsState extends RobotState {
+    public static class PivotingUpState extends RobotState {
         @Override
         public RobotState update() {
-            // Set new states based on controls from controller
-            // e.g. on A held down, intake
-
-            if(driveConfigImplementation.getCargoIntake()){
-                System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-                return new IntakingState();
-            }
-            else if (driveConfigImplementation.getCargoExhaust()){
-                return new ExhaustingState();
-            }
-            else {return new IdleState();}
+            CargoIntake.getInstance().cargoPivot.set(Constants.kCargoPivotUpPower);
+            return new IdleState();
         }
     }
 
-    private RobotState robotState = new UpdateControlsState();
+    public static class PivotingDownState extends RobotState {
+        @Override
+        public RobotState update() {
+            CargoIntake.getInstance().cargoPivot.set(Constants.kCargoPivotDownPower);
+            return new IdleState();
+        }
+    }
+
+    public static class IdleState extends RobotState {
+        @Override
+        public RobotState update() {
+            CargoIntake.getInstance().cargoIntake.set(0);
+            return new IdleState();
+        }
+    }
+
+    private RobotState robotState = new IdleState();
 
     @Override
     public void update(double timestamp) {
@@ -85,6 +88,15 @@ public class CargoIntake extends SubsystemBase{
             ));
         }
         robotState = newState;
+    }
+
+    public void setRobotState(RobotState state){
+        this.robotState = state;
+    }
+
+    public void setScore(double left, double right) {
+        cargoScoreLeft.set(left);
+        cargoScoreRight.set(right);
     }
 
     @Override
