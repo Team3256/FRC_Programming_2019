@@ -1,26 +1,29 @@
 package frc.team3256.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.VictorSP;
 import frc.team3256.robot.operations.Constants;
+import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.state.RobotState;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
 public class CargoIntake extends SubsystemBase{
 
-    private VictorSP cargoIntake, cargoScoreLeft, cargoScoreRight;
+    private WPI_TalonSRX cargoIntake, cargoScoreLeft, cargoScoreRight, cargoClearance;
     private CANSparkMax cargoPivot;
 
     private static CargoIntake instance;
     public static CargoIntake getInstance () {return instance == null ? instance = new CargoIntake(): instance;}
 
     private CargoIntake() {
-        cargoIntake = new VictorSP(Constants.kCargoIntakePort);
-        cargoScoreLeft = new VictorSP(Constants.kCargoScoreLeftPort);
-        cargoScoreRight = new VictorSP(Constants.kCargoScoreRightPort);
-        cargoIntake.setInverted(false); //TBD
+        cargoIntake = TalonSRXUtil.generateGenericTalon(Constants.kCargoIntakePort);
+        cargoScoreLeft = TalonSRXUtil.generateGenericTalon(Constants.kCargoScoreLeftPort);
+        cargoScoreRight = TalonSRXUtil.generateGenericTalon(Constants.kCargoScoreRightPort);
+        cargoClearance = TalonSRXUtil.generateGenericTalon(Constants.kCargoClearancePort);
         cargoPivot = new CANSparkMax(Constants.kCargoPivotPort, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+        cargoIntake.setInverted(false); //TBD
     }
 
     public static class IntakingState extends RobotState {
@@ -62,6 +65,22 @@ public class CargoIntake extends SubsystemBase{
         @Override
         public RobotState update() {
             CargoIntake.getInstance().cargoPivot.set(Constants.kCargoPivotDownPower);
+            return new IdleState();
+        }
+    }
+
+    public static class ClearanceUpState extends RobotState {
+        @Override
+        public RobotState update() {
+            CargoIntake.getInstance().cargoClearance.set(Constants.kCargoClearanceUpPower);
+            return new IdleState();
+        }
+    }
+
+    public static class ClearanceDownState extends RobotState {
+        @Override
+        public RobotState update() {
+            CargoIntake.getInstance().cargoClearance.set(Constants.kCargoClearanceDownPower);
             return new IdleState();
         }
     }

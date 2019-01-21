@@ -34,6 +34,10 @@ public interface ControlsInterface {
 
     boolean pivotCargoDown();
 
+    boolean clearanceCargoUp();
+
+    boolean clearanceCargoDown();
+
     boolean manualElevatorUp();
 
     boolean manualElevatorDown();

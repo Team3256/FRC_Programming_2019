@@ -1,11 +1,11 @@
 package frc.team3256.robot.operation;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class DriveConfigImplementation implements ControlsInterface {
 
     XboxController driver = new XboxController(0);
     //XboxController manipulator = new XboxController(1);
+
 
 
     @Override
@@ -51,6 +51,12 @@ public class DriveConfigImplementation implements ControlsInterface {
 
     @Override
     public boolean pivotCargoDown() { return false; }
+
+    @Override
+    public boolean clearanceCargoUp() { return false; }
+
+    @Override
+    public boolean clearanceCargoDown() { return false; }
 
     @Override
     public boolean manualElevatorUp() {
