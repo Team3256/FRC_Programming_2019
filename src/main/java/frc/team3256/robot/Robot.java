@@ -6,26 +6,24 @@ import frc.team3256.robot.odometry.PoseEstimator;
 import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.operations.DrivePower;
+import frc.team3256.robot.operations.Logger;
 import frc.team3256.robot.path.Path;
 import frc.team3256.robot.path.PurePursuitTracker;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.warriorlib.hardware.ADXRS453_Calibrator;
 import frc.team3256.warriorlib.loop.Looper;
+import org.opencv.core.Mat;
 
 public class Robot extends TimedRobot {
 
-    PoseEstimator poseEstimator = new PoseEstimator(new Vector(0,0));
+    PoseEstimator poseEstimator;
     DriveTrain driveTrain = DriveTrain.getInstance();
     Looper enabledLooper;
     TeleopUpdater teleopUpdater;
-    //DrivePower drivePower;
+    DrivePower drivePower;
     Path p;
     PurePursuitTracker purePursuitTracker;
-
-    //ADXRS453_Calibrator gyroCalibrator;
-
-
-
+    Logger logger = new Logger("Robot");
 
     /**
      * This function is called when the robot is first started up and should be
@@ -33,14 +31,19 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-        enabledLooper = new Looper(1.0/200.0);
-
+        enabledLooper = new Looper(Constants.loopTime);
+        poseEstimator = PoseEstimator.getInstance();
         enabledLooper.addLoops(driveTrain, poseEstimator);
         teleopUpdater = new TeleopUpdater();
-        //gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
-        teleopUpdater = new TeleopUpdater();
-        /*driveTrain.getGyro().initGyro();
-        driveTrain.getGyro().calibrate();*/
+
+        driveTrain.resetEncoders();
+        p = new Path(0,0,6, 0);
+        p.addSegment(new Vector(0,0), new Vector(0, 60));
+        p.addSegment(new Vector(0, 60), new Vector(0,100));
+        p.addSegment(new Vector(0,100), new Vector(4, 120));
+        p.addLastPoint();
+        p.setTargetVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
+        purePursuitTracker = new PurePursuitTracker(p, 10);
     }
 
     /**
@@ -69,15 +72,12 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        /*enabledLooper.stop();
+        enabledLooper.stop();
+        enabledLooper.start();
         driveTrain.resetEncoders();
-        p = new Path(0,0,0);
-        purePursuitTracker = new PurePursuitTracker(p, 20, 20);
-        poseEstimator = PoseEstimator.getInstance();
-        p.addSegment(new Vector(0,0), new Vector(0, 100));
-        p.setTargetVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
-        p.setCurvature();
-        enabledLooper.start();*/
+        driveTrain.resetGyro();
+        poseEstimator.resetPose();
+        purePursuitTracker.lastClosestPt = 0;
     }
 
     /**
@@ -85,8 +85,12 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {
-        /*drivePower = purePursuitTracker.update(poseEstimator.getPose(), driveTrain.getVelocity(), driveTrain.getAngle());
-        driveTrain.setOpenLoop(drivePower.getLeft(), drivePower.getRight());*/
+        drivePower = purePursuitTracker.update(poseEstimator.getPose(), driveTrain.getVelocity(), Math.toRadians(driveTrain.getAngle()) + (Math.PI/2) );
+        driveTrain.setVelocityClosedLoop(drivePower.getLeft(), drivePower.getRight());
+        System.out.println("left: " + driveTrain.getLeftDistance());
+        System.out.println("right: " + driveTrain.getRightDistance());
+        System.out.println("angle: " + driveTrain.getAngle());
+        System.out.println("pose: " + poseEstimator.getPose());
     }
 
     /**

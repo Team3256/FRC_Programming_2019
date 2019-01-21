@@ -7,19 +7,18 @@ import frc.team3256.robot.operations.Sign;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-
 public class Path {
 
-    double spacing = Constants.spacing; //spacing between points in inches
-    double distance; //in inches
+    double spacing; //spacing between points in inches
     double a, b, tolerance;
-    ArrayList<frc.team3256.robot.math.Vector> robotPath = new ArrayList<>();
+    ArrayList<Vector> robotPath = new ArrayList<>();
+    Vector endVector = new Vector(0,0);
 
-    public Path(double a, double b, double tolerance) {
+    public Path(double a, double b, double spacing, double tolerance) {
         this.a = a;
         this.b = b;
+        this.spacing = spacing;
         this.tolerance = tolerance;
-        distance = 0;
     }
     
     public Vector getStartPoint() {
@@ -31,7 +30,7 @@ public class Path {
     }
 
     public void initializePath() {
-        setCurvature();
+        setCurvatures();
         setDistances();
         setTargetVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
     }
@@ -41,23 +40,16 @@ public class Path {
     public void addSegment(Vector start, Vector end) {
         ArrayList<Vector> injectTemp = new ArrayList<>();
         injectPoints(start, end, injectTemp);
-        System.out.println(injectTemp);
         //ArrayList<Vector> smoothTemp = smooth(injectTemp, a, b, tolerance);
         //System.out.println(smoothTemp.size());
-        if (robotPath.size() == 0) {
-            for (int i = 0; i < injectTemp.size(); i++) {
-                robotPath.add(injectTemp.get(i));
-            }
+        for (int i = 0; i < injectTemp.size(); i++) {
+            robotPath.add(injectTemp.get(i));
         }
-        else {
-            for (int i = 0; i < injectTemp.size() - 1; i++) {
-                robotPath.add(injectTemp.get(i));
-            }
-        }
-        for (Vector v : robotPath) {
-            System.out.println(v);
-        }
-        System.out.println("RPath Size: " + robotPath.size());
+        endVector = end;
+    }
+
+    public void addLastPoint() {
+        robotPath.add(endVector);
     }
 
     //methods to transfer to make arrays -> lists and list -> arrays
@@ -96,7 +88,6 @@ public class Path {
     //methods to populate the path with more points, then to smooth the points in the path
 
     private void injectPoints(Vector startPt, Vector endPt, ArrayList<Vector> temp) {
-
         Vector vector = new Vector(Vector.sub(endPt, startPt, null));
         double num_pts_that_fit = Math.ceil(vector.norm() / spacing);
         Vector unitVector = vector.normalize(null);
@@ -105,7 +96,6 @@ public class Path {
             Vector newVector = Vector.mult(unitVector, i, null);
             temp.add(Vector.add(startPt, newVector, null));
         }
-        temp.add(endPt);
     }
 
 
@@ -137,9 +127,13 @@ public class Path {
         Vector prevPoint = new Vector(path.get(pointIndex - 1));
         Vector nextPoint = new Vector(path.get(pointIndex + 1));
 
-        double productOfSides = Vector.dist(point, prevPoint) * Vector.dist(point, nextPoint) * Vector.dist(nextPoint, prevPoint);
-        double semiPerimeter = (Vector.dist(point, prevPoint) + Vector.dist(point, nextPoint) + Vector.dist(nextPoint, prevPoint))/2;
-        double triangleArea = Math.sqrt(semiPerimeter * (semiPerimeter - Vector.dist(point, prevPoint)) * (semiPerimeter - Vector.dist(point, nextPoint)) * (semiPerimeter - Vector.dist(nextPoint, prevPoint)));
+        double distanceOne = Vector.dist(point, prevPoint);
+        double distanceTwo = Vector.dist(point, nextPoint);
+        double distanceThree = Vector.dist(nextPoint, prevPoint);
+
+        double productOfSides = distanceOne * distanceTwo * distanceThree;
+        double semiPerimeter = (distanceOne + distanceTwo + distanceThree)/2;
+        double triangleArea = Math.sqrt(semiPerimeter * (semiPerimeter - distanceOne) * (semiPerimeter - distanceTwo) * (semiPerimeter - distanceThree));
 
         double radius = (productOfSides)/(4 * triangleArea);
         double curvature = 1/radius;
@@ -149,7 +143,6 @@ public class Path {
 
     private double calculateMaxVelocity(ArrayList<Vector> path, int point, double pathMaxVel, double k) {
         if (point > 0) {
-
             double curvature = calculatePathCurvature(path, point);
             return Math.min(pathMaxVel, k/curvature); //k is a constant (generally between 1-5 based on how quickly you want to make the turn)
 
@@ -168,7 +161,7 @@ public class Path {
 
     //setter methods that iterate through and set attributes to robotPath
 
-    public void setCurvature() {
+    public void setCurvatures() {
         getStartPoint().setCurvature(0);
         getEndPoint().setCurvature(0);
         for (int i = 1; i < robotPath.size()-1; i++){
@@ -179,9 +172,12 @@ public class Path {
     public void setTargetVelocities(double maxVel, double maxAccel, double k) {
         robotPath.get(robotPath.size() - 1).setVelocity(0);
         for (int i = robotPath.size() - 2; i >= 0; i--) {
-            distance = Vector.dist(robotPath.get(i+1), robotPath.get(i));
+            double distance = Vector.dist(robotPath.get(i+1), robotPath.get(i));
+            System.out.println(robotPath.get(i));
             double maxReachableVel = Math.sqrt(Math.pow(robotPath.get(i+1).getVelocity(),2) + (2 * maxAccel * distance));
+            System.out.println("max reachable velocity at point " + i + " = " + maxReachableVel);
             robotPath.get(i).setVelocity(Math.min(calculateMaxVelocity(robotPath, i, maxVel, k), maxReachableVel));
+            System.out.println("velocity at point " + i + " = " + robotPath.get(i).getVelocity());
         }
     }
 
@@ -198,6 +194,7 @@ public class Path {
 
 
     public double calculateCurvatureLookAheadArc(Vector currPos, double heading, Vector lookahead, double lookaheadDistance) {
+        System.out.println("lookahead pt "+lookahead);
         double a = -Math.tan(heading);
         double b = 1;
         double c = (Math.tan(heading)*currPos.x) - currPos.y;

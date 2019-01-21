@@ -9,10 +9,10 @@ public class DriveConfigImplementation implements ControlsInterface {
 
 
     @Override
-    public double getThrottle() { return driver.getRawAxis(1);}
+    public double getThrottle() { return -driver.getRawAxis(1);}
 
     @Override
-    public double getTurn() { return -driver.getRawAxis(4);}
+    public double getTurn() { return driver.getRawAxis(4);}
 
     @Override
     public boolean getQuickTurn() {
