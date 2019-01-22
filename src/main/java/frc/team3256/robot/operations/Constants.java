@@ -29,6 +29,17 @@ public class Constants {
     public static final double kV = 1/maxVel; // 1/max robot speed
     public static final double maxVelk = 2; //generally between 1-5
 
+    public static final double velkP = 0;
+    public static final double velkI = 0;
+    public static final double velkD = 0;
+
+    //Curvature Drive
+
+    public static double quickStopAccumulator = 0.0; //temporary curv. drive
+    public static double kQuickStopAlpha = 0.1;
+    public static double kQuickStopScalar = 2.0;
+    public static final double kQuickTurnDeltaLimit = 2.0/1000.0/12.0*20.0;
+
     //CAN
     public static final int kLeftDriveMaster = 4;
     public static final int kLeftDriveSlave = 5;

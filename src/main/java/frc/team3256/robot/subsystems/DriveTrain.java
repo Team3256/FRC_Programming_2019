@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.sun.org.apache.bcel.internal.Const;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import frc.team3256.robot.math.Rotation;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.operations.DrivePower;
+import frc.team3256.robot.operations.PIDController;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.loop.Loop;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
@@ -24,11 +26,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private DoubleSolenoid shifter;
     private boolean init = false;
     private PigeonIMU gyro;
-    static double quickStopAccumulator = 0.0; //temporary curv. drive
-    static double kQuickStopAlpha = 0.1;
-    static double kQuickStopScalar = 2.0;
-    private static final double kQuickTurnDeltaLimit = 2.0/1000.0/12.0*20.0;
     private static double prevTurn = 0.0;
+    private PIDController velocityPIDController;
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
@@ -38,6 +37,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         gyro = new PigeonIMU(0);
         gyro.setAccumZAngle(0, 0);
         gyro.setYaw(0, 0);
+        velocityPIDController = new PIDController(Constants.velkP, Constants.velkI, Constants.velkD);
         leftMaster = TalonSRXUtil.generateGenericTalon(Constants.kLeftDriveMaster);
         leftSlave = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave, Constants.kLeftDriveMaster);
         //leftSlave2 = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave2, Constants.kLeftDriveMaster);
@@ -115,20 +115,21 @@ public class DriveTrain extends SubsystemBase implements Loop {
         return (leftMaster.getSelectedSensorVelocity() + rightMaster.getSelectedSensorVelocity())/2.0;
     }
 
+    public double getLeftVelocity() {
+        return leftMaster.getSelectedSensorVelocity();
+    }
+
+
+    public double getRightVelocity() {
+        return rightMaster.getSelectedSensorVelocity();
+    }
+
     public double getLeftDistance() {
         return sensorUnitsToInches(leftMaster.getSelectedSensorPosition(0));
     }
 
-    public double getLeftSlaveDistance() {
-        return sensorUnitsToInches(leftSlave.getSelectedSensorPosition(0));
-    }
-
     public double getRightDistance() {
         return sensorUnitsToInches(rightMaster.getSelectedSensorPosition(0));
-    }
-
-    public double getRightSlaveDistance() {
-        return sensorUnitsToInches(rightSlave.getSelectedSensorPosition(0));
     }
 
     public double getAverageDistance(){
@@ -172,7 +173,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public Rotation getRotationAngle(){
-        //Return negative value of the gyro, because the gyro returns
         return Rotation.fromDegrees(getAngle());
     }
 
@@ -191,31 +191,31 @@ public class DriveTrain extends SubsystemBase implements Loop {
                 if (quickTurn){
                     highGear = false;
                     if (Math.abs(throttle) < 0.2){
-                        quickStopAccumulator = (1-kQuickStopAlpha)*quickStopAccumulator + kQuickStopAlpha * clamp(turn) * kQuickStopScalar;
+                        Constants.quickStopAccumulator = (1-Constants.kQuickStopAlpha)* Constants.quickStopAccumulator + Constants.kQuickStopAlpha * clamp(turn) * Constants.kQuickStopScalar;
                     }
                     overPower = 1.0;
                     angularPower = turn/1.1;
-                    if (Math.abs(turn - prevTurn) > kQuickTurnDeltaLimit){
+                    if (Math.abs(turn - prevTurn) > Constants.kQuickTurnDeltaLimit){
                         //System.out.println("TURN: " + turn);
                         //System.out.println("PREVIOUS TURN: " + prevTurn);
                         if (turn > 0){
-                            angularPower = prevTurn + kQuickTurnDeltaLimit;
+                            angularPower = prevTurn + Constants.kQuickTurnDeltaLimit;
                             //System.out.println("ANGULAR POWER: " + angularPower);
                         }
-                        else angularPower = prevTurn - kQuickTurnDeltaLimit;
+                        else angularPower = prevTurn - Constants.kQuickTurnDeltaLimit;
                     }
                 }
                 else{
                     overPower = 0.0;
-                    angularPower = Math.abs(throttle)*turn - quickStopAccumulator;
-                    if (quickStopAccumulator > 1){
-                        quickStopAccumulator -= 1;
+                    angularPower = Math.abs(throttle)*turn - Constants.quickStopAccumulator;
+                    if (Constants.quickStopAccumulator > 1){
+                        Constants.quickStopAccumulator -= 1;
             }
-            else if (quickStopAccumulator < -1){
-                quickStopAccumulator += 1;
+            else if (Constants.quickStopAccumulator < -1){
+                Constants.quickStopAccumulator += 1;
             }
             else{
-                quickStopAccumulator = 0.0;
+                Constants.quickStopAccumulator = 0.0;
             }
         }
         prevTurn = turn;
@@ -249,8 +249,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public void setVelocityClosedLoop(double leftVelInchesPerSec, double rightVelInchesPerSec) {
-        leftMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(leftVelInchesPerSec));
-        rightMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(rightVelInchesPerSec));
+        double leftOutput = velocityPIDController.calculatePID(leftVelInchesPerSec, getLeftVelocity());
+        double rightOutput = velocityPIDController.calculatePID(rightVelInchesPerSec, getRightVelocity());
+        leftMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(leftOutput));
+        rightMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(rightOutput));
     }
 
     private static double inchesToRotations(double inches) {

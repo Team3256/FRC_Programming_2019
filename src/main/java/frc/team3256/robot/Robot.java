@@ -3,7 +3,7 @@ package frc.team3256.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3256.robot.math.Vector;
 import frc.team3256.robot.odometry.PoseEstimator;
-import frc.team3256.robot.odometry.PurePursuitLoop;
+import frc.team3256.robot.path.PurePursuitLoop;
 import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.path.Path;

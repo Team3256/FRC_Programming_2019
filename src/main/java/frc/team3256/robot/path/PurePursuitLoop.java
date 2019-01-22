@@ -1,5 +1,6 @@
-package frc.team3256.robot.odometry;
+package frc.team3256.robot.path;
 
+import frc.team3256.robot.odometry.PoseEstimator;
 import frc.team3256.robot.operations.DrivePower;
 import frc.team3256.robot.path.PurePursuitTracker;
 import frc.team3256.robot.subsystems.DriveTrain;
