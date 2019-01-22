@@ -16,6 +16,10 @@ public interface ControlsInterface {
     //Hold: Shifts down to low gear (default is high gear)
     boolean getLowGear();
 
+    boolean switchManipulatorControlMode();
+
+    boolean switchDriverControlMode();
+
     boolean getHatchIntake();
 
     boolean scoreHatch();
@@ -33,10 +37,6 @@ public interface ControlsInterface {
     boolean pivotCargoUp();
 
     boolean pivotCargoDown();
-
-    boolean clearanceCargoUp();
-
-    boolean clearanceCargoDown();
 
     boolean manualElevatorUp();
 

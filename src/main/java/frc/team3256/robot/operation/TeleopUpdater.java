@@ -16,7 +16,15 @@ public class TeleopUpdater {
     private Elevator m_elevator = Elevator.getInstance();
     boolean highGear = true;
 
+    private boolean isManipulatorHatchMode = true;
+    private boolean isDriverHatchMode = true;
+
     public void update(){
+        System.out.println(isManipulatorHatchMode ? "Manipulator: Hatch Mode" : "Manipulator: Cargo Mode");
+        System.out.println(isDriverHatchMode ? "Driver: Hatch Mode" : "Driver: Cargo Mode");
+
+        boolean switchManipulatorControlMode = controls.switchManipulatorControlMode();
+        boolean switchDriverControlMode = controls.switchDriverControlMode();
 
         //Drive
         double throttle = controls.getThrottle();
@@ -35,8 +43,6 @@ public class TeleopUpdater {
         boolean scoreCargo = controls.scoreCargo();
         boolean pivotCargoUp = controls.pivotCargoUp();
         boolean pivotCargoDown = controls.pivotCargoDown();
-        boolean clearanceCargoUp = controls.clearanceCargoUp();
-        boolean clearanceCargoDown = controls.clearanceCargoDown();
 
         //Elevator
         boolean manualElevatorUp = controls.manualElevatorUp();
@@ -52,13 +58,21 @@ public class TeleopUpdater {
         boolean hang = controls.hang();
 
         //DriveTrain Subsystem
-        DrivePower drivePower = DriveTrain.curvatureDrive(throttle, turn, quickTurn, highGear);
+        DrivePower drivePower = DriveTrain.curvatureDrive(throttle, turn, quickTurn, highGear/*!shiftDown*/);
         m_drive.setHighGear(drivePower.highGear());
         m_drive.setOpenLoop(drivePower.getLeft(), drivePower.getRight());
 
         if (m_drive.leftSlave.getOutputCurrent() > 10 || m_drive.leftSlave.getOutputCurrent() > 10)
             System.out.println("LEFT " + m_drive.leftSlave.getOutputCurrent() + " RIGHT " + m_drive.rightSlave.getOutputCurrent());
 
+        //Switch between Hatch and Cargo Control Modes
+        if (switchManipulatorControlMode){
+            isManipulatorHatchMode = !isManipulatorHatchMode;
+        }
+
+        if (switchDriverControlMode){
+            isDriverHatchMode = !isDriverHatchMode;
+        }
 
         //CargoIntake Subsystem
         if(intakeCargo){
@@ -71,16 +85,10 @@ public class TeleopUpdater {
             m_cargo.setRobotState(new CargoIntake.ScoringState());
         }
         else if (pivotCargoUp) {
-            m_cargo.setRobotState(new CargoIntake.PivotingUpState());
+            m_cargo.setRobotState(new CargoIntake.ManualPivotUpState());
         }
         else if (pivotCargoDown) {
-            m_cargo.setRobotState(new CargoIntake.PivotingDownState());
-        }
-        else if (clearanceCargoUp) {
-            m_cargo.setRobotState(new CargoIntake.ClearanceUpState());
-        }
-        else if (clearanceCargoDown) {
-            m_cargo.setRobotState(new CargoIntake.ClearanceDownState());
+            m_cargo.setRobotState(new CargoIntake.ManualPivotDownState());
         }
         else m_cargo.setRobotState(new CargoIntake.IdleState());
 

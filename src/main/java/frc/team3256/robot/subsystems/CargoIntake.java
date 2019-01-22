@@ -1,9 +1,12 @@
 package frc.team3256.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import frc.team3256.robot.operations.Constants;
+import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.state.RobotState;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
@@ -12,6 +15,8 @@ public class CargoIntake extends SubsystemBase{
 
     private WPI_TalonSRX cargoIntake, cargoScoreLeft, cargoScoreRight, cargoClearance;
     private CANSparkMax cargoPivot;
+    private CANPIDController cargoPID;
+    private CANEncoder cargoEncoder;
 
     private static CargoIntake instance;
     public static CargoIntake getInstance () {return instance == null ? instance = new CargoIntake(): instance;}
@@ -21,9 +26,9 @@ public class CargoIntake extends SubsystemBase{
         cargoScoreLeft = TalonSRXUtil.generateGenericTalon(Constants.kCargoScoreLeftPort);
         cargoScoreRight = TalonSRXUtil.generateGenericTalon(Constants.kCargoScoreRightPort);
         cargoClearance = TalonSRXUtil.generateGenericTalon(Constants.kCargoClearancePort);
-        cargoPivot = new CANSparkMax(Constants.kCargoPivotPort, CANSparkMaxLowLevel.MotorType.kBrushless);
-
-        cargoIntake.setInverted(false); //TBD
+        cargoPivot = SparkMAXUtil.generateGenericSparkMAX(Constants.kCargoPivotPort, CANSparkMaxLowLevel.MotorType.kBrushless);
+        cargoPID = cargoPivot.getPIDController();
+        cargoEncoder = cargoPivot.getEncoder();
     }
 
     public static class IntakingState extends RobotState {
@@ -53,7 +58,7 @@ public class CargoIntake extends SubsystemBase{
         }
     }
 
-    public static class PivotingUpState extends RobotState {
+    public static class ManualPivotUpState extends RobotState {
         @Override
         public RobotState update() {
             CargoIntake.getInstance().cargoPivot.set(Constants.kCargoPivotUpPower);
@@ -61,10 +66,25 @@ public class CargoIntake extends SubsystemBase{
         }
     }
 
-    public static class PivotingDownState extends RobotState {
+    public static class ManualPivotDownState extends RobotState {
         @Override
         public RobotState update() {
             CargoIntake.getInstance().cargoPivot.set(Constants.kCargoPivotDownPower);
+            return new IdleState();
+        }
+    }
+
+    public static class PivotFloorPresetState extends RobotState {
+        @Override
+        public RobotState update() {
+            return new IdleState();
+        }
+    }
+
+    public static class PivotScorePresetState extends RobotState {
+
+        @Override
+        public RobotState update() {
             return new IdleState();
         }
     }

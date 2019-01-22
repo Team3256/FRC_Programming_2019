@@ -1,10 +1,11 @@
 package frc.team3256.robot.operation;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class DriveConfigImplementation implements ControlsInterface {
 
     XboxController driver = new XboxController(0);
-    //XboxController manipulator = new XboxController(1);
+    XboxController manipulator = new XboxController(1);
 
 
 
@@ -24,6 +25,20 @@ public class DriveConfigImplementation implements ControlsInterface {
 
     @Override
     public boolean getLowGear() { return false; }
+
+    @Override
+    public boolean switchManipulatorControlMode() {
+        manipulator.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
+        manipulator.setRumble(GenericHID.RumbleType.kRightRumble, 1);
+        return manipulator.getStartButton();
+    }
+
+    @Override
+    public boolean switchDriverControlMode() {
+        driver.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
+        driver.setRumble(GenericHID.RumbleType.kRightRumble, 1);
+        return driver.getStartButton();
+    }
 
     @Override
     public boolean getHatchIntake() { return driver.getAButton(); }
@@ -51,12 +66,6 @@ public class DriveConfigImplementation implements ControlsInterface {
 
     @Override
     public boolean pivotCargoDown() { return false; }
-
-    @Override
-    public boolean clearanceCargoUp() { return false; }
-
-    @Override
-    public boolean clearanceCargoDown() { return false; }
 
     @Override
     public boolean manualElevatorUp() {
