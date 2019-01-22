@@ -17,7 +17,7 @@ public class PoseEstimator extends SubsystemBase {
 
     private PoseEstimator(Vector v) {
         currPose = new Vector(v);
-        lastAvgDistance = driveTrain.getAverageDistance();
+        lastAvgDistance = 0;
     }
 
     public Vector getPose() {
@@ -29,7 +29,7 @@ public class PoseEstimator extends SubsystemBase {
     }
 
     public void resetPose() {
-        lastAvgDistance = 0;
+        lastAvgDistance = driveTrain.getAverageDistance();
         currPose = new Vector(0,0);
     }
 
@@ -41,6 +41,9 @@ public class PoseEstimator extends SubsystemBase {
     @Override
     public void update(double timestamp) {
         double distanceChange = driveTrain.getAverageDistance() - lastAvgDistance;
+        if (distanceChange == 0)
+            System.out.println("NO DISTANCE CHANGE!!1!!11!11!!");
+        System.out.println("avg dist: " + driveTrain.getAverageDistance());
         double heading = Math.toRadians(driveTrain.getAngle())+(Math.PI/2);
         double updatedX = distanceChange * Math.cos(heading);
         double updatedY = distanceChange * Math.sin(heading);

@@ -10,8 +10,8 @@ public class TeleopUpdater {
     private DriveConfigImplementation controls = new DriveConfigImplementation();
 
     private DriveTrain m_drive = DriveTrain.getInstance();
-    private HatchPivot m_hatch = HatchPivot.getInstance();
-    private CargoIntake m_cargo = CargoIntake.getInstance();
+    /*private HatchPivot m_hatch = HatchPivot.getInstance();
+    private CargoIntake m_cargo = CargoIntake.getInstance();*/
     boolean highGear = true;
 
     public void update(){
@@ -57,7 +57,7 @@ public class TeleopUpdater {
 
 
         //CargoIntake Subsystem
-        if(intakeCargo){
+        /*if(intakeCargo){
             m_cargo.setRobotState(new CargoIntake.IntakingState());
         }
         else if (exhaustCargo) {
@@ -84,7 +84,7 @@ public class TeleopUpdater {
         else if (pivotHatchDown){
             m_hatch.setRobotState(new HatchPivot.PivotingDown());
         }
-        else m_hatch.setRobotState(new HatchPivot.IdleState());
+        else m_hatch.setRobotState(new HatchPivot.IdleState());*/
 
     }
 }

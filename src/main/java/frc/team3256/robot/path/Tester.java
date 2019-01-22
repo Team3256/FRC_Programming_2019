@@ -14,10 +14,10 @@ public class Tester {
 
         Vector currPos = new Vector(0, 0);
         //System.out.print(p.calcIntersectionPoint(start, end, currPos, 5));
-        //System.out.println(purePursuitTracker.calculateVectorLookAheadPoint(start, end, currPos, 20));
+        //System.out.println(initPurePursuitTracker.calculateVectorLookAheadPoint(start, end, currPos, 20));
         //System.out.println(p.getTotalPathDistance());
         purePursuitTracker.update(currPos, 0, Math.PI/2.0);
-        //System.out.println(purePursuitTracker.getClosestPoint(currPos));
+        //System.out.println(initPurePursuitTracker.getClosestPoint(currPos));
 
     }
 }

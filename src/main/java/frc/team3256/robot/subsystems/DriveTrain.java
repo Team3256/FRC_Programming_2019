@@ -35,19 +35,20 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     private DriveTrain() {
         gyro = new PigeonIMU(0);
-        gyro.setAccumZAngle(0, 30);
-        gyro.setYaw(0, 30);
+        gyro.setAccumZAngle(0, 0);
+        gyro.setYaw(0, 0);
         leftMaster = TalonSRXUtil.generateGenericTalon(Constants.kLeftDriveMaster);
         leftSlave = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave, Constants.kLeftDriveMaster);
         //leftSlave2 = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave2, Constants.kLeftDriveMaster);
         rightMaster = TalonSRXUtil.generateGenericTalon(Constants.kRightDriveMaster);
         rightSlave = TalonSRXUtil.generateSlaveTalon(Constants.kRightDriveSlave, Constants.kRightDriveMaster);
 
-        leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*Constants.loopTime), 0);
+        /*leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*Constants.loopTime), 0);
         rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*Constants.loopTime), 0);
 
         leftMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*Constants.loopTime), 0);
         rightMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*Constants.loopTime), 0);
+        */
 
         shifter = new DoubleSolenoid(Constants.kShifterForward, Constants.kShifterReverse);
 
@@ -77,7 +78,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             rightSlave.enableVoltageCompensation(false);
 //            leftSlave2.enableVoltageCompensation(false);
 //            rightSlave2.enableVoltageCompensation(false);
-            TalonSRXUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
+            TalonSRXUtil.setCoastMode(leftMaster, leftSlave, rightMaster, rightSlave);
             init = true;
         }
         leftMaster.set(ControlMode.PercentOutput, leftPower);
@@ -170,8 +171,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public void resetGyro(){
-        gyro.setYaw(0, 30);
-        gyro.setAccumZAngle(0, 30);
+        gyro.setYaw(0, 0);
+        gyro.setAccumZAngle(0, 0);
     }
 
     public static DrivePower curvatureDrive(double throttle, double turn, boolean quickTurn, boolean highGear){
@@ -214,7 +215,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         prevTurn = turn;
         double left = throttle + angularPower;
         double right = throttle - angularPower;
-        if (left > 1.0){
+        if (left > 1.0) {
             right -= overPower*(left - 1.0);
             left = 1.0;
         }

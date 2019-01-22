@@ -3,27 +3,23 @@ package frc.team3256.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3256.robot.math.Vector;
 import frc.team3256.robot.odometry.PoseEstimator;
+import frc.team3256.robot.odometry.PurePursuitLoop;
 import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.operations.Constants;
-import frc.team3256.robot.operations.DrivePower;
-import frc.team3256.robot.operations.Logger;
 import frc.team3256.robot.path.Path;
 import frc.team3256.robot.path.PurePursuitTracker;
 import frc.team3256.robot.subsystems.DriveTrain;
-import frc.team3256.warriorlib.hardware.ADXRS453_Calibrator;
 import frc.team3256.warriorlib.loop.Looper;
-import org.opencv.core.Mat;
 
 public class Robot extends TimedRobot {
 
     PoseEstimator poseEstimator;
     DriveTrain driveTrain = DriveTrain.getInstance();
-    Looper enabledLooper;
+    Looper enabledLooper, purePursuitLooper;
     TeleopUpdater teleopUpdater;
-    DrivePower drivePower;
     Path p;
     PurePursuitTracker purePursuitTracker;
-    Logger logger = new Logger("Robot");
+    PurePursuitLoop purePursuitLoop;
 
     /**
      * This function is called when the robot is first started up and should be
@@ -31,19 +27,22 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-        enabledLooper = new Looper(Constants.loopTime);
+        enabledLooper = new Looper(1/200D);
+        purePursuitLooper = new Looper(1/25D);
         poseEstimator = PoseEstimator.getInstance();
-        enabledLooper.addLoops(driveTrain, poseEstimator);
+        enabledLooper.addLoops(driveTrain);
+        purePursuitLoop = new PurePursuitLoop();
+        purePursuitLooper.addLoops(poseEstimator, purePursuitLoop);
         teleopUpdater = new TeleopUpdater();
 
         driveTrain.resetEncoders();
         p = new Path(0,0,6, 0);
         p.addSegment(new Vector(0,0), new Vector(0, 60));
-        p.addSegment(new Vector(0, 60), new Vector(0,100));
-        p.addSegment(new Vector(0,100), new Vector(4, 120));
+        p.addSegment(new Vector(0, 60), new Vector(60, 90));
         p.addLastPoint();
         p.setTargetVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
-        purePursuitTracker = new PurePursuitTracker(p, 10);
+        purePursuitTracker = new PurePursuitTracker(p, 15);
+        purePursuitLoop.initPurePursuitTracker(purePursuitTracker);
     }
 
     /**
@@ -52,6 +51,10 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         enabledLooper.stop();
+        purePursuitLooper.stop();
+        poseEstimator.resetPose();
+        driveTrain.resetGyro();
+        driveTrain.resetEncoders();
     }
 
     /**
@@ -64,7 +67,6 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
-
     }
 
     /**
@@ -73,11 +75,11 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         enabledLooper.stop();
-        enabledLooper.start();
         driveTrain.resetEncoders();
         driveTrain.resetGyro();
         poseEstimator.resetPose();
         purePursuitTracker.lastClosestPt = 0;
+        purePursuitLooper.start();
     }
 
     /**
@@ -85,12 +87,12 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {
-        drivePower = purePursuitTracker.update(poseEstimator.getPose(), driveTrain.getVelocity(), Math.toRadians(driveTrain.getAngle()) + (Math.PI/2) );
-        driveTrain.setVelocityClosedLoop(drivePower.getLeft(), drivePower.getRight());
+        /*
         System.out.println("left: " + driveTrain.getLeftDistance());
         System.out.println("right: " + driveTrain.getRightDistance());
         System.out.println("angle: " + driveTrain.getAngle());
         System.out.println("pose: " + poseEstimator.getPose());
+        */
     }
 
     /**
@@ -100,6 +102,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         //driveTrain.getGyro().reset();
         enabledLooper.start();
+        purePursuitLooper.stop();
     }
 
 
@@ -127,6 +130,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void testPeriodic() {
-
+        purePursuitLooper.start();
+        System.out.println("pose: " + poseEstimator.getPose());
     }
 }
