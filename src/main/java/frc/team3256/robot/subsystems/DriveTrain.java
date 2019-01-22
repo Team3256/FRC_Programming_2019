@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
+import frc.team3256.robot.math.Rotation;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.operations.DrivePower;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
@@ -168,6 +169,11 @@ public class DriveTrain extends SubsystemBase implements Loop {
         double[] ypr = new double[3];
         gyro.getYawPitchRoll(ypr);
         return ypr[0];
+    }
+
+    public Rotation getRotationAngle(){
+        //Return negative value of the gyro, because the gyro returns
+        return Rotation.fromDegrees(getAngle());
     }
 
     public void resetGyro(){
