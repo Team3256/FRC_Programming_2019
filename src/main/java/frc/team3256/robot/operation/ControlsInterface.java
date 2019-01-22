@@ -16,6 +16,10 @@ public interface ControlsInterface {
     //Hold: Shifts down to low gear (default is high gear)
     boolean getLowGear();
 
+    boolean switchManipulatorControlMode();
+
+    boolean switchDriverControlMode();
+
     boolean getHatchIntake();
 
     boolean scoreHatch();

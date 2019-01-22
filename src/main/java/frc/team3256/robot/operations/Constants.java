@@ -3,11 +3,6 @@ package frc.team3256.robot.operations;
 public class Constants {
 
     //Ports: No duplicates in each set
-    //PWM
-    public static final int kCargoIntakePort = 0; //TBD
-    public static final int kCargoPivotPort = 0; //TBD
-    public static final int kCargoScoreLeftPort = 0; //TBD
-    public static final int kCargoScoreRightPort = 0; //TBD
 
     //Solenoids
     public static final int kDeployRightForward = 0; //TBD
@@ -39,6 +34,11 @@ public class Constants {
     public static final int kLeftDriveSlave = 5;
     public static final int kRightDriveMaster = 3;
     public static final int kRightDriveSlave = 2;
+    public static final int kCargoIntakePort = 0; //TBD
+    public static final int kCargoPivotPort = 0; //TBD
+    public static final int kCargoScoreLeftPort = 0; //TBD
+    public static final int kCargoScoreRightPort = 0; //TBD
+    public static final int kCargoClearancePort = 0; //TBD
     public static final int kElevatorMaster = 0;
     public static final int kElevatorSlaveOne = 0;
     public static final int kElevatorSlaveTwo = 0;
@@ -72,23 +72,29 @@ public class Constants {
     public static final double kElevatorHoldP = 0;
     public static final double kElevatorHoldI = 0;
     public static final double kElevatorHoldD = 0;
+    public static final double kElevatorHoldF = 0;
+    public static final double kElevatorHoldIz = 0;
 
-    public static final int kElevatorMotionMagicUpSlot = 1;
-    public static final double kElevatorMotionMagicUpF = 0;
-    public static final double kElevatorMotionMagicUpP = 0;
-    public static final double kElevatorMotionMagicUpI = 0;
-    public static final double kElevatorMotionMagicUpD = 0;
+    public static final int kElevatorUpSlot = 0;
+    public static final double kElevatorUpP = 0;
+    public static final double kElevatorUpI = 0;
+    public static final double kElevatorUpD = 0;
+    public static final double kElevatorUpF = 0;
+    public static final double kElevatorUpIz = 0;
 
-    public static final int kElevatorMotionMagicDownSlot = 2;
-    public static final double kElevatorMotionMagicDownF = 0;
-    public static final double kElevatorMotionMagicDownP = 0;
-    public static final double kElevatorMotionMagicDownI = 0;
-    public static final double kElevatorMotionMagicDownD = 0;
-
+    public static final int kElevatorDownSlot = 0;
+    public static final double kElevatorDownP = 0;
+    public static final double kElevatorDownI = 0;
+    public static final double kElevatorDownD = 0;
+    public static final double kElevatorDownF = 0;
+    public static final double kElevatorDownIz = 0;
 
     //Presets:
     public static final double kIntakeSharpIRMaxVoltage = 0;
     public static final double kIntakeSharpIRMinVoltage = 0;
+    public static final double kElevatorMinOutput = 0;
+    public static final double kElevatorMaxOutput = 0;
+
 
     //Hatch
     public static final double kHatchIntakePower = 0;
@@ -101,6 +107,8 @@ public class Constants {
     public static final double kCargoScorePower = 0;
     public static final double kCargoPivotUpPower = 0;
     public static final double kCargoPivotDownPower = 0;
+    public static final double kCargoClearanceUpPower = 0;
+    public static final double kCargoClearanceDownPower = 0;
 
     //Elevator
     public static final double kElevatorUpManualPower = 0;
