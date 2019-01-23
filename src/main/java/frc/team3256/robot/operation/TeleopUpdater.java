@@ -60,6 +60,7 @@ public class TeleopUpdater {
         boolean hang = controls.hang();
 
         //DriveTrain Subsystem
+        m_drive.setBrakeMode();
         DrivePower drivePower = DriveTrain.curvatureDrive(throttle, turn, quickTurn, highGear/*!shiftDown*/);
         m_drive.setHighGear(drivePower.highGear());
         m_drive.setOpenLoop(drivePower.getLeft(), drivePower.getRight());
