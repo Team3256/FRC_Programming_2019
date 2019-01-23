@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
         p.addSegment(new Vector(0, 30), new Vector(0, 60));
         p.addLastPoint();
         p.setTargetVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
-    purePursuitTracker = new PurePursuitTracker(p, 15);
+        purePursuitTracker = new PurePursuitTracker(p, 15);
         purePursuitLoop.initPurePursuitTracker(purePursuitTracker);
 }
 
