@@ -29,9 +29,14 @@ public class Constants {
     public static final double kV = 1/maxVel; // 1/max robot speed
     public static final double maxVelk = 2; //generally between 1-5
 
-    public static final double velkP = 0;
-    public static final double velkI = 0;
-    public static final double velkD = 0;
+    public static final double leftVelkP = 0;
+    public static final double leftVelkI = 0;
+    public static final double leftVelkD = 0;
+
+
+    public static final double rightVelkP = 0;
+    public static final double rightVelkI = 0;
+    public static final double rightVelkD = 0;
 
     //Curvature Drive
 

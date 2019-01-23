@@ -26,7 +26,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private boolean init = false;
     private PigeonIMU gyro;
     private static double prevTurn = 0.0;
-    private PIDController velocityPIDController;
+    private PIDController leftVelocityPIDController;
+    private PIDController rightVelocityPIDController;
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
@@ -36,7 +37,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
         gyro = new PigeonIMU(0);
         gyro.setAccumZAngle(0, 0);
         gyro.setYaw(0, 0);
-        velocityPIDController = new PIDController(Constants.velkP, Constants.velkI, Constants.velkD);
+        leftVelocityPIDController = new PIDController(Constants.leftVelkP, Constants.leftVelkI, Constants.leftVelkD);
+        rightVelocityPIDController = new PIDController(Constants.rightVelkP, Constants.rightVelkI, Constants.rightVelkD);
         leftMaster = TalonSRXUtil.generateGenericTalon(Constants.kLeftDriveMaster);
         leftSlave = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave, Constants.kLeftDriveMaster);
         //leftSlave2 = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave2, Constants.kLeftDriveMaster);
@@ -248,10 +250,13 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public void setVelocityClosedLoop(double leftVelInchesPerSec, double rightVelInchesPerSec) {
-        double leftOutput = velocityPIDController.calculatePID(leftVelInchesPerSec, getLeftVelocity());
-        double rightOutput = velocityPIDController.calculatePID(rightVelInchesPerSec, getRightVelocity());
+        double leftOutput = leftVelocityPIDController.calculatePID(leftVelInchesPerSec, getLeftVelocity());
+        double rightOutput = rightVelocityPIDController.calculatePID(rightVelInchesPerSec, getRightVelocity());
         leftMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(leftOutput));
         rightMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(rightOutput));
+
+        //leftMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(leftVelInchesPerSec));
+        //rightMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(rightVelInchesPerSec));
     }
 
     private static double inchesToRotations(double inches) {
