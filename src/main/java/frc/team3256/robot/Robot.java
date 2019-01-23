@@ -3,6 +3,7 @@ package frc.team3256.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3256.robot.math.Vector;
 import frc.team3256.robot.odometry.PoseEstimator;
+import frc.team3256.robot.odometry.PoseEstimatorUpdated;
 import frc.team3256.robot.path.PurePursuitLoop;
 import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.operations.Constants;
@@ -20,6 +21,7 @@ public class Robot extends TimedRobot {
     Path p;
     PurePursuitTracker purePursuitTracker;
     PurePursuitLoop purePursuitLoop;
+    PoseEstimatorUpdated poseEstimatorUpdated;
 
     /**
      * This function is called when the robot is first started up and should be
@@ -30,20 +32,21 @@ public class Robot extends TimedRobot {
         enabledLooper = new Looper(1/200D);
         purePursuitLooper = new Looper(1/25D);
         poseEstimator = PoseEstimator.getInstance();
+        poseEstimatorUpdated = PoseEstimatorUpdated.getInstance();
         enabledLooper.addLoops(driveTrain);
         purePursuitLoop = new PurePursuitLoop();
-        purePursuitLooper.addLoops(poseEstimator, purePursuitLoop);
+        purePursuitLooper.addLoops(poseEstimator, purePursuitLoop, poseEstimatorUpdated);
         teleopUpdater = new TeleopUpdater();
 
         driveTrain.resetEncoders();
         p = new Path(0,0,6, 0);
-        p.addSegment(new Vector(0,0), new Vector(0, 60));
-        p.addSegment(new Vector(0, 60), new Vector(60, 90));
+        p.addSegment(new Vector(0,0), new Vector(0, 30));
+        p.addSegment(new Vector(0, 30), new Vector(0, 60));
         p.addLastPoint();
         p.setTargetVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
-        purePursuitTracker = new PurePursuitTracker(p, 15);
+    purePursuitTracker = new PurePursuitTracker(p, 15);
         purePursuitLoop.initPurePursuitTracker(purePursuitTracker);
-    }
+}
 
     /**
      * This function is called when the robot is disabled.
@@ -131,6 +134,6 @@ public class Robot extends TimedRobot {
     @Override
     public void testPeriodic() {
         purePursuitLooper.start();
-        System.out.println("pose: " + poseEstimator.getPose());
+        System.out.println("pose: " + poseEstimatorUpdated.getPose());
     }
 }

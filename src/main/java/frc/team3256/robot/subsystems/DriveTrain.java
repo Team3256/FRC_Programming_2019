@@ -4,10 +4,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
-import com.sun.org.apache.bcel.internal.Const;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -174,7 +172,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public Rotation getRotationAngle(){
-        return Rotation.fromDegrees(getAngle());
+        return Rotation.fromDegrees(getAngle() + 90);
     }
 
     public void resetGyro(){
