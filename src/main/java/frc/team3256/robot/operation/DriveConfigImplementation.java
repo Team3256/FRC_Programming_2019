@@ -47,10 +47,20 @@ public class DriveConfigImplementation implements ControlsInterface {
     public boolean scoreHatch() { return false; }
 
     @Override
-    public boolean pivotHatchUp() { return false; }
+    public boolean manualHatchUp() { return false; }
 
     @Override
-    public boolean pivotHatchDown() { return false; }
+    public boolean manualHatchDown() { return false; }
+
+    @Override
+    public boolean hatchPivotFloorIntakePreset() {
+        return false;
+    }
+
+    @Override
+    public boolean hatchPivotDeployPreset() {
+        return false;
+    }
 
     @Override
     public boolean getCargoIntake() { return driver.getBButton(); }
