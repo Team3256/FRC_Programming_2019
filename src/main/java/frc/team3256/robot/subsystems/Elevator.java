@@ -81,16 +81,14 @@ public class Elevator extends SubsystemBase {
         @Override
         public RobotState update() {
             if (Elevator.getInstance().getPosition() > Constants.kHighCargoPreset){
-                Elevator.getInstance().setPosition(Constants.kHighCargoPreset,Constants.kElevatorDownSlot);
+                Elevator.getInstance().setPosition(Constants.kHighCargoPreset, Constants.kElevatorDownSlot);
                 return new HoldState();
             }
             else if (Elevator.getInstance().getPosition() < Constants.kHighCargoPreset){
                 Elevator.getInstance().setPosition(Constants.kHighCargoPreset, Constants.kElevatorUpSlot);
                 return new HoldState();
             }
-            else{
-                return new HoldState();
-            }
+            else return new HoldState();
         }
     }
 
@@ -106,9 +104,7 @@ public class Elevator extends SubsystemBase {
                 Elevator.getInstance().setPosition(Constants.kMidCargoPreset, Constants.kElevatorUpSlot);
                 return new HoldState();
             }
-            else {
-                return new HoldState();
-            }
+            else return new HoldState();
         }
     }
 
@@ -124,9 +120,7 @@ public class Elevator extends SubsystemBase {
                 Elevator.getInstance().setPosition(Constants.kLowCargoPreset, Constants.kElevatorUpSlot);
                 return new HoldState();
             }
-            else {
-                return new HoldState();
-            }
+            else return new HoldState();
         }
     }
 
@@ -142,9 +136,7 @@ public class Elevator extends SubsystemBase {
                 Elevator.getInstance().setPosition(Constants.kHighHatchPreset, Constants.kElevatorUpSlot);
                 return new HoldState();
             }
-            else {
-                return new HoldState();
-            }
+            else return new HoldState();
         }
     }
 
@@ -160,9 +152,7 @@ public class Elevator extends SubsystemBase {
                 Elevator.getInstance().setPosition(Constants.kMidHatchPreset, Constants.kElevatorUpSlot);
                 return new HoldState();
             }
-            else {
-                return new HoldState();
-            }
+            else return new HoldState();
         }
     }
 
@@ -178,9 +168,7 @@ public class Elevator extends SubsystemBase {
                 Elevator.getInstance().setPosition(Constants.kLowHatchPreset, Constants.kElevatorUpSlot);
                 return new HoldState();
             }
-            else {
-                return new HoldState();
-            }
+            else return new HoldState();
         }
     }
 
@@ -192,9 +180,7 @@ public class Elevator extends SubsystemBase {
                 Elevator.getInstance().setPosition(Elevator.getInstance().getPosition(), Constants.kElevatorHoldSlot);
                 return new HoldState();
             }
-            else {
-                return new IdleState();
-            }
+            else return new IdleState();
         }
     }
 
@@ -211,12 +197,6 @@ public class Elevator extends SubsystemBase {
     public void setRobotState(RobotState state){
         this.robotState = state;
     }
-
-
-    //4096 = # of ticks per revolution | 4 X decoding for Talon SRX & Canifier only
-    private double heightToSensorUnits(double inches) {
-        return (inches/Constants.kElevatorPulleyDiameter*Constants.kMagEncoderTicksTalon*Constants.kElevatorGearRatio);
-    }// MagEncoder Ticks are placeholder for now.
 
     @Override
     public void outputToDashboard() {

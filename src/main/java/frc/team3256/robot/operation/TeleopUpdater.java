@@ -12,9 +12,9 @@ public class TeleopUpdater {
 
     private DriveTrain m_drive = DriveTrain.getInstance();
 
-    /*private HatchPivot m_hatch = HatchPivot.getInstance();
+    private HatchPivot m_hatch = HatchPivot.getInstance();
     private CargoIntake m_cargo = CargoIntake.getInstance();
-    private Elevator m_elevator = Elevator.getInstance();*/
+    private Elevator m_elevator = Elevator.getInstance();
 
     boolean highGear = true;
 
@@ -36,8 +36,10 @@ public class TeleopUpdater {
 
         //Hatch
         boolean scoreHatch = controls.scoreHatch();
-        boolean pivotHatchUp = controls.pivotHatchUp();
-        boolean pivotHatchDown = controls.pivotHatchDown();
+        boolean manualHatchUp = controls.manualHatchUp();
+        boolean manualHatchDown = controls.manualHatchDown();
+        boolean hatchFloorIntakePreset = controls.hatchPivotFloorIntakePreset();
+        boolean hatchDeployPreset = controls.hatchPivotDeployPreset();
 
         //Cargo
         boolean intakeCargo = controls.getCargoIntake();
@@ -78,7 +80,7 @@ public class TeleopUpdater {
         }
 
         //CargoIntake Subsystem
-        /*if(intakeCargo){
+        if(intakeCargo){
             m_cargo.setRobotState(new CargoIntake.IntakingState());
         }
         else if (exhaustCargo) {
@@ -100,15 +102,20 @@ public class TeleopUpdater {
         if (scoreHatch){
             m_hatch.setRobotState(new HatchPivot.DeployingState());
         }
-        else if (pivotHatchUp){
-            m_hatch.setRobotState(new HatchPivot.PivotingUp());
+        else if (manualHatchUp){
+            m_hatch.setRobotState(new HatchPivot.ManualPivotUpState());
         }
-        else if (pivotHatchDown){
-            m_hatch.setRobotState(new HatchPivot.PivotingDown());
+        else if (manualHatchDown){
+            m_hatch.setRobotState(new HatchPivot.ManualPivotDownState());
         }
-        else m_hatch.setRobotState(new HatchPivot.IdleState());*/
+        else if (hatchFloorIntakePreset){
+            m_hatch.setRobotState(new HatchPivot.PivotFloorIntakePreset());
+        }
+        else if (hatchDeployPreset){
+            m_hatch.setRobotState(new HatchPivot.PivotDeployPreset());
+        }
+        else m_hatch.setRobotState(new HatchPivot.IdleState());
 
-        /*
         //Elevator Subsystem
         if (manualElevatorUp) {
             m_elevator.setRobotState(new Elevator.ManualUpState());
@@ -134,6 +141,6 @@ public class TeleopUpdater {
         else if (hatchPresetLow) {
             m_elevator.setRobotState(new Elevator.LowHatchPresetState());
         }
-        */
+
     }
 }

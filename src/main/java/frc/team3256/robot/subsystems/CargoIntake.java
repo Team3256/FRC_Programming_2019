@@ -1,10 +1,7 @@
 package frc.team3256.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.*;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
@@ -13,7 +10,7 @@ import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
 public class CargoIntake extends SubsystemBase{
 
-    private WPI_TalonSRX cargoIntake, cargoScoreLeft, cargoScoreRight, cargoClearance;
+    private WPI_TalonSRX cargoIntake, cargoScoreLeft, cargoScoreRight;
     private CANSparkMax cargoPivot;
     private CANPIDController cargoPID;
     private CANEncoder cargoEncoder;
@@ -25,10 +22,21 @@ public class CargoIntake extends SubsystemBase{
         cargoIntake = TalonSRXUtil.generateGenericTalon(Constants.kCargoIntakePort);
         cargoScoreLeft = TalonSRXUtil.generateGenericTalon(Constants.kCargoScoreLeftPort);
         cargoScoreRight = TalonSRXUtil.generateGenericTalon(Constants.kCargoScoreRightPort);
-        cargoClearance = TalonSRXUtil.generateGenericTalon(Constants.kCargoClearancePort);
         cargoPivot = SparkMAXUtil.generateGenericSparkMAX(Constants.kCargoPivotPort, CANSparkMaxLowLevel.MotorType.kBrushless);
         cargoPID = cargoPivot.getPIDController();
         cargoEncoder = cargoPivot.getEncoder();
+
+        SparkMAXUtil.setBrakeMode(cargoPivot);
+
+        SparkMAXUtil.setPIDGains(cargoPID, Constants.kCargoPivotUpSlot, Constants.kCargoPivotUpP,
+                Constants.kCargoPivotUpI, Constants.kCargoPivotUpD, Constants.kCargoPivotUpF,
+                Constants.kCargoPivotUpIz);
+
+        SparkMAXUtil.setPIDGains(cargoPID, Constants.kCargoPivotDownSlot, Constants.kCargoPivotDownP,
+                Constants.kCargoPivotDownI, Constants.kCargoPivotDownD, Constants.kCargoPivotDownF,
+                Constants.kCargoPivotDownIz);
+
+        cargoPID.setOutputRange(Constants.kCargoPivotMinOutput, Constants.kCargoPivotMaxOutput);
     }
 
     public static class IntakingState extends RobotState {
@@ -77,30 +85,55 @@ public class CargoIntake extends SubsystemBase{
     public static class PivotFloorPresetState extends RobotState {
         @Override
         public RobotState update() {
+            if(CargoIntake.getInstance().getPosition() > Constants.kCargoPivotFloorPreset) {
+                CargoIntake.getInstance().setPosition(Constants.kCargoPivotFloorPreset, Constants.kCargoPivotDownSlot);
+                return new IdleState();
+            }
+            else if(CargoIntake.getInstance().getPosition() < Constants.kCargoPivotFloorPreset) {
+                CargoIntake.getInstance().setPosition(Constants.kCargoPivotFloorPreset, Constants.kCargoPivotUpSlot);
+                return new IdleState();
+            }
+            else return new IdleState();
+        }
+    }
+
+    public static class PivotClearancePresetState extends RobotState {
+        @Override
+        public RobotState update() {
+            if(CargoIntake.getInstance().getPosition() > Constants.kCargoPivotClearancePreset) {
+                CargoIntake.getInstance().setPosition(Constants.kCargoPivotClearancePreset, Constants.kCargoPivotDownSlot);
+                return new IdleState();
+            }
+            else if(CargoIntake.getInstance().getPosition() < Constants.kCargoPivotClearancePreset) {
+                CargoIntake.getInstance().setPosition(Constants.kCargoPivotClearancePreset, Constants.kCargoPivotUpSlot);
+                return new IdleState();
+            }
+            else return new IdleState();
+        }
+    }
+
+    public static class PivotTransferPresetState extends RobotState {
+        @Override
+        public RobotState update() {
+            if(CargoIntake.getInstance().getPosition() > Constants.kCargoPivotTransferPreset) {
+                CargoIntake.getInstance().setPosition(Constants.kCargoPivotTransferPreset, Constants.kCargoPivotDownSlot);
+            }
+            else if(CargoIntake.getInstance().getPosition() < Constants.kCargoPivotTransferPreset) {
+                CargoIntake.getInstance().setPosition(Constants.kCargoPivotTransferPreset, Constants.kCargoPivotUpSlot);
+            }
             return new IdleState();
         }
     }
 
-    public static class PivotScorePresetState extends RobotState {
-
+    public static class PivotFoldInPresetState extends RobotState {
         @Override
         public RobotState update() {
-            return new IdleState();
-        }
-    }
-
-    public static class ClearanceUpState extends RobotState {
-        @Override
-        public RobotState update() {
-            CargoIntake.getInstance().cargoClearance.set(Constants.kCargoClearanceUpPower);
-            return new IdleState();
-        }
-    }
-
-    public static class ClearanceDownState extends RobotState {
-        @Override
-        public RobotState update() {
-            CargoIntake.getInstance().cargoClearance.set(Constants.kCargoClearanceDownPower);
+            if(CargoIntake.getInstance().getPosition() > Constants.kCargoPivotFoldInPreset) {
+                CargoIntake.getInstance().setPosition(Constants.kCargoPivotFoldInPreset, Constants.kCargoPivotDownSlot);
+            }
+            else if(CargoIntake.getInstance().getPosition() < Constants.kCargoPivotFoldInPreset) {
+                CargoIntake.getInstance().setPosition(Constants.kCargoPivotFoldInPreset, Constants.kCargoPivotUpSlot);
+            }
             return new IdleState();
         }
     }
@@ -136,6 +169,14 @@ public class CargoIntake extends SubsystemBase{
     public void setScore(double left, double right) {
         cargoScoreLeft.set(left);
         cargoScoreRight.set(right);
+    }
+
+    private void setPosition(double position, int slot){
+        cargoPID.setReference(position, ControlType.kPosition, slot);
+    }
+
+    private double getPosition(){
+        return cargoEncoder.getPosition();
     }
 
     @Override

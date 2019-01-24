@@ -24,9 +24,13 @@ public interface ControlsInterface {
 
     boolean scoreHatch();
 
-    boolean pivotHatchUp();
+    boolean manualHatchUp();
 
-    boolean pivotHatchDown();
+    boolean manualHatchDown();
+
+    boolean hatchPivotFloorIntakePreset();
+
+    boolean hatchPivotDeployPreset();
 
     boolean getCargoIntake();
 
