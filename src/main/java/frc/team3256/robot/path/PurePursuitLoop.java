@@ -1,9 +1,7 @@
 package frc.team3256.robot.path;
 
 import frc.team3256.robot.odometry.PoseEstimator;
-import frc.team3256.robot.odometry.PoseEstimatorUpdated;
 import frc.team3256.robot.operations.DrivePower;
-import frc.team3256.robot.path.PurePursuitTracker;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.warriorlib.loop.Loop;
 
@@ -13,7 +11,6 @@ public class PurePursuitLoop implements Loop {
     DriveTrain driveTrain = DriveTrain.getInstance();
     PurePursuitTracker purePursuitTracker;
     PoseEstimator poseEstimator = PoseEstimator.getInstance();
-    PoseEstimatorUpdated poseEstimatorUpdated = PoseEstimatorUpdated.getInstance();
 
     public void initPurePursuitTracker(PurePursuitTracker tracker) {
         purePursuitTracker = tracker;
@@ -26,7 +23,7 @@ public class PurePursuitLoop implements Loop {
 
     @Override
     public void update(double timestamp) {
-        drivePower = purePursuitTracker.update(poseEstimatorUpdated.getPose(), driveTrain.getVelocity(), Math.toRadians(driveTrain.getAngle()) + (Math.PI/2) );
+        drivePower = purePursuitTracker.update(poseEstimator.getPose(), driveTrain.getVelocity(), Math.toRadians(driveTrain.getAngle()) + (Math.PI/2) );
         driveTrain.setVelocityClosedLoop(drivePower.getLeft(), drivePower.getRight());
     }
 

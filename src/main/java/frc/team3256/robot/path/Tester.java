@@ -1,7 +1,6 @@
 package frc.team3256.robot.path;
 
 import frc.team3256.robot.math.Vector;
-import frc.team3256.robot.odometry.PoseEstimator;
 import frc.team3256.robot.operations.Constants;
 
 public class Tester {

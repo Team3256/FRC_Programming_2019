@@ -14,6 +14,7 @@ import frc.team3256.robot.math.Rotation;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.operations.DrivePower;
 import frc.team3256.robot.operations.PIDController;
+import frc.team3256.warriorlib.hardware.ADXRS453_Gyro;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.loop.Loop;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
@@ -25,6 +26,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private DoubleSolenoid shifter;
     private boolean init = false;
     private PigeonIMU gyro;
+    //public ADXRS453_Gyro internalGyro;
     private static double prevTurn = 0.0;
     private PIDController leftVelocityPIDController;
     private PIDController rightVelocityPIDController;
@@ -37,6 +39,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
         gyro = new PigeonIMU(0);
         gyro.setAccumZAngle(0, 0);
         gyro.setYaw(0, 0);
+//        internalGyro = new ADXRS453_Gyro();
+//        internalGyro.startCalibrate();
         leftVelocityPIDController = new PIDController(Constants.leftVelkP, Constants.leftVelkI, Constants.leftVelkD);
         rightVelocityPIDController = new PIDController(Constants.rightVelkP, Constants.rightVelkI, Constants.rightVelkD);
         leftMaster = TalonSRXUtil.generateGenericTalon(Constants.kLeftDriveMaster);
@@ -80,7 +84,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             rightSlave.enableVoltageCompensation(false);
 //            leftSlave2.enableVoltageCompensation(false);
 //            rightSlave2.enableVoltageCompensation(false);
-            TalonSRXUtil.setCoastMode(leftMaster, leftSlave, rightMaster, rightSlave);
+            //TalonSRXUtil.setCoastMode(leftMaster, leftSlave, rightMaster, rightSlave);
             init = true;
         }
         leftMaster.set(ControlMode.PercentOutput, leftPower);
@@ -171,6 +175,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         double[] ypr = new double[3];
         gyro.getYawPitchRoll(ypr);
         return ypr[0];
+//        return -internalGyro.getAngle();
     }
 
     public Rotation getRotationAngle(){
@@ -180,6 +185,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     public void resetGyro(){
         gyro.setYaw(0, 0);
         gyro.setAccumZAngle(0, 0);
+//        internalGyro.reset();
     }
 
     public static DrivePower curvatureDrive(double throttle, double turn, boolean quickTurn, boolean highGear){
@@ -250,13 +256,13 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public void setVelocityClosedLoop(double leftVelInchesPerSec, double rightVelInchesPerSec) {
-        double leftOutput = leftVelocityPIDController.calculatePID(leftVelInchesPerSec, getLeftVelocity());
+        /*double leftOutput = leftVelocityPIDController.calculatePID(leftVelInchesPerSec, getLeftVelocity());
         double rightOutput = rightVelocityPIDController.calculatePID(rightVelInchesPerSec, getRightVelocity());
         leftMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(leftOutput));
-        rightMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(rightOutput));
+        rightMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(rightOutput));*/
 
-        //leftMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(leftVelInchesPerSec));
-        //rightMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(rightVelInchesPerSec));
+        leftMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(leftVelInchesPerSec));
+        rightMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(rightVelInchesPerSec));
     }
 
     private static double inchesToRotations(double inches) {
@@ -272,6 +278,14 @@ public class DriveTrain extends SubsystemBase implements Loop {
         leftSlave.setNeutralMode(NeutralMode.Brake);
         rightMaster.setNeutralMode(NeutralMode.Brake);
         rightSlave.setNeutralMode(NeutralMode.Brake);
+    }
+
+    public void setCoastMode() {
+        leftMaster.setNeutralMode(NeutralMode.Coast);
+        leftSlave.setNeutralMode(NeutralMode.Coast);
+        rightMaster.setNeutralMode(NeutralMode.Coast);
+        rightSlave.setNeutralMode(NeutralMode.Coast);
+
     }
 
 
