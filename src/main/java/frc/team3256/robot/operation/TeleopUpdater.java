@@ -12,7 +12,7 @@ public class TeleopUpdater {
     //private HatchPivot m_hatch = HatchPivot.getInstance();
     //private CargoIntake m_cargo = CargoIntake.getInstance();
     //private Elevator m_elevator = Elevator.getInstance();
-    private Hanger m_hanger = Hanger.getInstance();
+    //private Hanger m_hanger = Hanger.getInstance();
 
     boolean highGear = true;
 
