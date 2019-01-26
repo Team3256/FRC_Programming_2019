@@ -39,14 +39,15 @@ public class Robot extends TimedRobot {
         teleopUpdater = new TeleopUpdater();
 
         driveTrain.resetEncoders();
-        p = new Path(0,0,6, 0);
+        p = new Path(0,0,Constants.spacing, Constants.tolerance);
         p.addSegment(new Vector(0,0), new Vector(0, 30));
         p.addSegment(new Vector(0, 30), new Vector(70, 60));
         p.addSegment(new Vector(70, 60), new Vector(70, 80));
         p.addSegment(new Vector(70, 80), new Vector(70, 100));
         p.addLastPoint();
+        p.smooth(Constants.a, Constants.b, Constants.tolerance);
         p.setTargetVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
-        purePursuitTracker = new PurePursuitTracker(p, 15);
+        purePursuitTracker = new PurePursuitTracker(p, Constants.lookaheadDistance);
         purePursuitLoop.initPurePursuitTracker(purePursuitTracker);
 }
 
@@ -96,6 +97,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         System.out.println("Pose: " + poseEstimator.getPose());
+        System.out.println("LEFT ENC " + driveTrain.getLeftDistance() + " RIGHT ENC " + driveTrain.getRightDistance());
         System.out.println("Angle: " + driveTrain.getAngle());
         /*
         System.out.println("left: " + driveTrain.getLeftDistance());

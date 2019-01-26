@@ -1,7 +1,7 @@
 package frc.team3256.robot.path;
 
-import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.math.Vector;
+import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.operations.Sign;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class Path {
     double spacing; //spacing between points in inches
     double a, b, tolerance;
     ArrayList<Vector> robotPath = new ArrayList<>();
-    Vector endVector = new Vector(0,0);
+    Vector endVector = new Vector(0, 0);
 
     public Path(double a, double b, double spacing, double tolerance) {
         this.a = a;
@@ -20,13 +20,13 @@ public class Path {
         this.spacing = spacing;
         this.tolerance = tolerance;
     }
-    
+
     public Vector getStartPoint() {
         return robotPath.get(0);
     }
-    
+
     public Vector getEndPoint() {
-        return robotPath.get(robotPath.size()-1);
+        return robotPath.get(robotPath.size() - 1);
     }
 
     public void initializePath() {
@@ -54,9 +54,9 @@ public class Path {
 
     //methods to transfer to make arrays -> lists and list -> arrays
 
-    private double [][] makeArray(ArrayList<Vector> pts) {
+    private double[][] makeArray(ArrayList<Vector> pts) {
 
-        double [][] path = new double [pts.size()][2];
+        double[][] path = new double[pts.size()][2];
         for (int i = 0; i < pts.size(); i++) {
             path[i][0] = pts.get(i).x;
             path[i][1] = pts.get(i).y;
@@ -66,10 +66,10 @@ public class Path {
 
     }
 
-    private ArrayList<Vector> makeList(double [][] pts) {
+    private ArrayList<Vector> makeList(double[][] pts) {
 
         ArrayList<Vector> path = new ArrayList<>();
-        for (int i = 0; i < pts.length; i ++){
+        for (int i = 0; i < pts.length; i++) {
             path.add(new Vector(pts[i][0], pts[i][1]));
         }
 
@@ -78,9 +78,9 @@ public class Path {
 
     //makes a copy of a double array
 
-    private double [][] doubleArrayCopy(double [][] array) {
-        double [][] newArray = new double[array.length][];
-        for(int i = 0; i < array.length; i++)
+    private double[][] doubleArrayCopy(double[][] array) {
+        double[][] newArray = new double[array.length][];
+        for (int i = 0; i < array.length; i++)
             newArray[i] = Arrays.copyOf(array[i], array[i].length);
         return newArray;
     }
@@ -98,7 +98,31 @@ public class Path {
         }
     }
 
-
+    public void smooth(double a, double b, double tolerance) {
+        ArrayList<Vector> newPath = new ArrayList<>();
+        for (Vector v : robotPath) {
+            newPath.add(new Vector(v));
+        }
+        double change = tolerance;
+        while (change >= tolerance) {
+            change = 0.0;
+            for (int i = 1; i < robotPath.size() - 1; ++i) {
+                Vector oldVec = robotPath.get(i);
+                Vector currVec = newPath.get(i);
+                Vector prevVec = newPath.get(i-1);
+                Vector nextVec = newPath.get(i+1);
+                currVec.x += a * (oldVec.x - currVec.x) + b * (prevVec.x + nextVec.x - 2 * currVec.x);
+                currVec.y += a * (oldVec.y - currVec.y) + b * (prevVec.y + nextVec.y - 2 * currVec.y);
+                change += currVec.x - oldVec.x;
+                change += currVec.y - currVec.y;
+            }
+        }
+        ArrayList<Vector> path = new ArrayList<>();
+        for (Vector v : newPath)
+            path.add(new Vector(v));
+        robotPath = path;
+    }
+    /*
     private ArrayList<Vector> smooth(ArrayList<Vector> vectorPath, double a, double b, double tolerance) {
 
         double [][] path = makeArray(vectorPath);
@@ -119,6 +143,7 @@ public class Path {
         return makeList(newPath);
 
     }
+    */
 
     //calculations for point attributes (curvature and max velocity)
 
@@ -132,11 +157,11 @@ public class Path {
         double distanceThree = Vector.dist(nextPoint, prevPoint);
 
         double productOfSides = distanceOne * distanceTwo * distanceThree;
-        double semiPerimeter = (distanceOne + distanceTwo + distanceThree)/2;
+        double semiPerimeter = (distanceOne + distanceTwo + distanceThree) / 2;
         double triangleArea = Math.sqrt(semiPerimeter * (semiPerimeter - distanceOne) * (semiPerimeter - distanceTwo) * (semiPerimeter - distanceThree));
 
-        double radius = (productOfSides)/(4 * triangleArea);
-        double curvature = 1/radius;
+        double radius = (productOfSides) / (4 * triangleArea);
+        double curvature = 1 / radius;
 
         return curvature;
     }
@@ -144,7 +169,7 @@ public class Path {
     private double calculateMaxVelocity(ArrayList<Vector> path, int point, double pathMaxVel, double k) {
         if (point > 0) {
             double curvature = calculatePathCurvature(path, point);
-            return Math.min(pathMaxVel, k/curvature); //k is a constant (generally between 1-5 based on how quickly you want to make the turn)
+            return Math.min(pathMaxVel, k / curvature); //k is a constant (generally between 1-5 based on how quickly you want to make the turn)
 
         }
         return pathMaxVel;
@@ -155,7 +180,7 @@ public class Path {
     }
 
     public double getTotalPathDistance() {
-        return calculateCurrDistance(robotPath.size()-1);
+        return calculateCurrDistance(robotPath.size() - 1);
     }
 
 
@@ -164,7 +189,7 @@ public class Path {
     public void setCurvatures() {
         getStartPoint().setCurvature(0);
         getEndPoint().setCurvature(0);
-        for (int i = 1; i < robotPath.size()-1; i++){
+        for (int i = 1; i < robotPath.size() - 1; i++) {
             robotPath.get(i).setCurvature(calculatePathCurvature(robotPath, i));
         }
     }
@@ -172,9 +197,9 @@ public class Path {
     public void setTargetVelocities(double maxVel, double maxAccel, double k) {
         robotPath.get(robotPath.size() - 1).setVelocity(0);
         for (int i = robotPath.size() - 2; i >= 0; i--) {
-            double distance = Vector.dist(robotPath.get(i+1), robotPath.get(i));
+            double distance = Vector.dist(robotPath.get(i + 1), robotPath.get(i));
             System.out.println(robotPath.get(i));
-            double maxReachableVel = Math.sqrt(Math.pow(robotPath.get(i+1).getVelocity(),2) + (2 * maxAccel * distance));
+            double maxReachableVel = Math.sqrt(Math.pow(robotPath.get(i + 1).getVelocity(), 2) + (2 * maxAccel * distance));
             System.out.println("max reachable velocity at point " + i + " = " + maxReachableVel);
             robotPath.get(i).setVelocity(Math.min(calculateMaxVelocity(robotPath, i, maxVel, k), maxReachableVel));
             System.out.println("velocity at point " + i + " = " + robotPath.get(i).getVelocity());
@@ -184,8 +209,8 @@ public class Path {
     public void setDistances() {
         double distance = 0;
         getStartPoint().setDistance(0);
-        for (int i = 1; i < robotPath.size(); i++){
-            distance += Vector.sub(robotPath.get(i), robotPath.get(i-1)).norm();
+        for (int i = 1; i < robotPath.size(); i++) {
+            distance += Vector.sub(robotPath.get(i), robotPath.get(i - 1)).norm();
             robotPath.get(i).setDistance(distance);
         }
     }
@@ -194,17 +219,16 @@ public class Path {
 
 
     public double calculateCurvatureLookAheadArc(Vector currPos, double heading, Vector lookahead, double lookaheadDistance) {
-        System.out.println("lookahead pt "+lookahead);
+        System.out.println("lookahead pt " + lookahead);
         double a = -Math.tan(heading);
         double b = 1;
-        double c = (Math.tan(heading)*currPos.x) - currPos.y;
-        double x = Math.abs(a * lookahead.x + b * lookahead.y + c)/Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+        double c = (Math.tan(heading) * currPos.x) - currPos.y;
+        double x = Math.abs(a * lookahead.x + b * lookahead.y + c) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
         double cross = (Math.sin(heading) * (lookahead.x - currPos.x)) - (Math.cos(heading) * (lookahead.y - currPos.y));
         double side = Sign.getSign(cross);
-        double curvature = (2 * x)/(Math.pow(lookaheadDistance, 2));
+        double curvature = (2 * x) / (Math.pow(lookaheadDistance, 2));
         return curvature * side;
     }
-
 
 
 }

@@ -20,12 +20,13 @@ public class Constants {
     public static final double spacing = 6; //inches
     public static final double kA = 0.002; //0.002
     public static final double kP = 0; //0.01
-    public static final double a = 1;
-    public static final double b = 0.78;
+    public static final double b = 0.9;
+    public static final double a = 1-b;
     public static final double tolerance = 0.001;
     public static final double loopTime = 1.0/200.0; //how often Looper updates
-    public static final double maxAccel = 85; //max robot acceleration
-    public static final double maxVel = 60; //max robot velocity
+    public static final double lookaheadDistance = 18;
+    public static final double maxAccel = 100; //max robot acceleration
+    public static final double maxVel = 276; //max robot velocity
     public static final double kV = 1/maxVel; // 1/max robot speed
     public static final double maxVelk = 1; //generally between 1-5
 
@@ -73,7 +74,7 @@ public class Constants {
     public static final double kRobotTrack = 0;
     public static final double kScrubFactor = 1.0;
     public static final double kWheelDiameter = 4;
-    public static final double kDriveEncoderScalingFactor = 2.0*60.0/24.0; //3*60/24
+    public static final double kDriveEncoderScalingFactor = 2.12*60.0/24.0; //3*60/24
     public static final double kHatchPivotGearRatio = 1; //TBD
     public static final double kElevatorPulleyDiameter = 0*Math.PI;
     public static final double kElevatorGearRatio = 0;

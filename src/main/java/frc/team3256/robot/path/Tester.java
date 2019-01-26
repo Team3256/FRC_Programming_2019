@@ -5,18 +5,16 @@ import frc.team3256.robot.operations.Constants;
 
 public class Tester {
     public static void main (String[] args) {
-        Path p = new Path(1, 0.78, Constants.spacing, 0.001);
-        p.addSegment(new Vector(0, 0), new Vector(0, 60));
-        p.addSegment(new Vector(0, 60), new Vector(0, 120));
+        Path p = new Path(Constants.a, Constants.b, Constants.spacing, 0.001);
+        p.addSegment(new Vector(0,0), new Vector(0, 30));
+        p.addSegment(new Vector(0, 30), new Vector(70, 60));
+        p.addSegment(new Vector(70, 60), new Vector(70, 80));
+        p.addSegment(new Vector(70, 80), new Vector(70, 100));
         p.addLastPoint();
-        PurePursuitTracker purePursuitTracker = new PurePursuitTracker(p, 5);
-
-        Vector currPos = new Vector(0, 0);
-        //System.out.print(p.calcIntersectionPoint(start, end, currPos, 5));
-        //System.out.println(initPurePursuitTracker.calculateVectorLookAheadPoint(start, end, currPos, 20));
-        //System.out.println(p.getTotalPathDistance());
-        purePursuitTracker.update(currPos, 0, Math.PI/2.0);
-        //System.out.println(initPurePursuitTracker.getClosestPoint(currPos));
-
+        p.smooth(Constants.a, Constants.b, Constants.tolerance);
+        p.setTargetVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
+        for (Vector v : p.robotPath) {
+            System.out.println("x=" + v.x + " y=" + v.y + " z=" + v.z + " vel=" + v.getVelocity());
+        }
     }
 }

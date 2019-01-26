@@ -263,6 +263,14 @@ public class Vector {
         return "x: "+x+", y: "+y;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof Vector))
+            return false;
+        Vector vector = (Vector) object;
+        return vector.x == x && vector.y == y && vector.z == z && vector.curvature == curvature && vector.velocity == velocity && vector.distance == distance;
+    }
+
     static public double angleBetween(Vector a, Vector b) {
         double dot = dot(a, b);
         double amag = Math.sqrt(Math.pow(a.x, 2) + Math.pow(a.y, 2) + Math.pow(a.z, 2));

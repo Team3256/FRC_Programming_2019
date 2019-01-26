@@ -12,9 +12,9 @@ public class TeleopUpdater {
 
     private DriveTrain m_drive = DriveTrain.getInstance();
 
-    private HatchPivot m_hatch = HatchPivot.getInstance();
-    private CargoIntake m_cargo = CargoIntake.getInstance();
-    private Elevator m_elevator = Elevator.getInstance();
+    //private HatchPivot m_hatch = HatchPivot.getInstance();
+    //private CargoIntake m_cargo = CargoIntake.getInstance();
+    //private Elevator m_elevator = Elevator.getInstance();
 
     boolean highGear = true;
 
@@ -78,7 +78,7 @@ public class TeleopUpdater {
         if (switchDriverControlMode){
             isDriverHatchMode = !isDriverHatchMode;
         }
-
+        /*
         //CargoIntake Subsystem
         if(intakeCargo){
             m_cargo.setRobotState(new CargoIntake.IntakingState());
@@ -141,6 +141,6 @@ public class TeleopUpdater {
         else if (hatchPresetLow) {
             m_elevator.setRobotState(new Elevator.LowHatchPresetState());
         }
-
+        */
     }
 }
