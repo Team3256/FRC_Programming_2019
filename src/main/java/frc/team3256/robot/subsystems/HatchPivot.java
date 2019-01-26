@@ -39,7 +39,7 @@ public class HatchPivot extends SubsystemBase {
 		return instance == null ? instance = new HatchPivot() : instance;
 	}
 
-	public void deployHatch() {
+	private void deployHatch() {
 		deployLeft.set(DoubleSolenoid.Value.kForward);
 		deployRight.set(DoubleSolenoid.Value.kForward);
 		deployTop.set(DoubleSolenoid.Value.kForward);
@@ -51,11 +51,11 @@ public class HatchPivot extends SubsystemBase {
 		deployTop.close();
 	}
 
-	public void ratchet() {
+	private void ratchet() {
 		ratchetPivot.set(DoubleSolenoid.Value.kForward);
 	}
 
-	public void startRatchet() {
+	private void startRatchet() {
 		ratchetPivot.set(DoubleSolenoid.Value.kReverse);
 	}
 
@@ -68,7 +68,7 @@ public class HatchPivot extends SubsystemBase {
 		robotState = newState;
 	}
 
-	public void setTargetPosition(ControlMode mode, double targetAngle, int slotID) {
+	private void setTargetPosition(ControlMode mode, double targetAngle, int slotID) {
 		if (stateChanged) {
 			hatchPivot.selectProfileSlot(slotID, 0);
 		}
