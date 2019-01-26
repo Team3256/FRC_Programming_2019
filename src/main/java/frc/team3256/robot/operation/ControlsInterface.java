@@ -20,8 +20,6 @@ public interface ControlsInterface {
 
     boolean switchDriverControlMode();
 
-    boolean getHatchIntake();
-
     boolean scoreHatch();
 
     boolean manualHatchUp();
@@ -42,6 +40,14 @@ public interface ControlsInterface {
 
     boolean pivotCargoDown();
 
+    boolean pivotCargoFloorPreset();
+
+    boolean pivotCargoClearancePreset();
+
+    boolean pivotCargoTransferPreset();
+
+    boolean pivotCargoFoldInPreset();
+
     boolean manualElevatorUp();
 
     boolean manualElevatorDown();
@@ -59,4 +65,8 @@ public interface ControlsInterface {
     boolean hatchPresetHigh();
 
     boolean hang();
+
+    boolean retract();
+
+    double getHangDrive();
 }

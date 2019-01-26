@@ -9,7 +9,6 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Solenoid;
 import frc.team3256.robot.math.Rotation;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.operations.DrivePower;
@@ -22,7 +21,7 @@ import frc.team3256.warriorlib.subsystem.SubsystemBase;
 public class DriveTrain extends SubsystemBase implements Loop {
 
     private static DriveTrain instance;
-    public WPI_TalonSRX leftMaster, rightMaster, leftSlave, rightSlave;//, leftSlave2, rightSlave2;
+    public WPI_TalonSRX leftMaster, rightMaster, leftSlave, rightSlave, hangDriveMaster, hangDriveSlave;
     private DoubleSolenoid shifter;
     private boolean init = false;
     private PigeonIMU gyro;
@@ -48,6 +47,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
         //leftSlave2 = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave2, Constants.kLeftDriveMaster);
         rightMaster = TalonSRXUtil.generateGenericTalon(Constants.kRightDriveMaster);
         rightSlave = TalonSRXUtil.generateSlaveTalon(Constants.kRightDriveSlave, Constants.kRightDriveMaster);
+
+        hangDriveMaster = TalonSRXUtil.generateGenericTalon(Constants.kHangDriveMaster);
+        hangDriveSlave = TalonSRXUtil.generateSlaveTalon(Constants.kHangDriveSlave, Constants.kHangDriveMaster);
 
         /*leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*Constants.loopTime), 0);
         rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*Constants.loopTime), 0);
@@ -91,6 +93,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.set(ControlMode.PercentOutput, rightPower);
     }
 
+    public void setHangDrive(double power){
+        hangDriveMaster.set(ControlMode.PercentOutput, power);
+    }
 
     @Override
     public void outputToDashboard() {
