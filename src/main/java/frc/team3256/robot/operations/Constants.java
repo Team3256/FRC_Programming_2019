@@ -43,8 +43,8 @@ public class Constants {
 	public static final int kLeftDriveSlave = 5;
 	public static final int kRightDriveMaster = 3;
 	public static final int kRightDriveSlave = 2;
-	public static final int kHangDriveMaster = 0;
-	public static final int kHangDriveSlave = 0;
+	public static final int kLeftHangDrive = 0;
+	public static final int kRightHangDrive = 0;
 	public static final int kCargoIntakePort = 0; //TBD
 	public static final int kCargoPivotPort = 0; //TBD
 	public static final int kCargoScoreLeftPort = 0; //TBD

@@ -1,5 +1,6 @@
 package frc.team3256.robot.operation;
 
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class DriveConfigImplementation implements ControlsInterface {
@@ -33,28 +34,23 @@ public class DriveConfigImplementation implements ControlsInterface {
 	}
 
 	@Override
-	public boolean switchDriverControlMode() {
-		return driver.getStartButtonPressed();
-	}
-
-	@Override
 	public boolean scoreHatch() {
-		return false;
+		return manipulator.getTriggerAxis(GenericHID.Hand.kRight) > 0.25;
 	}
 
 	@Override
 	public boolean manualHatchUp() {
-		return false;
+		return manipulator.getRawAxis(5) < -0.25;
 	}
 
 	@Override
 	public boolean manualHatchDown() {
-		return false;
+		return -manipulator.getRawAxis(5) > 0.25;
 	}
 
 	@Override
 	public boolean hatchPivotFloorIntakePreset() {
-		return false;
+		return manipulator.getBumper(GenericHID.Hand.kRight);
 	}
 
 	@Override
@@ -64,32 +60,37 @@ public class DriveConfigImplementation implements ControlsInterface {
 
 	@Override
 	public boolean getCargoIntake() {
-		return driver.getBButton();
+		return manipulator.getTriggerAxis(GenericHID.Hand.kRight) > 0.25;
 	}
 
 	@Override
 	public boolean getCargoExhaust() {
-		return false;
+		return manipulator.getTriggerAxis(GenericHID.Hand.kLeft) > 0.25;
 	}
 
 	@Override
 	public boolean scoreCargo() {
-		return false;
+		return manipulator.getBumper(GenericHID.Hand.kLeft);
 	}
 
 	@Override
 	public boolean pivotCargoUp() {
-		return false;
+		return manipulator.getRawAxis(5) < -0.25;
 	}
 
 	@Override
 	public boolean pivotCargoDown() {
-		return false;
+		return manipulator.getRawAxis(5) > 0.25;
 	}
 
 	@Override
-	public boolean pivotCargoFloorPreset() {
-		return false;
+	public boolean togglePivotCargoFloorPreset() {
+		return manipulator.getBumper(GenericHID.Hand.kRight);
+	}
+
+	@Override
+	public boolean togglePivotCargoTransferPreset() {
+		return manipulator.getBumper(GenericHID.Hand.kRight);
 	}
 
 	@Override
@@ -97,11 +98,7 @@ public class DriveConfigImplementation implements ControlsInterface {
 		return false;
 	}
 
-	@Override
-	public boolean pivotCargoTransferPreset() {
-		return false;
-	}
-
+	//Check if Xbox button is supported
 	@Override
 	public boolean pivotCargoFoldInPreset() {
 		return false;
@@ -119,17 +116,17 @@ public class DriveConfigImplementation implements ControlsInterface {
 
 	@Override
 	public boolean cargoPresetLow() {
-		return false;
+		return manipulator.getAButtonPressed();
 	}
 
 	@Override
 	public boolean cargoPresetMid() {
-		return false;
+		return manipulator.getBButtonPressed();
 	}
 
 	@Override
 	public boolean cargoPresetHigh() {
-		return false;
+		return manipulator.getYButtonPressed();
 	}
 
 	@Override
@@ -149,7 +146,7 @@ public class DriveConfigImplementation implements ControlsInterface {
 
 	@Override
 	public boolean hang() {
-		return manipulator.getRawButtonPressed(6);
+		return manipulator.getBackButtonPressed();
 	}
 
 	@Override
@@ -158,7 +155,17 @@ public class DriveConfigImplementation implements ControlsInterface {
 	}
 
 	@Override
-	public double getHangDrive() {
+	public double getHangDriveThrottle() {
 		return -driver.getRawAxis(1);
+	}
+
+	@Override
+	public double getHangDriveTurn() {
+		return driver.getRawAxis(4);
+	}
+
+	@Override
+	public boolean getHangDriveQuickTurn() {
+		return driver.getRawAxis(3) > 0.2;
 	}
 }

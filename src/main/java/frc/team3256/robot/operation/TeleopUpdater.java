@@ -1,34 +1,34 @@
 package frc.team3256.robot.operation;
 
-import frc.team3256.robot.subsystems.DriveTrain;
+import frc.team3256.robot.subsystems.*;
 import frc.team3256.warriorlib.control.DrivePower;
 
 public class TeleopUpdater {
 
 	boolean highGear = true;
+	boolean hangHighGear = true;
+
+	boolean prevCargoFloorPositionToggle = false;
+	boolean prevCargoTransferPositionToggle = false;
+
 	private DriveConfigImplementation controls = new DriveConfigImplementation();
 
-	//private HatchPivot m_hatch = HatchPivot.getInstance();
-	//private CargoIntake m_cargo = CargoIntake.getInstance();
-	//private Elevator m_elevator = Elevator.getInstance();
-	//private Hanger m_hanger = Hanger.getInstance();
+	private HatchPivot m_hatch = HatchPivot.getInstance();
+	private CargoIntake m_cargo = CargoIntake.getInstance();
+	private Elevator m_elevator = Elevator.getInstance();
+	private Hanger m_hanger = Hanger.getInstance();
 	private DriveTrain m_drive = DriveTrain.getInstance();
-	private boolean isManipulatorHatchMode = true;
-	private boolean isDriverHatchMode = true;
+	private boolean isHatchMode = true;
+
 
 	public void update() {
-		System.out.println(isManipulatorHatchMode ? "Manipulator: Hatch Mode" : "Manipulator: Cargo Mode");
-		System.out.println(isDriverHatchMode ? "Driver: Hatch Mode" : "Driver: Cargo Mode");
-
+		System.out.println(isHatchMode ? "HATCH MODE" : "CARGO MODE");
 		boolean switchManipulatorControlMode = controls.switchManipulatorControlMode();
-		boolean switchDriverControlMode = controls.switchDriverControlMode();
-
 		//Drive
 		double throttle = controls.getThrottle();
 		double turn = controls.getTurn();
 		boolean quickTurn = controls.getQuickTurn();
 		boolean shiftDown = controls.getLowGear();
-		double hangDrive = controls.getHangDrive();
 
 		//Hatch
 		boolean scoreHatch = controls.scoreHatch();
@@ -43,9 +43,9 @@ public class TeleopUpdater {
 		boolean scoreCargo = controls.scoreCargo();
 		boolean pivotCargoUp = controls.pivotCargoUp();
 		boolean pivotCargoDown = controls.pivotCargoDown();
-		boolean pivotCargoFloor = controls.pivotCargoFloorPreset();
+		boolean togglePivotCargoFloor = controls.togglePivotCargoFloorPreset();
+		boolean togglePivotCargoTransfer = controls.togglePivotCargoTransferPreset();
 		boolean pivotCargoClearance = controls.pivotCargoClearancePreset();
-		boolean pivotCargoTransfer = controls.pivotCargoTransferPreset();
 		boolean pivotCargoFoldIn = controls.pivotCargoFoldInPreset();
 
 		//Elevator
@@ -61,6 +61,9 @@ public class TeleopUpdater {
 		//Hanger
 		boolean hang = controls.hang();
 		boolean retract = controls.retract();
+		double hangDriveThrottle = controls.getHangDriveThrottle();
+		double hangDriveTurn = controls.getHangDriveTurn();
+		boolean hangDriveQuickTurn = controls.getHangDriveQuickTurn();
 
 		//DriveTrain Subsystem
 		m_drive.setBrakeMode();
@@ -73,46 +76,45 @@ public class TeleopUpdater {
 
 		//Switch between Hatch and Cargo Control Modes
 		if (switchManipulatorControlMode) {
-			isManipulatorHatchMode = !isManipulatorHatchMode;
+			isHatchMode = !isHatchMode;
 		}
 
-		if (switchDriverControlMode) {
-			isDriverHatchMode = !isDriverHatchMode;
-		}
-        /*
         //CargoIntake Subsystem
-        if(intakeCargo){
-            m_cargo.setRobotState(new CargoIntake.IntakingState());
-        }
-        else if (exhaustCargo) {
-            m_cargo.setRobotState(new CargoIntake.ExhaustingState());
-        }
-        else if (scoreCargo) {
-            m_cargo.setRobotState(new CargoIntake.ScoringState());
-        }
-        else if (pivotCargoUp) {
-            m_cargo.setRobotState(new CargoIntake.ManualPivotUpState());
-        }
-        else if (pivotCargoDown) {
-            m_cargo.setRobotState(new CargoIntake.ManualPivotDownState());
-        }
-        else if (pivotCargoFloor){
-            m_cargo.setRobotState(new CargoIntake.PivotFloorPresetState());
-        }
-        else if (pivotCargoClearance){
-            m_cargo.setRobotState(new CargoIntake.PivotClearancePresetState());
-        }
-        else if (pivotCargoFoldIn){
-            m_cargo.setRobotState(new CargoIntake.PivotFoldInPresetState());
-        }
-        else if (pivotCargoTransfer){
-            m_cargo.setRobotState(new CargoIntake.PivotTransferPresetState());
-        }
-        else m_cargo.setRobotState(new CargoIntake.IdleState());
+		if (!isHatchMode) {
+			if (intakeCargo) {
+				m_cargo.setRobotState(new CargoIntake.IntakingState());
+			}
+			else if (exhaustCargo) {
+				m_cargo.setRobotState(new CargoIntake.ExhaustingState());
+			}
+			else if (scoreCargo) {
+				m_cargo.setRobotState(new CargoIntake.ScoringState());
+			}
+			else if (pivotCargoUp) {
+				m_cargo.setRobotState(new CargoIntake.ManualPivotUpState());
+			}
+			else if (pivotCargoDown) {
+				m_cargo.setRobotState(new CargoIntake.ManualPivotDownState());
+			}
+			else if (togglePivotCargoFloor && !prevCargoTransferPositionToggle) {
+				m_cargo.setRobotState(new CargoIntake.PivotFloorPresetState());
+				prevCargoFloorPositionToggle = true;
+				prevCargoTransferPositionToggle = false;
+			}
+			else if (togglePivotCargoTransfer && !prevCargoFloorPositionToggle) {
+				m_cargo.setRobotState(new CargoIntake.PivotTransferPresetState());
+				prevCargoTransferPositionToggle = true;
+				prevCargoFloorPositionToggle = false;
+			}
+			else if (pivotCargoFoldIn) {
+				m_cargo.setRobotState(new CargoIntake.PivotFoldInPresetState());
+			}
+			else m_cargo.setRobotState(new CargoIntake.PivotClearancePresetState());
+		}
 
 
         //HatchPivot Subsystem
-        if (isManipulatorHatchMode) {
+        if (isHatchMode) {
             if (scoreHatch) {
                 m_hatch.setRobotState(new HatchPivot.DeployingState());
             }
@@ -125,10 +127,7 @@ public class TeleopUpdater {
             else if (hatchFloorIntakePreset) {
                 m_hatch.setRobotState(new HatchPivot.PivotFloorIntakePreset());
             }
-            else if (hatchDeployPreset) {
-                m_hatch.setRobotState(new HatchPivot.PivotDeployPreset());
-            }
-            else m_hatch.setRobotState(new HatchPivot.IdleState());
+            else m_hatch.setRobotState(new HatchPivot.PivotDeployPreset());
         }
 
         //Elevator Subsystem
@@ -139,7 +138,7 @@ public class TeleopUpdater {
             m_elevator.setRobotState(new Elevator.ManualDownState());
         }
 
-        if (!isManipulatorHatchMode) {
+        if (!isHatchMode) {
             if (cargoPresetHigh) {
                 m_elevator.setRobotState(new Elevator.HighCargoPresetState());
             }
@@ -151,8 +150,8 @@ public class TeleopUpdater {
             }
         }
 
-        if (isManipulatorHatchMode) {
-            if (hatchPresetHigh) {
+        if (isHatchMode) {
+        	if (hatchPresetHigh) {
                 m_elevator.setRobotState(new Elevator.HighHatchPresetState());
             }
             else if (hatchPresetMid) {
@@ -168,11 +167,14 @@ public class TeleopUpdater {
             m_hatch.setRobotState(new HatchPivot.RatchetState());
             m_elevator.setRobotState(new Elevator.LowHatchPresetState());
             m_hanger.setRobotState(new Hanger.HangState());
-            m_drive.setHangDrive(hangDrive);
-        }
+            DrivePower hangDrivePower = DriveTrain.hangCurvatureDrive(hangDriveThrottle, hangDriveTurn,
+					hangDriveQuickTurn, hangHighGear);
+			m_drive.setHighGear(hangDrivePower.getHighGear());
+			m_drive.setHangDrive(hangDrivePower.getLeft(), hangDrivePower.getRight());
+		}
         else if (retract) {
             m_hanger.setRobotState(new Hanger.RetractState());
         }
-        */
+
 	}
 }
