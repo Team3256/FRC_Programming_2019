@@ -22,8 +22,10 @@ public class TeleopUpdater {
 
 
 	public void update() {
+		//Switch Control Modes
 		System.out.println(isHatchMode ? "HATCH MODE" : "CARGO MODE");
 		boolean switchManipulatorControlMode = controls.switchManipulatorControlMode();
+
 		//Drive
 		double throttle = controls.getThrottle();
 		double turn = controls.getTurn();
@@ -35,7 +37,6 @@ public class TeleopUpdater {
 		boolean manualHatchUp = controls.manualHatchUp();
 		boolean manualHatchDown = controls.manualHatchDown();
 		boolean hatchFloorIntakePreset = controls.hatchPivotFloorIntakePreset();
-		boolean hatchDeployPreset = controls.hatchPivotDeployPreset();
 
 		//Cargo
 		boolean intakeCargo = controls.getCargoIntake();
@@ -45,12 +46,12 @@ public class TeleopUpdater {
 		boolean pivotCargoDown = controls.pivotCargoDown();
 		boolean togglePivotCargoFloor = controls.togglePivotCargoFloorPreset();
 		boolean togglePivotCargoTransfer = controls.togglePivotCargoTransferPreset();
-		boolean pivotCargoClearance = controls.pivotCargoClearancePreset();
 		boolean pivotCargoFoldIn = controls.pivotCargoFoldInPreset();
 
 		//Elevator
 		boolean manualElevatorUp = controls.manualElevatorUp();
 		boolean manualElevatorDown = controls.manualElevatorDown();
+		boolean homePreset = controls.homePreset();
 		boolean cargoPresetLow = controls.cargoPresetLow();
 		boolean cargoPresetMid = controls.cargoPresetMid();
 		boolean cargoPresetHigh = controls.cargoPresetHigh();
@@ -137,7 +138,12 @@ public class TeleopUpdater {
         else if (manualElevatorDown) {
             m_elevator.setRobotState(new Elevator.ManualDownState());
         }
+        else if (homePreset){
+        	m_elevator.setRobotState(new Elevator.HomePresetState());
+		}
+        else m_elevator.setRobotState(new Elevator.HoldState());
 
+        //Cargo Mode Presets
         if (!isHatchMode) {
             if (cargoPresetHigh) {
                 m_elevator.setRobotState(new Elevator.HighCargoPresetState());
@@ -150,6 +156,7 @@ public class TeleopUpdater {
             }
         }
 
+        //Hatch Mode Presets
         if (isHatchMode) {
         	if (hatchPresetHigh) {
                 m_elevator.setRobotState(new Elevator.HighHatchPresetState());
@@ -162,6 +169,7 @@ public class TeleopUpdater {
             }
         }
 
+        //Hanger Subsystem
         if (hang){
             m_hatch.setRobotState(new HatchPivot.PivotFloorIntakePreset());
             m_hatch.setRobotState(new HatchPivot.RatchetState());

@@ -26,8 +26,6 @@ public interface ControlsInterface {
 
 	boolean hatchPivotFloorIntakePreset();
 
-	boolean hatchPivotDeployPreset();
-
 	boolean getCargoIntake();
 
 	boolean getCargoExhaust();
@@ -40,8 +38,6 @@ public interface ControlsInterface {
 
 	boolean togglePivotCargoFloorPreset();
 
-	boolean pivotCargoClearancePreset();
-
 	boolean togglePivotCargoTransferPreset();
 
 	boolean pivotCargoFoldInPreset();
@@ -49,6 +45,8 @@ public interface ControlsInterface {
 	boolean manualElevatorUp();
 
 	boolean manualElevatorDown();
+
+	boolean homePreset();
 
 	boolean cargoPresetLow();
 

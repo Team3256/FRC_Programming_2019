@@ -198,6 +198,24 @@ public class Elevator extends SubsystemBase {
 		}
 	}
 
+	public static class HomePresetState extends RobotState{
+
+		@Override
+		public RobotState update() {
+			if (Elevator.getInstance().getPosition() > Constants.kHomePreset) {
+				Elevator.getInstance().setPosition(Constants.kHomePreset, Constants.kElevatorDownSlot);
+				return new HoldState();
+			}
+			else if (Elevator.getInstance().getPosition() < Constants.kHomePreset) {
+				Elevator.getInstance().setPosition(Constants.kHomePreset, Constants.kElevatorUpSlot);
+				return new HoldState();
+			}
+			else {
+				return new IdleState();
+			}
+		}
+	}
+
 	public static class IdleState extends RobotState {
 		@Override
 		public RobotState update() {

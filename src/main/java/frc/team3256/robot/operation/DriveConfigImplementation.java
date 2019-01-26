@@ -10,17 +10,17 @@ public class DriveConfigImplementation implements ControlsInterface {
 
 	@Override
 	public double getThrottle() {
-		return -driver.getRawAxis(1);
+		return -driver.getY(GenericHID.Hand.kLeft);
 	}
 
 	@Override
 	public double getTurn() {
-		return driver.getRawAxis(4);
+		return driver.getX(GenericHID.Hand.kRight);
 	}
 
 	@Override
 	public boolean getQuickTurn() {
-		return driver.getRawAxis(3) > 0.2;
+		return driver.getTriggerAxis(GenericHID.Hand.kRight) > 0.2;
 	}
 
 	@Override
@@ -40,22 +40,17 @@ public class DriveConfigImplementation implements ControlsInterface {
 
 	@Override
 	public boolean manualHatchUp() {
-		return manipulator.getRawAxis(5) < -0.25;
+		return manipulator.getY(GenericHID.Hand.kLeft) < -0.25;
 	}
 
 	@Override
 	public boolean manualHatchDown() {
-		return -manipulator.getRawAxis(5) > 0.25;
+		return -manipulator.getY(GenericHID.Hand.kLeft) > 0.25;
 	}
 
 	@Override
 	public boolean hatchPivotFloorIntakePreset() {
 		return manipulator.getBumper(GenericHID.Hand.kRight);
-	}
-
-	@Override
-	public boolean hatchPivotDeployPreset() {
-		return false;
 	}
 
 	@Override
@@ -75,12 +70,12 @@ public class DriveConfigImplementation implements ControlsInterface {
 
 	@Override
 	public boolean pivotCargoUp() {
-		return manipulator.getRawAxis(5) < -0.25;
+		return manipulator.getY(GenericHID.Hand.kRight) < -0.25;
 	}
 
 	@Override
 	public boolean pivotCargoDown() {
-		return manipulator.getRawAxis(5) > 0.25;
+		return manipulator.getY(GenericHID.Hand.kRight) > 0.25;
 	}
 
 	@Override
@@ -91,11 +86,6 @@ public class DriveConfigImplementation implements ControlsInterface {
 	@Override
 	public boolean togglePivotCargoTransferPreset() {
 		return manipulator.getBumper(GenericHID.Hand.kRight);
-	}
-
-	@Override
-	public boolean pivotCargoClearancePreset() {
-		return false;
 	}
 
 	//Check if Xbox button is supported
@@ -112,6 +102,11 @@ public class DriveConfigImplementation implements ControlsInterface {
 	@Override
 	public boolean manualElevatorDown() {
 		return manipulator.getRawAxis(1) > 0.25;
+	}
+
+	@Override
+	public boolean homePreset() {
+		return manipulator.getXButtonPressed();
 	}
 
 	@Override
@@ -156,16 +151,16 @@ public class DriveConfigImplementation implements ControlsInterface {
 
 	@Override
 	public double getHangDriveThrottle() {
-		return -driver.getRawAxis(1);
+		return -driver.getY(GenericHID.Hand.kLeft);
 	}
 
 	@Override
 	public double getHangDriveTurn() {
-		return driver.getRawAxis(4);
+		return driver.getX(GenericHID.Hand.kRight);
 	}
 
 	@Override
 	public boolean getHangDriveQuickTurn() {
-		return driver.getRawAxis(3) > 0.2;
+		return driver.getTriggerAxis(GenericHID.Hand.kRight) > 0.2;
 	}
 }
