@@ -121,7 +121,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopPeriodic() {
-        //teleopUpdater.update();
+        teleopUpdater.update();
         //System.out.println("left encoder: "+driveTrain.getLeftDistance());
         //System.out.println("right encoder: "+driveTrain.getRightDistance());
         //System.out.println("angle " + driveTrain.getGyro().getAngle());

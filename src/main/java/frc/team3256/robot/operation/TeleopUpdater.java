@@ -1,10 +1,7 @@
 package frc.team3256.robot.operation;
 
 import frc.team3256.robot.operations.DrivePower;
-import frc.team3256.robot.subsystems.CargoIntake;
-import frc.team3256.robot.subsystems.DriveTrain;
-import frc.team3256.robot.subsystems.Elevator;
-import frc.team3256.robot.subsystems.HatchPivot;
+import frc.team3256.robot.subsystems.*;
 
 public class TeleopUpdater {
 
@@ -15,6 +12,7 @@ public class TeleopUpdater {
     private HatchPivot m_hatch = HatchPivot.getInstance();
     private CargoIntake m_cargo = CargoIntake.getInstance();
     private Elevator m_elevator = Elevator.getInstance();
+    private Hanger m_hanger = Hanger.getInstance();
 
     boolean highGear = true;
 
@@ -33,6 +31,7 @@ public class TeleopUpdater {
         double turn = controls.getTurn();
         boolean quickTurn = controls.getQuickTurn();
         boolean shiftDown = controls.getLowGear();
+        double hangDrive = controls.getHangDrive();
 
         //Hatch
         boolean scoreHatch = controls.scoreHatch();
@@ -47,6 +46,10 @@ public class TeleopUpdater {
         boolean scoreCargo = controls.scoreCargo();
         boolean pivotCargoUp = controls.pivotCargoUp();
         boolean pivotCargoDown = controls.pivotCargoDown();
+        boolean pivotCargoFloor = controls.pivotCargoFloorPreset();
+        boolean pivotCargoClearance = controls.pivotCargoClearancePreset();
+        boolean pivotCargoTransfer = controls.pivotCargoTransferPreset();
+        boolean pivotCargoFoldIn = controls.pivotCargoFoldInPreset();
 
         //Elevator
         boolean manualElevatorUp = controls.manualElevatorUp();
@@ -60,6 +63,8 @@ public class TeleopUpdater {
 
         //Hanger
         boolean hang = controls.hang();
+        boolean retract = controls.retract();
+
 
         //DriveTrain Subsystem
         m_drive.setBrakeMode();
@@ -95,26 +100,40 @@ public class TeleopUpdater {
         else if (pivotCargoDown) {
             m_cargo.setRobotState(new CargoIntake.ManualPivotDownState());
         }
+        else if (pivotCargoFloor){
+            m_cargo.setRobotState(new CargoIntake.PivotFloorPresetState());
+        }
+        else if (pivotCargoClearance){
+            m_cargo.setRobotState(new CargoIntake.PivotClearancePresetState());
+        }
+        else if (pivotCargoFoldIn){
+            m_cargo.setRobotState(new CargoIntake.PivotFoldInPresetState());
+        }
+        else if (pivotCargoTransfer){
+            m_cargo.setRobotState(new CargoIntake.PivotTransferPresetState());
+        }
         else m_cargo.setRobotState(new CargoIntake.IdleState());
 
 
         //HatchPivot Subsystem
-        if (scoreHatch){
-            m_hatch.setRobotState(new HatchPivot.DeployingState());
+        if (isManipulatorHatchMode) {
+            if (scoreHatch) {
+                m_hatch.setRobotState(new HatchPivot.DeployingState());
+            }
+            else if (manualHatchUp) {
+                m_hatch.setRobotState(new HatchPivot.ManualPivotUpState());
+            }
+            else if (manualHatchDown) {
+                m_hatch.setRobotState(new HatchPivot.ManualPivotDownState());
+            }
+            else if (hatchFloorIntakePreset) {
+                m_hatch.setRobotState(new HatchPivot.PivotFloorIntakePreset());
+            }
+            else if (hatchDeployPreset) {
+                m_hatch.setRobotState(new HatchPivot.PivotDeployPreset());
+            }
+            else m_hatch.setRobotState(new HatchPivot.IdleState());
         }
-        else if (manualHatchUp){
-            m_hatch.setRobotState(new HatchPivot.ManualPivotUpState());
-        }
-        else if (manualHatchDown){
-            m_hatch.setRobotState(new HatchPivot.ManualPivotDownState());
-        }
-        else if (hatchFloorIntakePreset){
-            m_hatch.setRobotState(new HatchPivot.PivotFloorIntakePreset());
-        }
-        else if (hatchDeployPreset){
-            m_hatch.setRobotState(new HatchPivot.PivotDeployPreset());
-        }
-        else m_hatch.setRobotState(new HatchPivot.IdleState());
 
         //Elevator Subsystem
         if (manualElevatorUp) {
@@ -123,24 +142,40 @@ public class TeleopUpdater {
         else if (manualElevatorDown) {
             m_elevator.setRobotState(new Elevator.ManualDownState());
         }
-        else if (cargoPresetHigh) {
-            m_elevator.setRobotState(new Elevator.HighCargoPresetState());
-        }
-        else if (cargoPresetMid) {
-            m_elevator.setRobotState(new Elevator.MidCargoPresetState());
-        }
-        else if (cargoPresetLow) {
-            m_elevator.setRobotState(new Elevator.LowCargoPresetState());
-        }
-        else if (hatchPresetHigh) {
-            m_elevator.setRobotState(new Elevator.HighHatchPresetState());
-        }
-        else if (hatchPresetMid) {
-            m_elevator.setRobotState(new Elevator.MidHatchPresetState());
-        }
-        else if (hatchPresetLow) {
-            m_elevator.setRobotState(new Elevator.LowHatchPresetState());
+
+        if (!isManipulatorHatchMode) {
+            if (cargoPresetHigh) {
+                m_elevator.setRobotState(new Elevator.HighCargoPresetState());
+            }
+            else if (cargoPresetMid) {
+                m_elevator.setRobotState(new Elevator.MidCargoPresetState());
+            }
+            else if (cargoPresetLow) {
+                m_elevator.setRobotState(new Elevator.LowCargoPresetState());
+            }
         }
 
+        if (isManipulatorHatchMode) {
+            if (hatchPresetHigh) {
+                m_elevator.setRobotState(new Elevator.HighHatchPresetState());
+            }
+            else if (hatchPresetMid) {
+                m_elevator.setRobotState(new Elevator.MidHatchPresetState());
+            }
+            else if (hatchPresetLow) {
+                m_elevator.setRobotState(new Elevator.LowHatchPresetState());
+            }
+        }
+
+        if (hang){
+            m_hatch.setRobotState(new HatchPivot.PivotFloorIntakePreset());
+            m_hatch.setRobotState(new HatchPivot.RatchetState());
+            m_elevator.setRobotState(new Elevator.LowHatchPresetState());
+            m_hanger.setRobotState(new Hanger.HangState());
+            m_drive.setHangDrive(hangDrive);
+        }
+        else if (retract) {
+            m_hanger.setRobotState(new Hanger.RetractState());
+        }
     }
 }

@@ -1,5 +1,4 @@
 package frc.team3256.robot.operation;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class DriveConfigImplementation implements ControlsInterface {
@@ -10,17 +9,18 @@ public class DriveConfigImplementation implements ControlsInterface {
 
 
     @Override
-    public double getThrottle() { return -driver.getRawAxis(1);}
+    public double getThrottle() {
+        return -driver.getRawAxis(1);
+    }
 
     @Override
-    public double getTurn() { return driver.getRawAxis(4);}
+    public double getTurn() {
+        return driver.getRawAxis(4);
+    }
 
     @Override
     public boolean getQuickTurn() {
-        if(driver.getRawAxis(3) > 0.2){
-            return true;
-        }
-        return false;
+        return driver.getRawAxis(3) > 0.2;
     }
 
     @Override
@@ -28,20 +28,13 @@ public class DriveConfigImplementation implements ControlsInterface {
 
     @Override
     public boolean switchManipulatorControlMode() {
-        manipulator.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
-        manipulator.setRumble(GenericHID.RumbleType.kRightRumble, 1);
-        return manipulator.getStartButton();
+        return manipulator.getStartButtonPressed();
     }
 
     @Override
     public boolean switchDriverControlMode() {
-        driver.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
-        driver.setRumble(GenericHID.RumbleType.kRightRumble, 1);
-        return driver.getStartButton();
+        return driver.getStartButtonPressed();
     }
-
-    @Override
-    public boolean getHatchIntake() { return driver.getAButton(); }
 
     @Override
     public boolean scoreHatch() { return false; }
@@ -78,13 +71,33 @@ public class DriveConfigImplementation implements ControlsInterface {
     public boolean pivotCargoDown() { return false; }
 
     @Override
-    public boolean manualElevatorUp() {
+    public boolean pivotCargoFloorPreset() {
         return false;
     }
 
     @Override
-    public boolean manualElevatorDown() {
+    public boolean pivotCargoClearancePreset() {
         return false;
+    }
+
+    @Override
+    public boolean pivotCargoTransferPreset() {
+        return false;
+    }
+
+    @Override
+    public boolean pivotCargoFoldInPreset() {
+        return false;
+    }
+
+    @Override
+    public boolean manualElevatorUp() {
+        return manipulator.getRawAxis(1) < -0.25;
+    }
+
+    @Override
+    public boolean manualElevatorDown() {
+        return manipulator.getRawAxis(1) > 0.25;
     }
 
     @Override
@@ -104,21 +117,29 @@ public class DriveConfigImplementation implements ControlsInterface {
 
     @Override
     public boolean hatchPresetLow() {
-        return false;
+        return manipulator.getAButtonPressed();
     }
 
     @Override
     public boolean hatchPresetMid() {
-        return false;
+        return manipulator.getBButtonPressed();
     }
 
     @Override
     public boolean hatchPresetHigh() {
-        return false;
+        return manipulator.getYButtonPressed();
     }
 
     @Override
     public boolean hang() {
-        return false;
+        return manipulator.getRawButtonPressed(6);
+    }
+
+    @Override
+    public boolean retract() { return false; }
+
+    @Override
+    public double getHangDrive() {
+        return -driver.getRawAxis(1);
     }
 }

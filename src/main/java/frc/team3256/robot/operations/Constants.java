@@ -13,6 +13,12 @@ public class Constants {
     public static final int kDeployTopReverse = 5; //TBD
     public static final int kShifterForward = 1; //TBD
     public static final int kShifterReverse = 6; //TBD
+    public static final int kHangerLeftForward = 0; //TBD
+    public static final int kHangerLeftReverse = 0; //TBD
+    public static final int kHangerRightForward = 0; //TBD
+    public static final int kHangerRightReverse = 0; //TBD
+    public static final int kRatchetPivotForward = 0; //TBD
+    public static final int kRatchetPivotReverse = 0; //TBD
 
     //Pure Pursuit
 
@@ -50,6 +56,8 @@ public class Constants {
     public static final int kLeftDriveSlave = 5;
     public static final int kRightDriveMaster = 3;
     public static final int kRightDriveSlave = 2;
+    public static final int kHangDriveMaster = 0;
+    public static final int kHangDriveSlave = 0;
     public static final int kCargoIntakePort = 0; //TBD
     public static final int kCargoPivotPort = 0; //TBD
     public static final int kCargoScoreLeftPort = 0; //TBD

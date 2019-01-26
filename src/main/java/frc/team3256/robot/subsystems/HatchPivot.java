@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import frc.team3256.robot.operation.DriveConfigImplementation;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.state.RobotState;
@@ -13,10 +12,9 @@ import frc.team3256.warriorlib.subsystem.SubsystemBase;
 public class HatchPivot extends SubsystemBase {
 
     private WPI_TalonSRX hatchPivot;
-    private DoubleSolenoid deployLeft, deployRight, deployTop;
+    private DoubleSolenoid deployLeft, deployRight, deployTop, ratchetPivot;
 
     private boolean stateChanged = false;
-    private boolean targetReached = false;
 
     private double m_closedLoopTarget;
     private boolean m_usingClosedLoop;
@@ -24,16 +22,16 @@ public class HatchPivot extends SubsystemBase {
     private static HatchPivot instance;
     public static HatchPivot getInstance() {return instance == null ? instance = new HatchPivot(): instance;}
 
-    DriveConfigImplementation driveConfigImplementation = new DriveConfigImplementation();
-
-
     private HatchPivot() {
         hatchPivot = TalonSRXUtil.generateGenericTalon(Constants.khatchPivotPort);
         deployLeft = new DoubleSolenoid(Constants.kDeployLeftForward, Constants.kDeployLeftReverse);
         deployRight = new DoubleSolenoid(Constants.kDeployRightForward, Constants.kDeployRightReverse);
         deployTop = new DoubleSolenoid(Constants.kDeployTopForward, Constants.kDeployTopReverse);
+        ratchetPivot = new DoubleSolenoid(Constants.kRatchetPivotForward, Constants.kRatchetPivotReverse);
 
         TalonSRXUtil.configMagEncoder(hatchPivot);
+
+        TalonSRXUtil.setBrakeMode();
 
         TalonSRXUtil.setPIDGains(hatchPivot, Constants.kHatchPivotUpSlot, Constants.kHatchPivotUpP,
                 Constants.kHatchPivotUpI, Constants.kHatchPivotUpD, Constants.kHatchPivotUpF);
@@ -52,6 +50,14 @@ public class HatchPivot extends SubsystemBase {
         deployLeft.close();
         deployRight.close();
         deployTop.close();
+    }
+
+    public void ratchet() {
+        ratchetPivot.set(DoubleSolenoid.Value.kForward);
+    }
+
+    public void startRatchet() {
+        ratchetPivot.set(DoubleSolenoid.Value.kReverse);
     }
 
     public static class DeployingState extends RobotState {
@@ -81,12 +87,14 @@ public class HatchPivot extends SubsystemBase {
     public static class PivotFloorIntakePreset extends RobotState {
         @Override
         public RobotState update() {
+            HatchPivot.getInstance().m_closedLoopTarget = Constants.kCargoPivotFloorPreset;
+            HatchPivot.getInstance().m_usingClosedLoop = true;
             if(HatchPivot.getInstance().atClosedLoopTarget()) {
                 return new IdleState();
             }
-            else if (HatchPivot.getInstance().getAngle() > Constants.kHatchPivotFloorIntakePreset) {
-                HatchPivot.getInstance().setTargetPosition(ControlMode.Position, Constants.kCargoPivotFloorPreset,
-                        Constants.kHatchPivotDownSlot);
+            else if (HatchPivot.getInstance().getAngle() > HatchPivot.getInstance().m_closedLoopTarget) {
+                HatchPivot.getInstance().setTargetPosition(ControlMode.Position,
+                        HatchPivot.getInstance().m_closedLoopTarget, Constants.kHatchPivotDownSlot);
                 return new IdleState();
             }
             else return new IdleState();
@@ -96,15 +104,25 @@ public class HatchPivot extends SubsystemBase {
     public static class PivotDeployPreset extends RobotState {
         @Override
         public RobotState update() {
+            HatchPivot.getInstance().m_closedLoopTarget = Constants.kHatchPivotDeployPreset;
+            HatchPivot.getInstance().m_usingClosedLoop = true;
             if(HatchPivot.getInstance().atClosedLoopTarget()) {
                 return new IdleState();
             }
-            else if (HatchPivot.getInstance().getAngle() < Constants.kHatchPivotDeployPreset) {
-                HatchPivot.getInstance().setTargetPosition(ControlMode.Position, Constants.kCargoPivotFloorPreset,
-                        Constants.kHatchPivotUpSlot);
+            else if (HatchPivot.getInstance().getAngle() < HatchPivot.getInstance().m_closedLoopTarget) {
+                HatchPivot.getInstance().setTargetPosition(ControlMode.Position,
+                        HatchPivot.getInstance().m_closedLoopTarget, Constants.kHatchPivotUpSlot);
                 return new IdleState();
             }
             else return new IdleState();
+        }
+    }
+
+    public static class RatchetState extends RobotState {
+        @Override
+        public RobotState update() {
+            HatchPivot.getInstance().ratchet();
+            return new IdleState();
         }
     }
 
@@ -174,7 +192,7 @@ public class HatchPivot extends SubsystemBase {
 
     @Override
     public void init(double timestamp) {
-
+        startRatchet();
     }
 
     @Override
