@@ -2,11 +2,22 @@ package frc.team3256.robot.path;
 
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.auto.purepursuit.Path;
+import frc.team3256.warriorlib.auto.purepursuit.PathGenerator;
 import frc.team3256.warriorlib.math.Vector;
 
 public class Tester {
 	public static void main(String[] args) {
-		Path p = new Path(Constants.spacing);
+		PathGenerator pathGenerator = new PathGenerator(Constants.spacing);
+		pathGenerator.addPoints(new Vector(0, 0), new Vector(0, 30), new Vector(70, 60), new Vector(70, 80), new Vector(70, 100));
+		pathGenerator.setSmoothingParameters(Constants.a, Constants.b, Constants.tolerance);
+		pathGenerator.setVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
+		Path p = pathGenerator.generatePath();
+		for (Vector v : p.getRobotPath()) {
+			System.out.println("x=" + v.x + " y=" + v.y + " z=" + v.z + " vel=" + v.getVelocity());
+		}
+		/*
+		System.out.println("OLD WAY");
+		p = new Path(Constants.spacing);
 		p.addSegment(new Vector(0, 0), new Vector(0, 30));
 		p.addSegment(new Vector(0, 30), new Vector(70, 60));
 		p.addSegment(new Vector(70, 60), new Vector(70, 80));
@@ -17,5 +28,6 @@ public class Tester {
 		for (Vector v : p.getRobotPath()) {
 			System.out.println("x=" + v.x + " y=" + v.y + " z=" + v.z + " vel=" + v.getVelocity());
 		}
+		*/
 	}
 }

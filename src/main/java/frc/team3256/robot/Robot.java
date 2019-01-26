@@ -4,11 +4,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3256.robot.auto.PurePursuitTestMode;
 import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.operations.Constants;
-import frc.team3256.robot.path.PurePursuitTracker;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.warriorlib.auto.AutoModeExecuter;
-import frc.team3256.warriorlib.auto.purepursuit.Path;
-import frc.team3256.warriorlib.auto.purepursuit.PoseEstimator;
+import frc.team3256.warriorlib.auto.purepursuit.*;
 import frc.team3256.warriorlib.loop.Looper;
 import frc.team3256.warriorlib.math.Vector;
 
@@ -17,7 +15,6 @@ public class Robot extends TimedRobot {
 	DriveTrain driveTrain = DriveTrain.getInstance();
 	Looper enabledLooper, poseEstimatorLooper;
 	TeleopUpdater teleopUpdater;
-	Path p;
 	PurePursuitTracker purePursuitTracker;
 	PoseEstimator poseEstimator;
 	//ADXRS453_Calibrator gyroCalibrator;
@@ -30,7 +27,8 @@ public class Robot extends TimedRobot {
 	public void robotInit() {
 		enabledLooper = new Looper(1 / 200D);
 		poseEstimatorLooper = new Looper(1 / 50D);
-		poseEstimator = PoseEstimator.getInstance(driveTrain);
+		poseEstimator = PoseEstimator.getInstance();
+		poseEstimator.setDriveTrainBase(driveTrain);
 		enabledLooper.addLoops(driveTrain);
 		//gyroCalibrator = new ADXRS453_Calibrator(driveTrain.internalGyro);
 		poseEstimatorLooper.addLoops(poseEstimator);
@@ -38,15 +36,21 @@ public class Robot extends TimedRobot {
 
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
-		p = new Path(Constants.spacing);
-		p.addSegment(new Vector(0, 0), new Vector(0, 30));
-		p.addSegment(new Vector(0, 30), new Vector(70, 60));
-		p.addSegment(new Vector(70, 60), new Vector(70, 80));
-		p.addSegment(new Vector(70, 80), new Vector(70, 100));
-		p.addLastPoint();
-		p.smooth(Constants.a, Constants.b, Constants.tolerance);
-		p.setTargetVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
-		purePursuitTracker = new PurePursuitTracker(p, Constants.lookaheadDistance);
+		PurePursuitAction.setDriveTrainBase(driveTrain);
+
+		PathGenerator pathGenerator = new PathGenerator(Constants.spacing);
+		pathGenerator.addPoint(new Vector(0, 0));
+		pathGenerator.addPoint(new Vector(0, 30));
+		pathGenerator.addPoint(new Vector(70, 60));
+		pathGenerator.addPoint(new Vector(70, 80));
+		pathGenerator.addPoint(new Vector(70, 103));
+		pathGenerator.setSmoothingParameters(Constants.a, Constants.b, Constants.tolerance);
+		pathGenerator.setVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
+		Path path = pathGenerator.generatePath();
+
+		purePursuitTracker = PurePursuitTracker.getInstance();
+		purePursuitTracker.setRobotTrack(Constants.robotTrack);
+		purePursuitTracker.setPath(path, Constants.lookaheadDistance);
 	}
 
 	/**
@@ -56,11 +60,11 @@ public class Robot extends TimedRobot {
 	public void disabledInit() {
 		enabledLooper.stop();
 		poseEstimatorLooper.stop();
-		poseEstimator.init(0);
 		driveTrain.resetGyro();
 		driveTrain.resetEncoders();
 		driveTrain.setCoastMode();
-		purePursuitTracker = new PurePursuitTracker(p, Constants.lookaheadDistance);
+		poseEstimator.reset();
+		purePursuitTracker.reset();
 	}
 
 	/**
@@ -85,12 +89,12 @@ public class Robot extends TimedRobot {
 		enabledLooper.stop();
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
-		poseEstimator.init(0);
-		purePursuitTracker.lastClosestPt = 0;
+		poseEstimator.reset();
+		purePursuitTracker.reset();
 		poseEstimatorLooper.start();
 
 		AutoModeExecuter autoModeExecuter = new AutoModeExecuter();
-		autoModeExecuter.setAutoMode(new PurePursuitTestMode(purePursuitTracker));
+		autoModeExecuter.setAutoMode(new PurePursuitTestMode());
 		autoModeExecuter.start();
 	}
 
@@ -99,10 +103,11 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		/*
 		System.out.println("Pose: " + poseEstimator.getPose());
 		System.out.println("LEFT ENC " + driveTrain.getLeftDistance() + " RIGHT ENC " + driveTrain.getRightDistance());
 		System.out.println("Angle: " + driveTrain.getAngle());
-        /*
+
         System.out.println("left: " + driveTrain.getLeftDistance());
         System.out.println("right: " + driveTrain.getRightDistance());
         System.out.println("angle: " + driveTrain.getAngle());

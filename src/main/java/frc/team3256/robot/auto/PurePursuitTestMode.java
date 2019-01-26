@@ -1,20 +1,16 @@
 package frc.team3256.robot.auto;
 
-import frc.team3256.robot.path.PurePursuitTracker;
 import frc.team3256.warriorlib.auto.AutoModeBase;
 import frc.team3256.warriorlib.auto.AutoModeEndedException;
+import frc.team3256.warriorlib.auto.purepursuit.PoseEstimator;
+import frc.team3256.warriorlib.auto.purepursuit.PurePursuitAction;
 
 public class PurePursuitTestMode extends AutoModeBase {
-	private PurePursuitTracker purePursuitTracker;
-
-	public PurePursuitTestMode(PurePursuitTracker purePursuitTracker) {
-		this.purePursuitTracker = purePursuitTracker;
-	}
-
 	@Override
 	protected void routine() throws AutoModeEndedException {
 		System.out.println("STARTED PURE PURSUIT");
-		runAction(new PurePursuitAction(purePursuitTracker));
+		runAction(new PurePursuitAction());
 		System.out.println("FINISHED PURE PURSUIT");
+		System.out.println(PoseEstimator.getInstance().getPose());
 	}
 }
