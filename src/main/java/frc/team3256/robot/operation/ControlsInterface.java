@@ -2,71 +2,71 @@ package frc.team3256.robot.operation;
 
 public interface ControlsInterface {
 
-    //--------------Driver-----------------
+	//--------------Driver-----------------
 
-    //Y Axis: Throttle for drive
-    double getThrottle();
+	//Y Axis: Throttle for drive
+	double getThrottle();
 
-    //X Axis: Turn for drive
-    double getTurn();
+	//X Axis: Turn for drive
+	double getTurn();
 
-    //Hold: Enables quick turn
-    boolean getQuickTurn();
+	//Hold: Enables quick turn
+	boolean getQuickTurn();
 
-    //Hold: Shifts down to low gear (default is high gear)
-    boolean getLowGear();
+	//Hold: Shifts down to low gear (default is high gear)
+	boolean getLowGear();
 
-    boolean switchManipulatorControlMode();
+	boolean switchManipulatorControlMode();
 
-    boolean switchDriverControlMode();
+	boolean switchDriverControlMode();
 
-    boolean scoreHatch();
+	boolean scoreHatch();
 
-    boolean manualHatchUp();
+	boolean manualHatchUp();
 
-    boolean manualHatchDown();
+	boolean manualHatchDown();
 
-    boolean hatchPivotFloorIntakePreset();
+	boolean hatchPivotFloorIntakePreset();
 
-    boolean hatchPivotDeployPreset();
+	boolean hatchPivotDeployPreset();
 
-    boolean getCargoIntake();
+	boolean getCargoIntake();
 
-    boolean getCargoExhaust();
+	boolean getCargoExhaust();
 
-    boolean scoreCargo();
+	boolean scoreCargo();
 
-    boolean pivotCargoUp();
+	boolean pivotCargoUp();
 
-    boolean pivotCargoDown();
+	boolean pivotCargoDown();
 
-    boolean pivotCargoFloorPreset();
+	boolean pivotCargoFloorPreset();
 
-    boolean pivotCargoClearancePreset();
+	boolean pivotCargoClearancePreset();
 
-    boolean pivotCargoTransferPreset();
+	boolean pivotCargoTransferPreset();
 
-    boolean pivotCargoFoldInPreset();
+	boolean pivotCargoFoldInPreset();
 
-    boolean manualElevatorUp();
+	boolean manualElevatorUp();
 
-    boolean manualElevatorDown();
+	boolean manualElevatorDown();
 
-    boolean cargoPresetLow();
+	boolean cargoPresetLow();
 
-    boolean cargoPresetMid();
+	boolean cargoPresetMid();
 
-    boolean cargoPresetHigh();
+	boolean cargoPresetHigh();
 
-    boolean hatchPresetLow();
+	boolean hatchPresetLow();
 
-    boolean hatchPresetMid();
+	boolean hatchPresetMid();
 
-    boolean hatchPresetHigh();
+	boolean hatchPresetHigh();
 
-    boolean hang();
+	boolean hang();
 
-    boolean retract();
+	boolean retract();
 
-    double getHangDrive();
+	double getHangDrive();
 }

@@ -1,133 +1,135 @@
 package frc.team3256.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import frc.team3256.robot.math.RigidTransform;
-import frc.team3256.robot.math.Vector;
-import frc.team3256.robot.odometry.PoseEstimator;
-import frc.team3256.robot.path.PurePursuitLoop;
+import frc.team3256.robot.auto.PurePursuitTestMode;
 import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.operations.Constants;
-import frc.team3256.robot.path.Path;
 import frc.team3256.robot.path.PurePursuitTracker;
 import frc.team3256.robot.subsystems.DriveTrain;
+import frc.team3256.warriorlib.auto.AutoModeExecuter;
+import frc.team3256.warriorlib.auto.purepursuit.Path;
+import frc.team3256.warriorlib.auto.purepursuit.PoseEstimator;
 import frc.team3256.warriorlib.loop.Looper;
+import frc.team3256.warriorlib.math.Vector;
 
 public class Robot extends TimedRobot {
 
-    DriveTrain driveTrain = DriveTrain.getInstance();
-    Looper enabledLooper, purePursuitLooper;
-    TeleopUpdater teleopUpdater;
-    Path p;
-    PurePursuitTracker purePursuitTracker;
-    PurePursuitLoop purePursuitLoop;
-    PoseEstimator poseEstimator;
-    //ADXRS453_Calibrator gyroCalibrator;
+	DriveTrain driveTrain = DriveTrain.getInstance();
+	Looper enabledLooper, poseEstimatorLooper;
+	TeleopUpdater teleopUpdater;
+	Path p;
+	PurePursuitTracker purePursuitTracker;
+	PoseEstimator poseEstimator;
+	//ADXRS453_Calibrator gyroCalibrator;
 
-    /**
-     * This function is called when the robot is first started up and should be
-     * used for any initialization code.
-     */
-    @Override
-    public void robotInit() {
-        enabledLooper = new Looper(1/200D);
-        purePursuitLooper = new Looper(1/50D);
-        poseEstimator = PoseEstimator.getInstance();
-        enabledLooper.addLoops(driveTrain);
-        purePursuitLoop = new PurePursuitLoop();
-        //gyroCalibrator = new ADXRS453_Calibrator(driveTrain.internalGyro);
-        purePursuitLooper.addLoops(poseEstimator, purePursuitLoop);
-        teleopUpdater = new TeleopUpdater();
+	/**
+	 * This function is called when the robot is first started up and should be
+	 * used for any initialization code.
+	 */
+	@Override
+	public void robotInit() {
+		enabledLooper = new Looper(1 / 200D);
+		poseEstimatorLooper = new Looper(1 / 50D);
+		poseEstimator = PoseEstimator.getInstance(driveTrain);
+		enabledLooper.addLoops(driveTrain);
+		//gyroCalibrator = new ADXRS453_Calibrator(driveTrain.internalGyro);
+		poseEstimatorLooper.addLoops(poseEstimator);
+		teleopUpdater = new TeleopUpdater();
 
-        driveTrain.resetEncoders();
-        p = new Path(0,0,Constants.spacing, Constants.tolerance);
-        p.addSegment(new Vector(0,0), new Vector(0, 30));
-        p.addSegment(new Vector(0, 30), new Vector(70, 60));
-        p.addSegment(new Vector(70, 60), new Vector(70, 80));
-        p.addSegment(new Vector(70, 80), new Vector(70, 100));
-        p.addLastPoint();
-        p.smooth(Constants.a, Constants.b, Constants.tolerance);
-        p.setTargetVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
-        purePursuitTracker = new PurePursuitTracker(p, Constants.lookaheadDistance);
-        purePursuitLoop.initPurePursuitTracker(purePursuitTracker);
-}
+		driveTrain.resetEncoders();
+		driveTrain.resetGyro();
+		p = new Path(Constants.spacing);
+		p.addSegment(new Vector(0, 0), new Vector(0, 30));
+		p.addSegment(new Vector(0, 30), new Vector(70, 60));
+		p.addSegment(new Vector(70, 60), new Vector(70, 80));
+		p.addSegment(new Vector(70, 80), new Vector(70, 100));
+		p.addLastPoint();
+		p.smooth(Constants.a, Constants.b, Constants.tolerance);
+		p.setTargetVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
+		purePursuitTracker = new PurePursuitTracker(p, Constants.lookaheadDistance);
+	}
 
-    /**
-     * This function is called when the robot is disabled.
-     */
-    @Override
-    public void disabledInit() {
-        enabledLooper.stop();
-        purePursuitLooper.stop();
-        poseEstimator.reset(new RigidTransform());
-        driveTrain.resetGyro();
-        driveTrain.resetEncoders();
-        driveTrain.setCoastMode();
-    }
+	/**
+	 * This function is called when the robot is disabled.
+	 */
+	@Override
+	public void disabledInit() {
+		enabledLooper.stop();
+		poseEstimatorLooper.stop();
+		poseEstimator.init(0);
+		driveTrain.resetGyro();
+		driveTrain.resetEncoders();
+		driveTrain.setCoastMode();
+		purePursuitTracker = new PurePursuitTracker(p, Constants.lookaheadDistance);
+	}
 
-    /**
-     * This function is called every robot packet, no matter the mode. Use
-     * this for items like diagnostics that you want ran during disabled,
-     * autonomous/sandstorm, teleoperated and test.
-     *
-     * <p>This runs after the mode specific periodic functions, but before
-     * LiveWindow and SmartDashboard integrated updating.
-     */
-    @Override
-    public void robotPeriodic() {
+	/**
+	 * This function is called every robot packet, no matter the mode. Use
+	 * this for items like diagnostics that you want ran during disabled,
+	 * autonomous/sandstorm, teleoperated and test.
+	 *
+	 * <p>This runs after the mode specific periodic functions, but before
+	 * LiveWindow and SmartDashboard integrated updating.
+	 */
+	@Override
+	public void robotPeriodic() {
 
-    }
+	}
 
-    /**
-     * This function is called when autonomous/sandstorm starts.
-     */
-    @Override
-    public void autonomousInit() {
-        driveTrain.setBrakeMode();
-        enabledLooper.stop();
-        driveTrain.resetEncoders();
-        driveTrain.resetGyro();
-        poseEstimator.reset(new RigidTransform());
-        purePursuitTracker.lastClosestPt = 0;
-        purePursuitLooper.start();
-    }
+	/**
+	 * This function is called when autonomous/sandstorm starts.
+	 */
+	@Override
+	public void autonomousInit() {
+		driveTrain.setBrakeMode();
+		enabledLooper.stop();
+		driveTrain.resetEncoders();
+		driveTrain.resetGyro();
+		poseEstimator.init(0);
+		purePursuitTracker.lastClosestPt = 0;
+		poseEstimatorLooper.start();
 
-    /**
-     * This function is called periodically during autonomous/sandstorm.
-     */
-    @Override
-    public void autonomousPeriodic() {
-        System.out.println("Pose: " + poseEstimator.getPose());
-        System.out.println("LEFT ENC " + driveTrain.getLeftDistance() + " RIGHT ENC " + driveTrain.getRightDistance());
-        System.out.println("Angle: " + driveTrain.getAngle());
+		AutoModeExecuter autoModeExecuter = new AutoModeExecuter();
+		autoModeExecuter.setAutoMode(new PurePursuitTestMode(purePursuitTracker));
+		autoModeExecuter.start();
+	}
+
+	/**
+	 * This function is called periodically during autonomous/sandstorm.
+	 */
+	@Override
+	public void autonomousPeriodic() {
+		System.out.println("Pose: " + poseEstimator.getPose());
+		System.out.println("LEFT ENC " + driveTrain.getLeftDistance() + " RIGHT ENC " + driveTrain.getRightDistance());
+		System.out.println("Angle: " + driveTrain.getAngle());
         /*
         System.out.println("left: " + driveTrain.getLeftDistance());
         System.out.println("right: " + driveTrain.getRightDistance());
         System.out.println("angle: " + driveTrain.getAngle());
         System.out.println("pose: " + poseEstimator.getPose());
         */
-    }
+	}
 
-    /**
-     * This function is called when teleop starts.
-     */
-    @Override
-    public void teleopInit() {
-        //driveTrain.getGyro().reset();
-        enabledLooper.start();
-        purePursuitLooper.stop();
-    }
+	/**
+	 * This function is called when teleop starts.
+	 */
+	@Override
+	public void teleopInit() {
+		//driveTrain.getGyro().reset();
+		enabledLooper.start();
+		poseEstimatorLooper.stop();
+	}
 
-
-    /**
-     * This function is called periodically during teleop.
-     */
-    @Override
-    public void teleopPeriodic() {
-        teleopUpdater.update();
-        //System.out.println("left encoder: "+driveTrain.getLeftDistance());
-        //System.out.println("right encoder: "+driveTrain.getRightDistance());
-        //System.out.println("angle " + driveTrain.getGyro().getAngle());
-        //System.out.println("Connected: " + driveTrain.getGyro().isConnected());
+	/**
+	 * This function is called periodically during teleop.
+	 */
+	@Override
+	public void teleopPeriodic() {
+		teleopUpdater.update();
+		//System.out.println("left encoder: "+driveTrain.getLeftDistance());
+		//System.out.println("right encoder: "+driveTrain.getRightDistance());
+		//System.out.println("angle " + driveTrain.getGyro().getAngle());
+		//System.out.println("Connected: " + driveTrain.getGyro().isConnected());
 
         /*
         System.out.println("right master: " + driveTrain.getRightDistance());
@@ -135,14 +137,14 @@ public class Robot extends TimedRobot {
         System.out.println();
         System.out.println("gyro: " + driveTrain.getAngle());
         //System.out.println("vel: " + driveTrain.getVelocity());*/
-    }
+	}
 
-    /**
-     * This function is called periodically during test mode.
-     */
-    @Override
-    public void testPeriodic() {
-        purePursuitLooper.start();
-        System.out.println("pose: " + poseEstimator.getPose());
-    }
+	/**
+	 * This function is called periodically during test mode.
+	 */
+	@Override
+	public void testPeriodic() {
+		poseEstimatorLooper.start();
+		System.out.println("pose: " + poseEstimator.getPose());
+	}
 }

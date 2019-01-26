@@ -15,33 +15,33 @@ import edu.wpi.first.wpilibj.RobotBase;
  * change the parameter class to the startRobot call.
  */
 public final class Main {
-    private Main() {
+	private Main() {
 
-    }
+	}
 
-    /**
-     * Main initialization function. Do not perform any initialization here.
-     *
-     * <p>If you change your main robot class, change the parameter type.
-     */
-    public static void main(String... args) {
-        if (robotExists())
-            work();
-    }
+	/**
+	 * Main initialization function. Do not perform any initialization here.
+	 *
+	 * <p>If you change your main robot class, change the parameter type.
+	 */
+	public static void main(String... args) {
+		if (robotExists())
+			work();
+	}
 
-    public static void work() {
-        RobotBase.startRobot(Robot::new);
-    }
+	public static void work() {
+		RobotBase.startRobot(Robot::new);
+	}
 
-    /**
-     * 'cuz all robot code deserves a little humor
-     */
-    private static boolean robotExists() {
-        try {
-            Class.forName(Robot.class.getName());
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-        return true;
-    }
+	/**
+	 * 'cuz all robot code deserves a little humor
+	 */
+	private static boolean robotExists() {
+		try {
+			Class.forName(Robot.class.getName());
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
+		return true;
+	}
 }

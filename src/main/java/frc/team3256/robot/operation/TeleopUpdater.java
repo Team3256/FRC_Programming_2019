@@ -1,88 +1,84 @@
 package frc.team3256.robot.operation;
 
-import frc.team3256.robot.operations.DrivePower;
-import frc.team3256.robot.subsystems.*;
+import frc.team3256.robot.subsystems.DriveTrain;
+import frc.team3256.warriorlib.control.DrivePower;
 
 public class TeleopUpdater {
 
-    private DriveConfigImplementation controls = new DriveConfigImplementation();
+	boolean highGear = true;
+	private DriveConfigImplementation controls = new DriveConfigImplementation();
 
-    private DriveTrain m_drive = DriveTrain.getInstance();
+	//private HatchPivot m_hatch = HatchPivot.getInstance();
+	//private CargoIntake m_cargo = CargoIntake.getInstance();
+	//private Elevator m_elevator = Elevator.getInstance();
+	//private Hanger m_hanger = Hanger.getInstance();
+	private DriveTrain m_drive = DriveTrain.getInstance();
+	private boolean isManipulatorHatchMode = true;
+	private boolean isDriverHatchMode = true;
 
-    //private HatchPivot m_hatch = HatchPivot.getInstance();
-    //private CargoIntake m_cargo = CargoIntake.getInstance();
-    //private Elevator m_elevator = Elevator.getInstance();
-    //private Hanger m_hanger = Hanger.getInstance();
+	public void update() {
+		System.out.println(isManipulatorHatchMode ? "Manipulator: Hatch Mode" : "Manipulator: Cargo Mode");
+		System.out.println(isDriverHatchMode ? "Driver: Hatch Mode" : "Driver: Cargo Mode");
 
-    boolean highGear = true;
+		boolean switchManipulatorControlMode = controls.switchManipulatorControlMode();
+		boolean switchDriverControlMode = controls.switchDriverControlMode();
 
-    private boolean isManipulatorHatchMode = true;
-    private boolean isDriverHatchMode = true;
+		//Drive
+		double throttle = controls.getThrottle();
+		double turn = controls.getTurn();
+		boolean quickTurn = controls.getQuickTurn();
+		boolean shiftDown = controls.getLowGear();
+		double hangDrive = controls.getHangDrive();
 
-    public void update(){
-        System.out.println(isManipulatorHatchMode ? "Manipulator: Hatch Mode" : "Manipulator: Cargo Mode");
-        System.out.println(isDriverHatchMode ? "Driver: Hatch Mode" : "Driver: Cargo Mode");
+		//Hatch
+		boolean scoreHatch = controls.scoreHatch();
+		boolean manualHatchUp = controls.manualHatchUp();
+		boolean manualHatchDown = controls.manualHatchDown();
+		boolean hatchFloorIntakePreset = controls.hatchPivotFloorIntakePreset();
+		boolean hatchDeployPreset = controls.hatchPivotDeployPreset();
 
-        boolean switchManipulatorControlMode = controls.switchManipulatorControlMode();
-        boolean switchDriverControlMode = controls.switchDriverControlMode();
+		//Cargo
+		boolean intakeCargo = controls.getCargoIntake();
+		boolean exhaustCargo = controls.getCargoExhaust();
+		boolean scoreCargo = controls.scoreCargo();
+		boolean pivotCargoUp = controls.pivotCargoUp();
+		boolean pivotCargoDown = controls.pivotCargoDown();
+		boolean pivotCargoFloor = controls.pivotCargoFloorPreset();
+		boolean pivotCargoClearance = controls.pivotCargoClearancePreset();
+		boolean pivotCargoTransfer = controls.pivotCargoTransferPreset();
+		boolean pivotCargoFoldIn = controls.pivotCargoFoldInPreset();
 
-        //Drive
-        double throttle = controls.getThrottle();
-        double turn = controls.getTurn();
-        boolean quickTurn = controls.getQuickTurn();
-        boolean shiftDown = controls.getLowGear();
-        double hangDrive = controls.getHangDrive();
+		//Elevator
+		boolean manualElevatorUp = controls.manualElevatorUp();
+		boolean manualElevatorDown = controls.manualElevatorDown();
+		boolean cargoPresetLow = controls.cargoPresetLow();
+		boolean cargoPresetMid = controls.cargoPresetMid();
+		boolean cargoPresetHigh = controls.cargoPresetHigh();
+		boolean hatchPresetLow = controls.hatchPresetLow();
+		boolean hatchPresetMid = controls.hatchPresetMid();
+		boolean hatchPresetHigh = controls.hatchPresetHigh();
 
-        //Hatch
-        boolean scoreHatch = controls.scoreHatch();
-        boolean manualHatchUp = controls.manualHatchUp();
-        boolean manualHatchDown = controls.manualHatchDown();
-        boolean hatchFloorIntakePreset = controls.hatchPivotFloorIntakePreset();
-        boolean hatchDeployPreset = controls.hatchPivotDeployPreset();
+		//Hanger
+		boolean hang = controls.hang();
+		boolean retract = controls.retract();
 
-        //Cargo
-        boolean intakeCargo = controls.getCargoIntake();
-        boolean exhaustCargo = controls.getCargoExhaust();
-        boolean scoreCargo = controls.scoreCargo();
-        boolean pivotCargoUp = controls.pivotCargoUp();
-        boolean pivotCargoDown = controls.pivotCargoDown();
-        boolean pivotCargoFloor = controls.pivotCargoFloorPreset();
-        boolean pivotCargoClearance = controls.pivotCargoClearancePreset();
-        boolean pivotCargoTransfer = controls.pivotCargoTransferPreset();
-        boolean pivotCargoFoldIn = controls.pivotCargoFoldInPreset();
+		//DriveTrain Subsystem
+		m_drive.setBrakeMode();
+		DrivePower drivePower = DriveTrain.curvatureDrive(throttle, turn, quickTurn, highGear/*!shiftDown*/);
+		m_drive.setHighGear(drivePower.getHighGear());
+		m_drive.setOpenLoop(drivePower.getLeft(), drivePower.getRight());
 
-        //Elevator
-        boolean manualElevatorUp = controls.manualElevatorUp();
-        boolean manualElevatorDown = controls.manualElevatorDown();
-        boolean cargoPresetLow = controls.cargoPresetLow();
-        boolean cargoPresetMid = controls.cargoPresetMid();
-        boolean cargoPresetHigh = controls.cargoPresetHigh();
-        boolean hatchPresetLow = controls.hatchPresetLow();
-        boolean hatchPresetMid = controls.hatchPresetMid();
-        boolean hatchPresetHigh = controls.hatchPresetHigh();
+		if (m_drive.leftSlave.getOutputCurrent() > 10 || m_drive.leftSlave.getOutputCurrent() > 10)
+			System.out.println("LEFT " + m_drive.leftSlave.getOutputCurrent() + " RIGHT " + m_drive.rightSlave.getOutputCurrent());
 
-        //Hanger
-        boolean hang = controls.hang();
-        boolean retract = controls.retract();
+		//Switch between Hatch and Cargo Control Modes
+		if (switchManipulatorControlMode) {
+			isManipulatorHatchMode = !isManipulatorHatchMode;
+		}
 
-
-        //DriveTrain Subsystem
-        m_drive.setBrakeMode();
-        DrivePower drivePower = DriveTrain.curvatureDrive(throttle, turn, quickTurn, highGear/*!shiftDown*/);
-        m_drive.setHighGear(drivePower.highGear());
-        m_drive.setOpenLoop(drivePower.getLeft(), drivePower.getRight());
-
-        if (m_drive.leftSlave.getOutputCurrent() > 10 || m_drive.leftSlave.getOutputCurrent() > 10)
-            System.out.println("LEFT " + m_drive.leftSlave.getOutputCurrent() + " RIGHT " + m_drive.rightSlave.getOutputCurrent());
-
-        //Switch between Hatch and Cargo Control Modes
-        if (switchManipulatorControlMode){
-            isManipulatorHatchMode = !isManipulatorHatchMode;
-        }
-
-        if (switchDriverControlMode){
-            isDriverHatchMode = !isDriverHatchMode;
-        }
+		if (switchDriverControlMode) {
+			isDriverHatchMode = !isDriverHatchMode;
+		}
         /*
         //CargoIntake Subsystem
         if(intakeCargo){
@@ -178,5 +174,5 @@ public class TeleopUpdater {
             m_hanger.setRobotState(new Hanger.RetractState());
         }
         */
-    }
+	}
 }
