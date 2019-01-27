@@ -9,7 +9,6 @@ import frc.team3256.warriorlib.subsystem.SubsystemBase;
 public class Elevator extends SubsystemBase {
 
 	private static Elevator instance;
-	RobotState robotState = new HoldState();
 	private CANSparkMax master, slaveOne, slaveTwo, slaveThree;
 	private CANPIDController masterPID;
 	private CANEncoder masterEncoder;
@@ -37,20 +36,40 @@ public class Elevator extends SubsystemBase {
 		return instance == null ? instance = new Elevator() : instance;
 	}
 
-	private void setOpenLoop(double power) {
+	public void setOpenLoop(double power) {
 		master.set(power);
 	}
 
-	private void setPosition(double position, int slot) {
-		masterPID.setReference(position, ControlType.kPosition, slot);
+	public void setPosition(double position) {
+		masterPID.setReference(position, ControlType.kPosition);
 	}
 
 	private double getPosition() {
 		return masterEncoder.getPosition();
 	}
 
-	public void setRobotState(RobotState state) {
-		this.robotState = state;
+	public void setHighCargoPosition() {
+		setPosition(Constants.kHighCargoPreset);
+	}
+
+	public void setMidCargoPosition() {
+		setPosition(Constants.kMidCargoPreset);
+	}
+
+	public void setLowCargoPosition() {
+		setPosition(Constants.kLowCargoPreset);
+	}
+
+	public void setHighHatchPosition() {
+		setPosition(Constants.kHighHatchPreset);
+	}
+
+	public void setMidHatchPosition() {
+		setPosition(Constants.kMidHatchPreset);
+	}
+
+	public void setLowHatchPosition() {
+		setPosition(Constants.kLowHatchPreset);
 	}
 
 	@Override
@@ -70,157 +89,15 @@ public class Elevator extends SubsystemBase {
 
 	@Override
 	public void update(double timestamp) {
-
+		if (getPosition() > Constants.kHighCargoPreset) {
+			setPosition(Constants.kHighCargoPreset);
+		} else if (getPosition() < Constants.kLowCargoPreset) {
+			setPosition(Constants.kLowCargoPreset);
+		}
 	}
 
 	@Override
 	public void end(double timestamp) {
 
-	}
-
-	public static class ManualUpState extends RobotState {
-
-		@Override
-		public RobotState update() {
-			Elevator.getInstance().setOpenLoop(Constants.kElevatorUpManualPower);
-			return new HoldState();
-		}
-	}
-
-	public static class ManualDownState extends RobotState {
-
-		@Override
-		public RobotState update() {
-			Elevator.getInstance().setOpenLoop(Constants.kElevatorDownManualPower);
-			return new HoldState();
-		}
-	}
-
-	public static class HighCargoPresetState extends RobotState {
-
-		@Override
-		public RobotState update() {
-			if (Elevator.getInstance().getPosition() > Constants.kHighCargoPreset) {
-				Elevator.getInstance().setPosition(Constants.kHighCargoPreset, Constants.kElevatorDownSlot);
-				return new HoldState();
-			} else if (Elevator.getInstance().getPosition() < Constants.kHighCargoPreset) {
-				Elevator.getInstance().setPosition(Constants.kHighCargoPreset, Constants.kElevatorUpSlot);
-				return new HoldState();
-			} else
-				return new HoldState();
-		}
-	}
-
-	public static class MidCargoPresetState extends RobotState {
-
-		@Override
-		public RobotState update() {
-			if (Elevator.getInstance().getPosition() > Constants.kMidCargoPreset) {
-				Elevator.getInstance().setPosition(Constants.kMidCargoPreset, Constants.kElevatorDownSlot);
-				return new HoldState();
-			} else if (Elevator.getInstance().getPosition() < Constants.kMidCargoPreset) {
-				Elevator.getInstance().setPosition(Constants.kMidCargoPreset, Constants.kElevatorUpSlot);
-				return new HoldState();
-			} else
-				return new HoldState();
-		}
-	}
-
-	public static class LowCargoPresetState extends RobotState {
-
-		@Override
-		public RobotState update() {
-			if (Elevator.getInstance().getPosition() > Constants.kLowCargoPreset) {
-				Elevator.getInstance().setPosition(Constants.kLowCargoPreset, Constants.kElevatorDownSlot);
-				return new HoldState();
-			} else if (Elevator.getInstance().getPosition() < Constants.kLowCargoPreset) {
-				Elevator.getInstance().setPosition(Constants.kLowCargoPreset, Constants.kElevatorUpSlot);
-				return new HoldState();
-			} else
-				return new HoldState();
-		}
-	}
-
-	public static class HighHatchPresetState extends RobotState {
-
-		@Override
-		public RobotState update() {
-			if (Elevator.getInstance().getPosition() > Constants.kHighHatchPreset) {
-				Elevator.getInstance().setPosition(Constants.kHighHatchPreset, Constants.kElevatorDownSlot);
-				return new HoldState();
-			} else if (Elevator.getInstance().getPosition() < Constants.kHighHatchPreset) {
-				Elevator.getInstance().setPosition(Constants.kHighHatchPreset, Constants.kElevatorUpSlot);
-				return new HoldState();
-			} else
-				return new HoldState();
-		}
-	}
-
-	public static class MidHatchPresetState extends RobotState {
-
-		@Override
-		public RobotState update() {
-			if (Elevator.getInstance().getPosition() > Constants.kMidHatchPreset) {
-				Elevator.getInstance().setPosition(Constants.kMidHatchPreset, Constants.kElevatorDownSlot);
-				return new HoldState();
-			} else if (Elevator.getInstance().getPosition() < Constants.kMidHatchPreset) {
-				Elevator.getInstance().setPosition(Constants.kMidHatchPreset, Constants.kElevatorUpSlot);
-				return new HoldState();
-			} else
-				return new HoldState();
-		}
-	}
-
-	public static class LowHatchPresetState extends RobotState {
-
-		@Override
-		public RobotState update() {
-			if (Elevator.getInstance().getPosition() > Constants.kLowHatchPreset) {
-				Elevator.getInstance().setPosition(Constants.kLowHatchPreset, Constants.kElevatorDownSlot);
-				return new HoldState();
-			} else if (Elevator.getInstance().getPosition() < Constants.kLowHatchPreset) {
-				Elevator.getInstance().setPosition(Constants.kLowHatchPreset, Constants.kElevatorUpSlot);
-				return new HoldState();
-			} else
-				return new HoldState();
-		}
-	}
-
-	public static class HoldState extends RobotState {
-
-		@Override
-		public RobotState update() {
-			if (Elevator.getInstance().getPosition() > Constants.kDropPreset) {
-				Elevator.getInstance().setPosition(Elevator.getInstance().getPosition(), Constants.kElevatorHoldSlot);
-				return new HoldState();
-			} else
-				return new IdleState();
-		}
-	}
-
-	public static class HomePresetState extends RobotState{
-
-		@Override
-		public RobotState update() {
-			if (Elevator.getInstance().getPosition() > Constants.kHomePreset) {
-				Elevator.getInstance().setPosition(Constants.kHomePreset, Constants.kElevatorDownSlot);
-				return new HoldState();
-			}
-			else if (Elevator.getInstance().getPosition() < Constants.kHomePreset) {
-				Elevator.getInstance().setPosition(Constants.kHomePreset, Constants.kElevatorUpSlot);
-				return new HoldState();
-			}
-			else {
-				return new IdleState();
-			}
-		}
-	}
-
-	public static class IdleState extends RobotState {
-		@Override
-		public RobotState update() {
-			Elevator.getInstance().setOpenLoop(0);
-			return new IdleState();
-		}
 	}
 }

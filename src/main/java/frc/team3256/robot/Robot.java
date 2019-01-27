@@ -2,7 +2,7 @@ package frc.team3256.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3256.robot.auto.PurePursuitTestMode;
-import frc.team3256.robot.operation.TeleopUpdater;
+import frc.team3256.robot.operation.NewTeleopUpdater;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.warriorlib.auto.AutoModeExecuter;
@@ -13,11 +13,11 @@ import frc.team3256.warriorlib.math.Vector;
 public class Robot extends TimedRobot {
 
 	DriveTrain driveTrain = DriveTrain.getInstance();
-	Looper enabledLooper, poseEstimatorLooper;
-	TeleopUpdater teleopUpdater;
 	PurePursuitTracker purePursuitTracker;
 	PoseEstimator poseEstimator;
-	//ADXRS453_Calibrator gyroCalibrator;
+
+	Looper enabledLooper, poseEstimatorLooper;
+	NewTeleopUpdater teleopUpdater;
 
 	/**
 	 * This function is called when the robot is first started up and should be
@@ -26,16 +26,17 @@ public class Robot extends TimedRobot {
 	@Override
 	public void robotInit() {
 		enabledLooper = new Looper(1 / 200D);
+		driveTrain.resetEncoders();
+		driveTrain.resetGyro();
+		enabledLooper.addLoops(driveTrain);
+
 		poseEstimatorLooper = new Looper(1 / 50D);
 		poseEstimator = PoseEstimator.getInstance();
 		poseEstimator.setDriveTrainBase(driveTrain);
-		enabledLooper.addLoops(driveTrain);
-		//gyroCalibrator = new ADXRS453_Calibrator(driveTrain.internalGyro);
 		poseEstimatorLooper.addLoops(poseEstimator);
-		teleopUpdater = new TeleopUpdater();
 
-		driveTrain.resetEncoders();
-		driveTrain.resetGyro();
+		teleopUpdater = NewTeleopUpdater.getInstance();
+
 		PurePursuitAction.setDriveTrainBase(driveTrain);
 
 		PathGenerator pathGenerator = new PathGenerator(Constants.spacing);
@@ -60,9 +61,11 @@ public class Robot extends TimedRobot {
 	public void disabledInit() {
 		enabledLooper.stop();
 		poseEstimatorLooper.stop();
+
 		driveTrain.resetGyro();
 		driveTrain.resetEncoders();
 		driveTrain.setCoastMode();
+
 		poseEstimator.reset();
 		purePursuitTracker.reset();
 	}
@@ -85,12 +88,14 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		driveTrain.setBrakeMode();
 		enabledLooper.stop();
+
+		driveTrain.setBrakeMode();
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
 		poseEstimator.reset();
 		purePursuitTracker.reset();
+
 		poseEstimatorLooper.start();
 
 		AutoModeExecuter autoModeExecuter = new AutoModeExecuter();
@@ -120,7 +125,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		//driveTrain.getGyro().reset();
 		enabledLooper.start();
 		poseEstimatorLooper.stop();
 	}
