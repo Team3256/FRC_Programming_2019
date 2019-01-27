@@ -48,6 +48,22 @@ public class CargoIntake extends SubsystemBase {
 		}
 	}
 
+	public void setPositionFoldIn() {
+
+	}
+
+	public void setPositionElevatorExchange() {
+
+	}
+
+	public void setPositionElevatorClearance() {
+
+	}
+
+	public void setPositionFloorIntake() {
+
+	}
+
 	public void setIntakePower(double power) {
 		cargoIntake.set(power);
 	}

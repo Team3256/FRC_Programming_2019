@@ -1,33 +1,34 @@
 package frc.team3256.robot.operation.control;
 
 import frc.team3256.robot.operation.TeleopUpdater;
-import frc.team3256.robot.operation.XboxListenerBase;
-import frc.team3256.robot.operations.Constants;
-import frc.team3256.robot.subsystems.CargoIntake;
-import frc.team3256.robot.subsystems.Elevator;
+import frc.team3256.warriorlib.control.XboxListenerBase;
 
 public class CargoIntakeControlScheme extends XboxListenerBase {
-    private CargoIntake cargoIntake = CargoIntake.getInstance();
-    private Elevator elevator = Elevator.getInstance();
+    //private CargoIntake cargoIntake = CargoIntake.getInstance();
+    //private Elevator elevator = Elevator.getInstance();
 
     @Override
     public void onAPressed() {
-        elevator.setLowCargoPosition();
+        //elevator.setLowCargoPosition();
+        System.out.println("Set low cargo position");
     }
 
     @Override
     public void onBPressed() {
-        elevator.setMidCargoPosition();
+        System.out.println("Set mid cargo position");
+        //elevator.setMidCargoPosition();
     }
 
     @Override
     public void onXPressed() {
-        elevator.setPosition(0);
+        System.out.println("Home elevator");
+        //elevator.setPosition(0);
     }
 
     @Override
     public void onYPressed() {
-        elevator.setHighCargoPosition();
+        System.out.println("Set high cargo position");
+        //elevator.setHighCargoPosition();
     }
 
     @Override
@@ -50,7 +51,8 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
 
     @Override
     public void onSelectedPressed() {
-        cargoIntake.setPivotFoldInPosition();
+        System.out.println("Cargo intake set fold in position");
+        //cargoIntake.setPivotFoldInPosition();
     }
 
     @Override
@@ -61,7 +63,8 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
     // Score Cargo
     @Override
     public void onLeftShoulderPressed() {
-        cargoIntake.setScorePower(Constants.kCargoScorePower);
+        System.out.println("Score cargo");
+        //cargoIntake.setScorePower(Constants.kCargoScorePower);
     }
 
     @Override
@@ -121,7 +124,8 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
 
     @Override
     public void onLeftShoulderReleased() {
-        cargoIntake.setScorePower(0);
+        System.out.println("Stop scoring cargo");
+        //cargoIntake.setScorePower(0);
     }
 
     @Override
@@ -133,9 +137,10 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
     @Override
     public void onLeftTrigger(double value) {
         if (value > 0.25) {
-            cargoIntake.setIntakePower(-1);
+            System.out.println("Exhausting cargo");
+            //cargoIntake.setIntakePower(-1);
         } else {
-            cargoIntake.setIntakePower(1);
+            //cargoIntake.setIntakePower(0);
         }
     }
 
@@ -143,19 +148,22 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
     @Override
     public void onRightTrigger(double value) {
         if (value > 0.25) {
-            cargoIntake.setIntakePower(1);
+            System.out.println("Intaking cargo");
+            //cargoIntake.setIntakePower(1);
         } else {
-            cargoIntake.setIntakePower(0);
+            //cargoIntake.setIntakePower(0);
         }
     }
 
     @Override
     public void onLeftJoystick(double x, double y) {
         if (y > 0.25) {
-            elevator.setOpenLoop(Constants.kElevatorUpManualPower);
+            System.out.println("Moving elevator up manually");
+            //elevator.setOpenLoop(Constants.kElevatorUpManualPower);
         }
-        if (y < 0.25){
-            elevator.setOpenLoop(Constants.kElevatorDownManualPower);
+        if (y < -0.25){
+            System.out.println("Moving elevator down manually");
+            //elevator.setOpenLoop(Constants.kElevatorDownManualPower);
         }
     }
 
@@ -164,11 +172,13 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
     @Override
     public void onRightJoyStick(double x, double y) {
         if (y > 0.25) {
-            cargoIntake.setPivotPower(1);
-        } else if (y < 0.25) {
-            cargoIntake.setPivotPower(-1);
+            System.out.println("Moving cargo pivot up manually");
+            //cargoIntake.setPivotPower(1);
+        } else if (y < -0.25) {
+            System.out.println("Moving cargo pivot down manually");
+            //cargoIntake.setPivotPower(-1);
         } else {
-            cargoIntake.setPivotPower(0);
+            //cargoIntake.setPivotPower(0);
         }
     }
 

@@ -2,13 +2,14 @@ package frc.team3256.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3256.robot.auto.PurePursuitTestMode;
-import frc.team3256.robot.operation.NewTeleopUpdater;
+import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.warriorlib.auto.AutoModeExecuter;
 import frc.team3256.warriorlib.auto.purepursuit.*;
 import frc.team3256.warriorlib.loop.Looper;
 import frc.team3256.warriorlib.math.Vector;
+import frc.team3256.warriorlib.subsystem.DriveTrainBase;
 
 public class Robot extends TimedRobot {
 
@@ -17,7 +18,7 @@ public class Robot extends TimedRobot {
 	PoseEstimator poseEstimator;
 
 	Looper enabledLooper, poseEstimatorLooper;
-	NewTeleopUpdater teleopUpdater;
+	TeleopUpdater teleopUpdater;
 
 	/**
 	 * This function is called when the robot is first started up and should be
@@ -30,14 +31,13 @@ public class Robot extends TimedRobot {
 		driveTrain.resetGyro();
 		enabledLooper.addLoops(driveTrain);
 
+		DriveTrainBase.setDriveTrain(driveTrain);
+
 		poseEstimatorLooper = new Looper(1 / 50D);
 		poseEstimator = PoseEstimator.getInstance();
-		poseEstimator.setDriveTrainBase(driveTrain);
 		poseEstimatorLooper.addLoops(poseEstimator);
 
-		teleopUpdater = NewTeleopUpdater.getInstance();
-
-		PurePursuitAction.setDriveTrainBase(driveTrain);
+		teleopUpdater = TeleopUpdater.getInstance();
 
 		PathGenerator pathGenerator = new PathGenerator(Constants.spacing);
 		pathGenerator.addPoint(new Vector(0, 0));

@@ -1,10 +1,10 @@
 package frc.team3256.robot.operation.control;
 
 import frc.team3256.robot.operation.TeleopUpdater;
-import frc.team3256.robot.operation.XboxListenerBase;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.subsystems.HatchPivot;
+import frc.team3256.warriorlib.control.XboxListenerBase;
 
 public class HatchIntakeControlScheme extends XboxListenerBase {
     private HatchPivot hatchPivot = HatchPivot.getInstance();
