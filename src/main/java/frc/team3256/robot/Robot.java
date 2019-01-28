@@ -6,7 +6,10 @@ import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.warriorlib.auto.AutoModeExecuter;
-import frc.team3256.warriorlib.auto.purepursuit.*;
+import frc.team3256.warriorlib.auto.purepursuit.Path;
+import frc.team3256.warriorlib.auto.purepursuit.PathGenerator;
+import frc.team3256.warriorlib.auto.purepursuit.PoseEstimator;
+import frc.team3256.warriorlib.auto.purepursuit.PurePursuitTracker;
 import frc.team3256.warriorlib.loop.Looper;
 import frc.team3256.warriorlib.math.Vector;
 import frc.team3256.warriorlib.subsystem.DriveTrainBase;
@@ -51,6 +54,7 @@ public class Robot extends TimedRobot {
 
 		purePursuitTracker = PurePursuitTracker.getInstance();
 		purePursuitTracker.setRobotTrack(Constants.robotTrack);
+		purePursuitTracker.setFeedbackMultiplier(Constants.maxVel * Constants.kP);
 		purePursuitTracker.setPath(path, Constants.lookaheadDistance);
 	}
 

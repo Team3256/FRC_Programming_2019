@@ -25,7 +25,7 @@ public class Constants {
 	public static final double robotTrack = 27; //inches
 	public static final double spacing = 6; //inches
 	public static final double kA = 0.002; //0.002
-	public static final double kP = 0; //0.01
+	public static final double kP = 0.001; //0.01
 	public static final double b = 0.9;
 	public static final double a = 1 - b;
 	public static final double tolerance = 0.001;
