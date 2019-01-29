@@ -1,15 +1,20 @@
 package frc.team3256.robot.operation.control;
 
 import frc.team3256.robot.operation.TeleopUpdater;
+import frc.team3256.robot.operations.Constants;
+import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.warriorlib.control.XboxListenerBase;
 
 public class CargoIntakeControlScheme extends XboxListenerBase {
-    //private CargoIntake cargoIntake = CargoIntake.getInstance();
+    private CargoIntake cargoIntake = CargoIntake.getInstance();
     //private Elevator elevator = Elevator.getInstance();
+
+    private double cargoPivotAccumulator = 0;
+    private boolean intaking = false, exhausting = false;
 
     @Override
     public void onAPressed() {
-        //elevator.setLowCargoPosition();
+//        elevator.setLowCargoPosition();
         System.out.println("Set low cargo position");
     }
 
@@ -52,7 +57,7 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
     @Override
     public void onSelectedPressed() {
         System.out.println("Cargo intake set fold in position");
-        //cargoIntake.setPivotFoldInPosition();
+        cargoIntake.setPivotFoldInPosition();
     }
 
     @Override
@@ -64,7 +69,7 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
     @Override
     public void onLeftShoulderPressed() {
         System.out.println("Score cargo");
-        //cargoIntake.setScorePower(Constants.kCargoScorePower);
+        cargoIntake.setScorePower(Constants.kCargoScorePower);
     }
 
     @Override
@@ -125,7 +130,7 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
     @Override
     public void onLeftShoulderReleased() {
         System.out.println("Stop scoring cargo");
-        //cargoIntake.setScorePower(0);
+        cargoIntake.setScorePower(0);
     }
 
     @Override
@@ -136,22 +141,26 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
     // Exhaust Cargo on hold
     @Override
     public void onLeftTrigger(double value) {
-        if (value > 0.25) {
+        if (value > 0.25 && !intaking) {
+            exhausting = true;
             System.out.println("Exhausting cargo");
-            //cargoIntake.setIntakePower(-1);
-        } else {
-            //cargoIntake.setIntakePower(0);
+            cargoIntake.setIntakePower(-0.4);
+        } else if (exhausting) {
+            cargoIntake.setIntakePower(0);
+            exhausting = false;
         }
     }
 
     // Intake Cargo on hold
     @Override
     public void onRightTrigger(double value) {
-        if (value > 0.25) {
+        if (value > 0.25 && !exhausting) {
+            intaking = true;
             System.out.println("Intaking cargo");
-            //cargoIntake.setIntakePower(1);
-        } else {
-            //cargoIntake.setIntakePower(0);
+            cargoIntake.setIntakePower(0.4);
+        } else if (intaking) {
+            cargoIntake.setIntakePower(0);
+            intaking = false;
         }
     }
 
@@ -173,12 +182,18 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
     public void onRightJoyStick(double x, double y) {
         if (y > 0.25) {
             System.out.println("Moving cargo pivot up manually");
-            //cargoIntake.setPivotPower(1);
+            cargoPivotAccumulator += 0.005;
+            cargoPivotAccumulator = Math.max(0, Math.min(.5, cargoPivotAccumulator));
+            cargoIntake.setPivotPower(-cargoPivotAccumulator);
         } else if (y < -0.25) {
             System.out.println("Moving cargo pivot down manually");
-            //cargoIntake.setPivotPower(-1);
+            cargoPivotAccumulator += 0.005;
+            cargoPivotAccumulator = Math.max(0, Math.min(.5, cargoPivotAccumulator));
+            cargoIntake.setPivotPower(cargoPivotAccumulator);
         } else {
-            //cargoIntake.setPivotPower(0);
+            cargoIntake.setPivotPower(0);
+            cargoPivotAccumulator -= 0.005;
+            cargoPivotAccumulator = Math.max(0, cargoPivotAccumulator);
         }
     }
 

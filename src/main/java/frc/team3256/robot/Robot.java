@@ -47,14 +47,14 @@ public class Robot extends TimedRobot {
 		pathGenerator.addPoint(new Vector(0, 30));
 		pathGenerator.addPoint(new Vector(70, 60));
 		pathGenerator.addPoint(new Vector(70, 80));
-		pathGenerator.addPoint(new Vector(70, 103));
+		pathGenerator.addPoint(new Vector(70, 102));
 		pathGenerator.setSmoothingParameters(Constants.a, Constants.b, Constants.tolerance);
 		pathGenerator.setVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
 		Path path = pathGenerator.generatePath();
 
 		purePursuitTracker = PurePursuitTracker.getInstance();
 		purePursuitTracker.setRobotTrack(Constants.robotTrack);
-		purePursuitTracker.setFeedbackMultiplier(Constants.maxVel * Constants.kP);
+		//purePursuitTracker.setFeedbackMultiplier(Constants.kP);
 		purePursuitTracker.setPath(path, Constants.lookaheadDistance);
 	}
 

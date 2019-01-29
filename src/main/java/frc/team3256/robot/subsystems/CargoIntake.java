@@ -2,10 +2,10 @@ package frc.team3256.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.*;
+import edu.wpi.first.wpilibj.Spark;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
-import frc.team3256.warriorlib.state.RobotState;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
 public class CargoIntake extends SubsystemBase {
@@ -21,10 +21,9 @@ public class CargoIntake extends SubsystemBase {
 		cargoScoreLeft = TalonSRXUtil.generateGenericTalon(Constants.kCargoScoreLeftPort);
 		cargoScoreRight = TalonSRXUtil.generateGenericTalon(Constants.kCargoScoreRightPort);
 		cargoPivot = SparkMAXUtil.generateGenericSparkMAX(Constants.kCargoPivotPort, CANSparkMaxLowLevel.MotorType.kBrushless);
+		SparkMAXUtil.setBrakeMode(cargoPivot);
 		cargoPID = cargoPivot.getPIDController();
 		cargoEncoder = cargoPivot.getEncoder();
-
-		SparkMAXUtil.setBrakeMode(cargoPivot);
 
 		SparkMAXUtil.setPIDGains(cargoPID, Constants.kCargoPivotUpSlot, Constants.kCargoPivotUpP, Constants.kCargoPivotUpI, Constants.kCargoPivotUpD, Constants.kCargoPivotUpF, Constants.kCargoPivotUpIz);
 
@@ -39,13 +38,14 @@ public class CargoIntake extends SubsystemBase {
 
 	@Override
 	public void update(double timestamp) {
-		if (getPosition() > Constants.kCargoPivotClearancePreset) {
-			cargoPivot.set(0);
-			setPosition(Constants.kCargoPivotClearancePreset);
-		} else if (getPosition() < Constants.kCargoPivotClearancePreset) {
-			cargoPivot.set(0);
-			setPosition(Constants.kCargoPivotClearancePreset);
-		}
+		System.out.println("Cargo Pivot Pos: " + getPosition());
+//		if (getPosition() > Constants.kCargoPivotClearancePreset) {
+//			cargoPivot.set(0);
+//			setPosition(Constants.kCargoPivotClearancePreset);
+//		} else if (getPosition() < Constants.kCargoPivotClearancePreset) {
+//			cargoPivot.set(0);
+//			setPosition(Constants.kCargoPivotClearancePreset);
+//		}
 	}
 
 	public void setPositionFoldIn() {
