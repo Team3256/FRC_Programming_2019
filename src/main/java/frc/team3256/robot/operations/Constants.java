@@ -25,16 +25,16 @@ public class Constants {
 	public static final double robotTrack = 27; //inches
 	public static final double spacing = 6; //inches
 	public static final double kA = 0.002; //0.002
-	public static final double kP = 0; //0.01
+	public static final double kP = 0.001; //0.01
 	public static final double b = 0.9;
 	public static final double a = 1 - b;
 	public static final double tolerance = 0.001;
 	public static final double loopTime = 1.0 / 200.0; //how often Looper updates
-	public static final double lookaheadDistance = 18;
+	public static final double lookaheadDistance = 21;
 	public static final double maxAccel = 100; //max robot acceleration
 	public static final double maxVel = 276; //max robot velocity
 	public static final double kV = 1 / maxVel; // 1/max robot speed
-	public static final double maxVelk = 1; //generally between 1-5
+	public static final double maxVelk = 3; //generally between 1-5
 
 	//Curvature Drive
 	public static final double kQuickTurnDeltaLimit = 2.0 / 1000.0 / 12.0 * 20.0;
@@ -45,8 +45,8 @@ public class Constants {
 	public static final int kRightDriveSlave = 2;
 	public static final int kLeftHangDrive = 0;
 	public static final int kRightHangDrive = 0;
-	public static final int kCargoIntakePort = 0; //TBD
-	public static final int kCargoPivotPort = 0; //TBD
+	public static final int kCargoIntakePort = 7; //TBD
+	public static final int kCargoPivotPort = 10; //TBD
 	public static final int kCargoScoreLeftPort = 0; //TBD
 	public static final int kCargoScoreRightPort = 0; //TBD
 	public static final int kElevatorMaster = 0;
@@ -132,9 +132,8 @@ public class Constants {
 	//Cargo
 	public static final double kCargoIntakePower = 0;
 	public static final double kCargoExhaustPower = 0;
-	public static final double kCargoScorePower = 0;
-	public static final double kCargoPivotUpPower = 0;
-	public static final double kCargoPivotDownPower = 0;
+	public static final double kCargoScorePower = 0.5;
+	public static final double kCargoPivotUpPower = -0.5;
 	public static final double kCargoPivotFloorPreset = 0;
 	public static final double kCargoPivotClearancePreset = 0;
 	public static final double kCargoPivotTransferPreset = 0;
