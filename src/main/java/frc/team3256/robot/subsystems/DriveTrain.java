@@ -153,59 +153,6 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         rightHangDrive.set(ControlMode.PercentOutput, rightPower);
     }
 
-    public static DrivePower hangCurvatureDrive(double throttle, double turn, boolean quickTurn, boolean highGear) {
-        if (Math.abs(turn) <= 0.15) { //deadband
-            turn = 0;
-        }
-
-        double angularPower, overPower;
-
-        if (quickTurn) {
-            highGear = false;
-            if (Math.abs(throttle) < 0.2) {
-                Constants.quickStopAccumulator = (1 - Constants.kQuickStopAlpha) * Constants.quickStopAccumulator + Constants.kQuickStopAlpha * clamp(turn) * Constants.kQuickStopScalar;
-            }
-            overPower = 1.0;
-            angularPower = turn / 1.1;
-            if (Math.abs(turn - prevTurn) > Constants.kQuickTurnDeltaLimit) {
-                //System.out.println("TURN: " + turn);
-                //System.out.println("PREVIOUS TURN: " + prevTurn);
-                if (turn > 0) {
-                    angularPower = prevTurn + Constants.kQuickTurnDeltaLimit;
-                    //System.out.println("ANGULAR POWER: " + angularPower);
-                } else
-                    angularPower = prevTurn - Constants.kQuickTurnDeltaLimit;
-            }
-        } else {
-            overPower = 0.0;
-            angularPower = Math.abs(throttle) * turn - Constants.quickStopAccumulator;
-            if (Constants.quickStopAccumulator > 1) {
-                Constants.quickStopAccumulator -= 1;
-            } else if (Constants.quickStopAccumulator < -1) {
-                Constants.quickStopAccumulator += 1;
-            } else {
-                Constants.quickStopAccumulator = 0.0;
-            }
-        }
-        prevTurn = turn;
-        double left = throttle + angularPower;
-        double right = throttle - angularPower;
-        if (left > 1.0) {
-            right -= overPower * (left - 1.0);
-            left = 1.0;
-        } else if (right > 1.0) {
-            left -= overPower * (right - 1.0);
-            right = 1.0;
-        } else if (left < -1.0) {
-            right += overPower * (-1.0 - left);
-            left = -1.0;
-        } else if (right < -1.0) {
-            left += overPower * (-1.0 - right);
-            right = -1.0;
-        }
-        return new DrivePower(left, right, highGear);
-    }
-
     @Override
     public void outputToDashboard() {
 

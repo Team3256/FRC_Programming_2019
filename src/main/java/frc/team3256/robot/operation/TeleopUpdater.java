@@ -29,7 +29,7 @@ public class TeleopUpdater {
 
     private TeleopUpdater() {
         cargoIntakeControlScheme = new CargoIntakeControlScheme();
-        //hatchIntakeControlScheme = new HatchIntakeControlScheme();
+        hatchIntakeControlScheme = new HatchIntakeControlScheme();
         currentControlScheme = cargoIntakeControlScheme;
 
         driverController = new XboxController(0);
@@ -49,8 +49,19 @@ public class TeleopUpdater {
         driveTrain.setOpenLoop(drivePower.getLeft(), drivePower.getRight());
     }
 
-    public void changeToCargoControlScheme() {
+    private void handleHangDrive(){
+        driveTrain.setBrakeMode();
+        DrivePower drivePower = DriveTrain.curvatureDrive(
+                -driverController.getY(GenericHID.Hand.kLeft),
+                driverController.getX(GenericHID.Hand.kRight),
+                driverController.getTriggerAxis(GenericHID.Hand.kRight) > 0.25,
+                true
+        );
+        driveTrain.setHighGear(drivePower.getHighGear());
+        driveTrain.setHangDrive(drivePower.getLeft(), drivePower.getRight());
+    }
 
+    public void changeToCargoControlScheme() {
         currentControlScheme = cargoIntakeControlScheme;
         manipulatorController.setListener(currentControlScheme);
     }
@@ -64,5 +75,9 @@ public class TeleopUpdater {
         handleDrive();
         CargoIntake.getInstance().update(0);
         manipulatorController.update();
+
+        if(driverController.getBackButtonPressed()){
+            handleHangDrive();
+        }
     }
 }
