@@ -3,7 +3,6 @@ package frc.team3256.robot.subsystems;
 import com.revrobotics.*;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
-import frc.team3256.warriorlib.state.RobotState;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
 public class Elevator extends SubsystemBase {

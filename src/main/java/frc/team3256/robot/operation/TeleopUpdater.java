@@ -50,6 +50,7 @@ public class TeleopUpdater {
     }
 
     public void changeToCargoControlScheme() {
+
         currentControlScheme = cargoIntakeControlScheme;
         manipulatorController.setListener(currentControlScheme);
     }

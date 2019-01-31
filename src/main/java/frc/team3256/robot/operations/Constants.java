@@ -5,18 +5,12 @@ public class Constants {
 	//Ports: No duplicates in each set
 
 	//Solenoids
-	public static final int kDeployRightForward = 0; //TBD
-	public static final int kDeployRightReverse = 1; //TBD
-	public static final int kDeployLeftForward = 2; //TBD
-	public static final int kDeployLeftReverse = 3; //TBD
-	public static final int kDeployTopForward = 4; //TBD
-	public static final int kDeployTopReverse = 5; //TBD
+	public static final int kDeployHatchForward = 2; //TBD
+	public static final int kDeployHatchReverse = 3; //TBD
 	public static final int kShifterForward = 1; //TBD
 	public static final int kShifterReverse = 6; //TBD
-	public static final int kHangerLeftForward = 0; //TBD
-	public static final int kHangerLeftReverse = 0; //TBD
-	public static final int kHangerRightForward = 0; //TBD
-	public static final int kHangerRightReverse = 0; //TBD
+	public static final int kHangerForward = 0; //TBD
+	public static final int kHangerReverse = 0; //TBD
 	public static final int kRatchetPivotForward = 0; //TBD
 	public static final int kRatchetPivotReverse = 0; //TBD
 

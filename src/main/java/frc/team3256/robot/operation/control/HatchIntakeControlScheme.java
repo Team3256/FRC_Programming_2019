@@ -11,9 +11,7 @@ public class HatchIntakeControlScheme extends XboxListenerBase {
     private Elevator elevator = Elevator.getInstance();
 
     @Override
-    public void onAPressed() {
-        elevator.setLowHatchPosition();
-    }
+    public void onAPressed() { elevator.setLowHatchPosition(); }
 
     @Override
     public void onBPressed() {
@@ -97,9 +95,7 @@ public class HatchIntakeControlScheme extends XboxListenerBase {
     }
 
     @Override
-    public void onStartPressed() {
-        TeleopUpdater.getInstance().changeToCargoControlScheme();
-    }
+    public void onStartPressed() { TeleopUpdater.getInstance().changeToCargoControlScheme(); }
 
     @Override
     public void onSelectedReleased() {
@@ -118,12 +114,12 @@ public class HatchIntakeControlScheme extends XboxListenerBase {
 
     @Override
     public void onRightShoulderPressed() {
-
+        hatchPivot.setFloorIntakePosition();
     }
 
     @Override
     public void onLeftShoulderReleased() {
-
+        hatchPivot.setDeployPosition();
     }
 
     @Override
@@ -138,7 +134,10 @@ public class HatchIntakeControlScheme extends XboxListenerBase {
 
     @Override
     public void onRightTrigger(double value) {
-
+        if(value > 0.25) {
+            hatchPivot.deployHatch();
+        }
+        else { hatchPivot.closeHatch(); }
     }
 
     // Move elevator manually
