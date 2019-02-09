@@ -4,8 +4,8 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3256.robot.auto.PurePursuitTestMode;
-import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.robot.subsystems.Elevator;
+import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.teleop.TeleopUpdater;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.subsystems.DriveTrain;
@@ -18,8 +18,6 @@ import frc.team3256.warriorlib.loop.Looper;
 import frc.team3256.warriorlib.math.Vector;
 import frc.team3256.warriorlib.subsystem.DriveTrainBase;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class Robot extends TimedRobot {
@@ -27,6 +25,7 @@ public class Robot extends TimedRobot {
 	// Subsystems
 	private DriveTrain driveTrain = DriveTrain.getInstance();
 	private Elevator elevator = Elevator.getInstance();
+	private HatchPivot hatchPivot = HatchPivot.getInstance();
 
 	// Pure Pursuit
 	private PurePursuitTracker purePursuitTracker;
@@ -51,7 +50,7 @@ public class Robot extends TimedRobot {
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
 
-		enabledLooper.addLoops(driveTrain, elevator);
+		enabledLooper.addLoops(driveTrain, elevator, hatchPivot);
 
 		DriveTrainBase.setDriveTrain(driveTrain);
 
@@ -119,6 +118,7 @@ public class Robot extends TimedRobot {
 		purePursuitTracker.reset();
 
 		poseEstimatorLooper.start();
+		hatchPivot.zeroSensors();
 
 		AutoModeExecuter autoModeExecuter = new AutoModeExecuter();
 		autoModeExecuter.setAutoMode(new PurePursuitTestMode());
@@ -156,18 +156,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		teleopUpdater.update();
-		//System.out.println("left encoder: "+driveTrain.getLeftDistance());
-		//System.out.println("right encoder: "+driveTrain.getRightDistance());
-		//System.out.println("angle " + driveTrain.getGyro().getAngle());
-		//System.out.println("Connected: " + driveTrain.getGyro().isConnected());
-
-        /*
-        System.out.println("right master: " + driveTrain.getRightDistance());
-        System.out.println("left master: " + driveTrain.getLeftDistance());
-        System.out.println();
-        System.out.println("gyro: " + driveTrain.getAngle());
-        //System.out.println("vel: " + driveTrain.getVelocity());*/
+		//teleopUpdater.update();
 	}
 
 	/**
@@ -175,7 +164,5 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		poseEstimatorLooper.start();
-		System.out.println("pose: " + poseEstimator.getPose());
 	}
 }

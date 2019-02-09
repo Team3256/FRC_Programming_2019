@@ -8,6 +8,8 @@ import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
+import static frc.team3256.robot.constants.HatchConstants.*;
+
 public class HatchPivot extends SubsystemBase {
 
     private static HatchPivot instance;
@@ -15,17 +17,17 @@ public class HatchPivot extends SubsystemBase {
     private DoubleSolenoid deployHatch, ratchetPivot;
 
     private HatchPivot() {
-        hatchPivot = TalonSRXUtil.generateGenericTalon(Constants.khatchPivotPort);
-        deployHatch = new DoubleSolenoid(Constants.kDeployHatchForward, Constants.kDeployHatchReverse);
-        ratchetPivot = new DoubleSolenoid(Constants.kRatchetPivotForward, Constants.kRatchetPivotReverse);
+        hatchPivot = TalonSRXUtil.generateGenericTalon(kHatchPivotPort);
+        deployHatch = new DoubleSolenoid(kHatchForwardChannel, kHatchReverseChannel);
+
+        //ratchetPivot = new DoubleSolenoid(Constants.kRatchetPivotForward, Constants.kRatchetPivotReverse);
 
         TalonSRXUtil.configMagEncoder(hatchPivot);
 
         TalonSRXUtil.setBrakeMode();
 
-        TalonSRXUtil.setPIDGains(hatchPivot, Constants.kHatchPivotUpSlot, Constants.kHatchPivotUpP, Constants.kHatchPivotUpI, Constants.kHatchPivotUpD, Constants.kHatchPivotUpF);
-
-        TalonSRXUtil.setPIDGains(hatchPivot, Constants.kHatchPivotDownSlot, Constants.kHatchPivotDownP, Constants.kHatchPivotDownI, Constants.kHatchPivotDownD, Constants.kHatchPivotDownF);
+        TalonSRXUtil.setPIDGains(hatchPivot, 0, kHatchP, kHatchI, kHatchD, kHatchF);
+        hatchPivot.selectProfileSlot(0, 0);
     }
 
     public static HatchPivot getInstance() {return instance == null ? instance = new HatchPivot(): instance;}
@@ -42,15 +44,17 @@ public class HatchPivot extends SubsystemBase {
         ratchetPivot.set(DoubleSolenoid.Value.kForward);
     }
 
-    public void setFloorIntakePosition() {
-        hatchPivot.selectProfileSlot(Constants.kHatchPivotDownSlot, 0);
-        hatchPivot.set(ControlMode.Position, angleToSensorUnits(Constants.kHatchPivotFloorIntakePreset), DemandType.Neutral, 0);
+    public void setPositionFoldIn() {
+        hatchPivot.set(ControlMode.Position, angleToSensorUnits(kPositionFoldIn), DemandType.Neutral, 0);
     }
 
-    //Default
-    public void setDeployPosition() {
-        hatchPivot.selectProfileSlot(Constants.kHatchPivotDownSlot, 0);
-        hatchPivot.set(ControlMode.Position, angleToSensorUnits(Constants.kHatchPivotDeployPreset), DemandType.Neutral, 0);
+
+    public void setPositionFloorIntake() {
+        hatchPivot.set(ControlMode.Position, angleToSensorUnits(kPositionFloorIntakeHatch), DemandType.Neutral, 0);
+    }
+
+    public void setPositionDeploy() {
+        hatchPivot.set(ControlMode.Position, angleToSensorUnits(kPositionDeployHatch), DemandType.Neutral, 0);
     }
 
     private double angleToSensorUnits(double degrees) { return (degrees / 360) * Constants.kMagEncoderTicksTalon * Constants.kHatchPivotGearRatio; }
@@ -61,9 +65,9 @@ public class HatchPivot extends SubsystemBase {
         return sensorUnitsToAngle(hatchPivot.getSelectedSensorPosition(0));
     }
 
-
     @Override
     public void update(double timestamp) {
+        System.out.println("Raw Value: " + hatchPivot.getSelectedSensorPosition(0));
         System.out.println("Hatch Pivot Angle: " + getAngle());
     }
 
@@ -74,7 +78,7 @@ public class HatchPivot extends SubsystemBase {
 
     @Override
     public void zeroSensors() {
-
+        hatchPivot.setSelectedSensorPosition(0);
     }
 
     @Override
