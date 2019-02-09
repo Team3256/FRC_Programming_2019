@@ -5,10 +5,10 @@ public class Constants {
 	//Ports: No duplicates in each set
 
 	//Solenoids
-	public static final int kDeployHatchForward = 2; //TBD
-	public static final int kDeployHatchReverse = 3; //TBD
-	public static final int kShifterForward = 1; //TBD
-	public static final int kShifterReverse = 6; //TBD
+	public static final int kDeployHatchForward = 0; //TBD
+	public static final int kDeployHatchReverse = 0; //TBD
+	public static final int kShifterForward = 4; //TBD
+	public static final int kShifterReverse = 3; //TBD
 	public static final int kHangerForward = 0; //TBD
 	public static final int kHangerReverse = 0; //TBD
 	public static final int kRatchetPivotForward = 0; //TBD
@@ -33,14 +33,14 @@ public class Constants {
 	//Curvature Drive
 	public static final double kQuickTurnDeltaLimit = 2.0 / 1000.0 / 12.0 * 20.0;
 	//CAN
-	public static final int kLeftDriveMaster = 4;
-	public static final int kLeftDriveSlave = 5;
-	public static final int kRightDriveMaster = 3;
-	public static final int kRightDriveSlave = 2;
+	public static final int kLeftDriveMaster = 2;
+	public static final int kLeftDriveSlave = 3;
+	public static final int kRightDriveMaster = 4;
+	public static final int kRightDriveSlave = 6;
 	public static final int kLeftHangDrive = 0;
 	public static final int kRightHangDrive = 0;
-	public static final int kCargoIntakePort = 7; //TBD
-	public static final int kCargoPivotPort = 10; //TBD
+	public static final int kCargoIntakePort = 0; //TBD
+	public static final int kCargoPivotPort = 0; //TBD
 	public static final int kCargoScoreLeftPort = 0; //TBD
 	public static final int kCargoScoreRightPort = 0; //TBD
 	public static final int kElevatorMaster = 0;

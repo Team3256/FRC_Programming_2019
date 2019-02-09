@@ -7,26 +7,27 @@ import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.warriorlib.control.XboxListenerBase;
 
 public class HatchIntakeControlScheme extends XboxListenerBase {
-    private HatchPivot hatchPivot = HatchPivot.getInstance();
-    private Elevator elevator = Elevator.getInstance();
+    //private HatchPivot hatchPivot = HatchPivot.getInstance();
+    //private Elevator elevator = Elevator.getInstance();
 
     @Override
-    public void onAPressed() { elevator.setLowHatchPosition(); }
+    public void onAPressed() { //elevator.setLowHatchPosition();
+         }
 
     @Override
     public void onBPressed() {
-        elevator.setMidHatchPosition();
+        //elevator.setMidHatchPosition();
     }
 
     // Home elevator
     @Override
     public void onXPressed() {
-        elevator.setPosition(0);
+        //elevator.setPosition(0);
     }
 
     @Override
     public void onYPressed() {
-        elevator.setHighHatchPosition();
+        //elevator.setHighHatchPosition();
     }
 
     @Override
@@ -114,12 +115,12 @@ public class HatchIntakeControlScheme extends XboxListenerBase {
 
     @Override
     public void onRightShoulderPressed() {
-        hatchPivot.setFloorIntakePosition();
+        //hatchPivot.setFloorIntakePosition();
     }
 
     @Override
     public void onLeftShoulderReleased() {
-        hatchPivot.setDeployPosition();
+        //hatchPivot.setDeployPosition();
     }
 
     @Override
@@ -135,19 +136,20 @@ public class HatchIntakeControlScheme extends XboxListenerBase {
     @Override
     public void onRightTrigger(double value) {
         if(value > 0.25) {
-            hatchPivot.deployHatch();
+            //hatchPivot.deployHatch();
         }
-        else { hatchPivot.closeHatch(); }
+        else { //hatchPivot.closeHatch();
+        }
     }
 
     // Move elevator manually
     @Override
     public void onLeftJoystick(double x, double y) {
         if (y > 0.25) {
-            elevator.setOpenLoop(Constants.kElevatorUpManualPower);
+            //elevator.setOpenLoop(Constants.kElevatorUpManualPower);
         }
         if (y < 0.25){
-            elevator.setOpenLoop(Constants.kElevatorDownManualPower);
+            //elevator.setOpenLoop(Constants.kElevatorDownManualPower);
         }
     }
 

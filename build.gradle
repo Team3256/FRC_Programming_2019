@@ -47,7 +47,7 @@ dependencies {
     compile wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
-    compile 'com.github.Team3256:warriorlib:b989f6e8a1'
+    compile 'com.github.Team3256:warriorlib:9cd3e6a21c'
 }
 
 // Setting up Jar File. In this case, adding all libraries into the main jar ('fat jar')

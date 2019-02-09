@@ -15,7 +15,7 @@ public class TeleopUpdater {
     private DriveTrain driveTrain = DriveTrain.getInstance();
 
     private XboxController driverController;
-    private ControllerObserver manipulatorController;
+    private XboxControllerObserver manipulatorController;
 
     private CargoIntakeControlScheme cargoIntakeControlScheme;
     private HatchIntakeControlScheme hatchIntakeControlScheme;
@@ -42,9 +42,7 @@ public class TeleopUpdater {
         DrivePower drivePower = DriveTrain.curvatureDrive(
             -driverController.getY(GenericHID.Hand.kLeft),
             driverController.getX(GenericHID.Hand.kRight),
-            driverController.getTriggerAxis(GenericHID.Hand.kRight) > 0.25,
-            true
-        );
+            driverController.getTriggerAxis(GenericHID.Hand.kRight) > 0.25);
         driveTrain.setHighGear(drivePower.getHighGear());
         driveTrain.setOpenLoop(drivePower.getLeft(), drivePower.getRight());
     }
@@ -54,11 +52,14 @@ public class TeleopUpdater {
         DrivePower drivePower = DriveTrain.curvatureDrive(
                 -driverController.getY(GenericHID.Hand.kLeft),
                 driverController.getX(GenericHID.Hand.kRight),
-                driverController.getTriggerAxis(GenericHID.Hand.kRight) > 0.25,
-                true
+                driverController.getTriggerAxis(GenericHID.Hand.kRight) > 0.25
         );
         driveTrain.setHighGear(drivePower.getHighGear());
         driveTrain.setHangDrive(drivePower.getLeft(), drivePower.getRight());
+    }
+
+    public void setRumble() {
+        manipulatorController.setRumble();
     }
 
     public void changeToCargoControlScheme() {
@@ -73,7 +74,7 @@ public class TeleopUpdater {
 
     public void update() {
         handleDrive();
-        CargoIntake.getInstance().update(0);
+        //CargoIntake.getInstance().update(0);
         manipulatorController.update();
 
         if(driverController.getBackButtonPressed()){

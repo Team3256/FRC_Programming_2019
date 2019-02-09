@@ -10,6 +10,7 @@ import frc.team3256.warriorlib.auto.purepursuit.Path;
 import frc.team3256.warriorlib.auto.purepursuit.PathGenerator;
 import frc.team3256.warriorlib.auto.purepursuit.PoseEstimator;
 import frc.team3256.warriorlib.auto.purepursuit.PurePursuitTracker;
+import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.loop.Looper;
 import frc.team3256.warriorlib.math.Vector;
 import frc.team3256.warriorlib.subsystem.DriveTrainBase;
@@ -68,7 +69,8 @@ public class Robot extends TimedRobot {
 
 		driveTrain.resetGyro();
 		driveTrain.resetEncoders();
-		driveTrain.setCoastMode();
+		driveTrain.setBrakeMode();
+		//driveTrain.setCoastMode();
 
 		poseEstimator.reset();
 		purePursuitTracker.reset();
