@@ -12,10 +12,11 @@ import frc.team3256.warriorlib.auto.purepursuit.Path;
 import frc.team3256.warriorlib.auto.purepursuit.PathGenerator;
 import frc.team3256.warriorlib.auto.purepursuit.PoseEstimator;
 import frc.team3256.warriorlib.auto.purepursuit.PurePursuitTracker;
-import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.loop.Looper;
 import frc.team3256.warriorlib.math.Vector;
 import frc.team3256.warriorlib.subsystem.DriveTrainBase;
+
+import java.util.ArrayList;
 
 public class Robot extends TimedRobot {
 
@@ -50,7 +51,7 @@ public class Robot extends TimedRobot {
 
 		teleopUpdater = TeleopUpdater.getInstance();
 
-		PathGenerator pathGenerator = new PathGenerator(Constants.spacing);
+		PathGenerator pathGenerator = new PathGenerator(Constants.spacing, true);
 		pathGenerator.addPoint(new Vector(0, 0));
 		pathGenerator.addPoint(new Vector(0, 30));
 		pathGenerator.addPoint(new Vector(70, 60));
@@ -63,7 +64,9 @@ public class Robot extends TimedRobot {
 		purePursuitTracker = PurePursuitTracker.getInstance();
 		purePursuitTracker.setRobotTrack(Constants.robotTrack);
 		//purePursuitTracker.setFeedbackMultiplier(Constants.kP);
-		purePursuitTracker.setPath(path, Constants.lookaheadDistance);
+		ArrayList<Path> paths = new ArrayList<>();
+		paths.add(path);
+		purePursuitTracker.setPath(paths, Constants.lookaheadDistance);
 	}
 
 	/**

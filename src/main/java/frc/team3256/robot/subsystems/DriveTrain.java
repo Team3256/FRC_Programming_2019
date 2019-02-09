@@ -21,12 +21,12 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     public WPI_TalonSRX leftMaster, rightMaster, leftSlave, rightSlave, leftHangDrive, rightHangDrive;
     private DoubleSolenoid shifter;
     private boolean init = false;
-    //private PigeonIMU gyro;
+    private PigeonIMU gyro;
 
     private DriveTrain() {
-//        gyro = new PigeonIMU(0);
-//        gyro.setAccumZAngle(0, 0);
-//        gyro.setYaw(0, 0);
+        gyro = new PigeonIMU(0);
+        gyro.setAccumZAngle(0, 0);
+        gyro.setYaw(0, 0);
         //        internalGyro = new ADXRS453_Gyro();
         //        internalGyro.startCalibrate();
         leftMaster = TalonSRXUtil.generateGenericTalon(Constants.kLeftDriveMaster);
@@ -247,12 +247,12 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public PigeonIMU getGyro() {
-        return null;
+        return gyro;
     }
 
     public double getAngle() {
         double[] ypr = new double[3];
-        //gyro.getYawPitchRoll(ypr);
+        gyro.getYawPitchRoll(ypr);
         return ypr[0];
         //        return -internalGyro.getAngle();
     }
@@ -279,11 +279,6 @@ public class DriveTrain extends DriveTrainBase implements Loop {
 
         leftMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(leftVelInchesPerSec));
         rightMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(rightVelInchesPerSec));
-    }
-
-    @Override
-    public void flipDirection() {
-
     }
 
     public void setBrakeMode() {

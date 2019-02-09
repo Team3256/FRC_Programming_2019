@@ -3,10 +3,7 @@ package frc.team3256.robot.operation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.team3256.robot.operation.control.CargoIntakeControlScheme;
-import frc.team3256.robot.operation.control.HatchIntakeControlScheme;
-import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.robot.subsystems.DriveTrain;
-import frc.team3256.warriorlib.control.ControllerObserver;
 import frc.team3256.warriorlib.control.DrivePower;
 import frc.team3256.warriorlib.control.XboxControllerObserver;
 import frc.team3256.warriorlib.control.XboxListenerBase;
@@ -59,7 +56,7 @@ public class TeleopUpdater {
     }
 
     public void setRumble() {
-        manipulatorController.setRumble();
+        //manipulatorController.setRumble();
     }
 
     public void changeToCargoControlScheme() {
