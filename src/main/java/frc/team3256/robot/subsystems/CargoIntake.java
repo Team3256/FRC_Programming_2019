@@ -39,13 +39,13 @@ public class CargoIntake extends SubsystemBase {
 	@Override
 	public void update(double timestamp) {
 		System.out.println("Cargo Pivot Pos: " + getPosition());
-//		if (getPosition() > Constants.kCargoPivotClearancePreset) {
-//			cargoPivot.set(0);
-//			setPosition(Constants.kCargoPivotClearancePreset);
-//		} else if (getPosition() < Constants.kCargoPivotClearancePreset) {
-//			cargoPivot.set(0);
-//			setPosition(Constants.kCargoPivotClearancePreset);
-//		}
+		if (getPosition() > Constants.kCargoPivotClearancePreset) {
+			cargoPivot.set(0);
+			setPosition(Constants.kCargoPivotClearancePreset);
+		} else if (getPosition() < Constants.kCargoPivotClearancePreset) {
+			cargoPivot.set(0);
+			setPosition(Constants.kCargoPivotClearancePreset);
+		}
 	}
 
 	public void setPositionFoldIn() {
