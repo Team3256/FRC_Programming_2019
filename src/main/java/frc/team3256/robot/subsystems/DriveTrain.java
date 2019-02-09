@@ -153,6 +153,22 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         rightHangDrive.set(ControlMode.PercentOutput, rightPower);
     }
 
+    public void flipDirection() {
+        rightMaster.setInverted(true);
+        rightSlave.setInverted(InvertType.FollowMaster);
+
+        leftMaster.setInverted(false);
+        leftSlave.setInverted(InvertType.FollowMaster);
+    }
+
+    public void unflipDirection() {
+        rightMaster.setInverted(false);
+        rightSlave.setInverted(InvertType.FollowMaster);
+
+        leftMaster.setInverted(true);
+        leftSlave.setInverted(InvertType.FollowMaster);
+    }
+
     @Override
     public void outputToDashboard() {
 
