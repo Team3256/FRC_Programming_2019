@@ -1,9 +1,6 @@
-package frc.team3256.robot.operation.control;
+package frc.team3256.robot.teleop.control;
 
-import frc.team3256.robot.operation.TeleopUpdater;
-import frc.team3256.robot.operations.Constants;
-import frc.team3256.robot.subsystems.CargoIntake;
-import frc.team3256.warriorlib.control.XboxControllerObserver;
+import frc.team3256.robot.teleop.TeleopUpdater;
 import frc.team3256.warriorlib.control.XboxListenerBase;
 
 public class CargoIntakeControlScheme extends XboxListenerBase {

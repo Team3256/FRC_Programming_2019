@@ -4,7 +4,9 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3256.robot.auto.PurePursuitTestMode;
-import frc.team3256.robot.operation.TeleopUpdater;
+import frc.team3256.robot.subsystems.CargoIntake;
+import frc.team3256.robot.subsystems.Elevator;
+import frc.team3256.robot.teleop.TeleopUpdater;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.warriorlib.auto.AutoModeExecuter;
@@ -17,15 +19,22 @@ import frc.team3256.warriorlib.math.Vector;
 import frc.team3256.warriorlib.subsystem.DriveTrainBase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class Robot extends TimedRobot {
 
-	DriveTrain driveTrain = DriveTrain.getInstance();
-	PurePursuitTracker purePursuitTracker;
-	PoseEstimator poseEstimator;
+	// Subsystems
+	private DriveTrain driveTrain = DriveTrain.getInstance();
+	private Elevator elevator = Elevator.getInstance();
 
-	Looper enabledLooper, poseEstimatorLooper;
-	TeleopUpdater teleopUpdater;
+	// Pure Pursuit
+	private PurePursuitTracker purePursuitTracker;
+	private PoseEstimator poseEstimator;
+
+	// Loopers
+	private Looper enabledLooper, poseEstimatorLooper;
+	private TeleopUpdater teleopUpdater;
 
 
 	/**
@@ -41,7 +50,8 @@ public class Robot extends TimedRobot {
 		enabledLooper = new Looper(1 / 200D);
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
-		enabledLooper.addLoops(driveTrain);
+
+		enabledLooper.addLoops(driveTrain, elevator);
 
 		DriveTrainBase.setDriveTrain(driveTrain);
 
@@ -64,9 +74,7 @@ public class Robot extends TimedRobot {
 		purePursuitTracker = PurePursuitTracker.getInstance();
 		purePursuitTracker.setRobotTrack(Constants.robotTrack);
 		//purePursuitTracker.setFeedbackMultiplier(Constants.kP);
-		ArrayList<Path> paths = new ArrayList<>();
-		paths.add(path);
-		purePursuitTracker.setPath(paths, Constants.lookaheadDistance);
+		purePursuitTracker.setPaths(Collections.singletonList(path), Constants.lookaheadDistance);
 	}
 
 	/**
@@ -80,7 +88,6 @@ public class Robot extends TimedRobot {
 		driveTrain.resetGyro();
 		driveTrain.resetEncoders();
 		driveTrain.setBrakeMode();
-		//driveTrain.setCoastMode();
 
 		poseEstimator.reset();
 		purePursuitTracker.reset();

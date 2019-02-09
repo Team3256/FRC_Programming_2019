@@ -1,8 +1,8 @@
-package frc.team3256.robot.operation;
+package frc.team3256.robot.teleop;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.team3256.robot.operation.control.CargoIntakeControlScheme;
+import frc.team3256.robot.teleop.control.CargoIntakeControlScheme;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.warriorlib.control.DrivePower;
 import frc.team3256.warriorlib.control.XboxControllerObserver;
@@ -55,10 +55,6 @@ public class TeleopUpdater {
         driveTrain.setHangDrive(drivePower.getLeft(), drivePower.getRight());
     }
 
-    public void setRumble() {
-        //manipulatorController.setRumble();
-    }
-
     public void changeToCargoControlScheme() {
         currentControlScheme = cargoIntakeControlScheme;
         manipulatorController.setListener(currentControlScheme);
@@ -71,7 +67,7 @@ public class TeleopUpdater {
 
     public void update() {
         handleDrive();
-        //CargoIntake.getInstance().update(0);
+        
         manipulatorController.update();
 
         if(driverController.getBackButtonPressed()){

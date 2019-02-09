@@ -1,9 +1,10 @@
 package frc.team3256.robot.subsystems;
 
 import com.revrobotics.*;
-import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
+
+import static frc.team3256.robot.constants.ElevatorConstants.*;
 
 public class Elevator extends SubsystemBase {
 
@@ -13,22 +14,19 @@ public class Elevator extends SubsystemBase {
 	private CANEncoder masterEncoder;
 
 	private Elevator() {
-		master = SparkMAXUtil.generateGenericSparkMAX(Constants.kElevatorMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
-		slaveOne = SparkMAXUtil.generateSlaveSparkMAX(Constants.kElevatorSlaveOne, CANSparkMaxLowLevel.MotorType.kBrushless, master);
-		slaveTwo = SparkMAXUtil.generateSlaveSparkMAX(Constants.kElevatorSlaveTwo, CANSparkMaxLowLevel.MotorType.kBrushless, master);
-		slaveThree = SparkMAXUtil.generateSlaveSparkMAX(Constants.kElevatorSlaveThree, CANSparkMaxLowLevel.MotorType.kBrushless, master);
+		master = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
+		slaveOne = SparkMAXUtil.generateSlaveSparkMAX(kSparkMaxSlaveOne, CANSparkMaxLowLevel.MotorType.kBrushless, master);
+		slaveTwo = SparkMAXUtil.generateSlaveSparkMAX(kSparkMaxSlaveTwo, CANSparkMaxLowLevel.MotorType.kBrushless, master);
+		slaveThree = SparkMAXUtil.generateSlaveSparkMAX(kSparkMaxSlaveThree, CANSparkMaxLowLevel.MotorType.kBrushless, master);
+
 		masterPID = master.getPIDController();
 		masterEncoder = master.getEncoder();
 
 		SparkMAXUtil.setCoastMode(master, slaveOne, slaveTwo, slaveThree);
 
-		SparkMAXUtil.setPIDGains(masterPID, Constants.kElevatorHoldSlot, Constants.kElevatorHoldP, Constants.kElevatorHoldI, Constants.kElevatorHoldD, Constants.kElevatorHoldF, Constants.kElevatorHoldIz);
+		SparkMAXUtil.setPIDGains(masterPID, 0, kElevatorP, kElevatorI, kElevatorD, kElevatorF, kElevatorIz);
 
-		SparkMAXUtil.setPIDGains(masterPID, Constants.kElevatorUpSlot, Constants.kElevatorUpP, Constants.kElevatorUpI, Constants.kElevatorUpD, Constants.kElevatorUpF, Constants.kElevatorUpIz);
-
-		SparkMAXUtil.setPIDGains(masterPID, Constants.kElevatorDownSlot, Constants.kElevatorDownP, Constants.kElevatorDownI, Constants.kElevatorDownD, Constants.kElevatorDownF, Constants.kElevatorDownIz);
-
-		masterPID.setOutputRange(Constants.kElevatorMinOutput, Constants.kElevatorMaxOutput);
+		masterPID.setOutputRange(kElevatorMinOutput, kElevatorMaxOutput);
 	}
 
 	public static Elevator getInstance() {
@@ -47,28 +45,28 @@ public class Elevator extends SubsystemBase {
 		return masterEncoder.getPosition();
 	}
 
-	public void setHighCargoPosition() {
-		setPosition(Constants.kHighCargoPreset);
+	public void setPositionHighCargo() {
+		setPosition(kPositionHighCargo);
 	}
 
-	public void setMidCargoPosition() {
-		setPosition(Constants.kMidCargoPreset);
+	public void setPositionMidCargo() {
+		setPosition(kPositionMidCargo);
 	}
 
-	public void setLowCargoPosition() {
-		setPosition(Constants.kLowCargoPreset);
+	public void setPositionLowCargo() {
+		setPosition(kPositionLowCargo);
 	}
 
-	public void setHighHatchPosition() {
-		setPosition(Constants.kHighHatchPreset);
+	public void setPositionHighHatch() {
+		setPosition(kPositionHighHatch);
 	}
 
-	public void setMidHatchPosition() {
-		setPosition(Constants.kMidHatchPreset);
+	public void setPositionMidHatch() {
+		setPosition(kPositionMidHatch);
 	}
 
-	public void setLowHatchPosition() {
-		setPosition(Constants.kLowHatchPreset);
+	public void setPositionLowHatch() {
+		setPosition(kPositionLowHatch);
 	}
 
 	@Override
@@ -88,10 +86,10 @@ public class Elevator extends SubsystemBase {
 
 	@Override
 	public void update(double timestamp) {
-		if (getPosition() > Constants.kHighCargoPreset) {
-			setPosition(Constants.kHighCargoPreset);
-		} else if (getPosition() < Constants.kLowCargoPreset) {
-			setPosition(Constants.kLowCargoPreset);
+		if (getPosition() > kPositionHighCargo) {
+			setPosition(kPositionHighCargo);
+		} else if (getPosition() < kPositionLowCargo) {
+			setPosition(kPositionLowCargo);
 		}
 	}
 

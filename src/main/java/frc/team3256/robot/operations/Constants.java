@@ -65,25 +65,6 @@ public class Constants {
 	public static final double kElevatorMinHeight = 0;
 	public static final double kRampRate = 0.25;
 	public static final double kMagEncoderTicksTalon = 4096.0; //4096 = # of ticks per revolution | 4 X decoding for Talon SRX & Canifier only
-	//Elevator Gains
-	public static final int kElevatorHoldSlot = 0;
-	public static final double kElevatorHoldP = 0;
-	public static final double kElevatorHoldI = 0;
-	public static final double kElevatorHoldD = 0;
-	public static final double kElevatorHoldF = 0;
-	public static final double kElevatorHoldIz = 0;
-	public static final int kElevatorUpSlot = 0;
-	public static final double kElevatorUpP = 0;
-	public static final double kElevatorUpI = 0;
-	public static final double kElevatorUpD = 0;
-	public static final double kElevatorUpF = 0;
-	public static final double kElevatorUpIz = 0;
-	public static final int kElevatorDownSlot = 0;
-	public static final double kElevatorDownP = 0;
-	public static final double kElevatorDownI = 0;
-	public static final double kElevatorDownD = 0;
-	public static final double kElevatorDownF = 0;
-	public static final double kElevatorDownIz = 0;
 	//Cargo Pivot Gains
 	public static final int kCargoPivotUpSlot = 0;
 	public static final double kCargoPivotUpP = 0;
@@ -133,16 +114,6 @@ public class Constants {
 	public static final double kCargoPivotTransferPreset = 0;
 	public static final double kCargoPivotFoldInPreset = 0;
 	//Elevator
-	public static final double kElevatorUpManualPower = 0;
-	public static final double kElevatorDownManualPower = -0;
-	public static final double kDropPreset = 10.0;
-	public static final double kHighHatchPreset = 0;
-	public static final double kMidHatchPreset = 0;
-	public static final double kLowHatchPreset = 0;
-	public static final double kHighCargoPreset = 0;
-	public static final double kMidCargoPreset = 0;
-	public static final double kLowCargoPreset = 0;
-	public static final double kHomePreset = 0;
 	public static double quickStopAccumulator = 0.0; //temporary curv. drive
 	public static double kQuickStopAlpha = 0.1;
 	public static double kQuickStopScalar = 2.0;
