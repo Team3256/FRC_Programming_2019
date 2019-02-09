@@ -18,7 +18,7 @@ public class TeleopUpdater {
     private XboxControllerObserver manipulatorController;
 
     private CargoIntakeControlScheme cargoIntakeControlScheme;
-    private HatchIntakeControlScheme hatchIntakeControlScheme;
+    //private HatchIntakeControlScheme hatchIntakeControlScheme;
 
     private XboxListenerBase currentControlScheme;
 
@@ -29,7 +29,7 @@ public class TeleopUpdater {
 
     private TeleopUpdater() {
         cargoIntakeControlScheme = new CargoIntakeControlScheme();
-        hatchIntakeControlScheme = new HatchIntakeControlScheme();
+        //hatchIntakeControlScheme = new HatchIntakeControlScheme();
         currentControlScheme = cargoIntakeControlScheme;
 
         driverController = new XboxController(0);
@@ -68,7 +68,7 @@ public class TeleopUpdater {
     }
 
     public void changeToHatchControlScheme() {
-        currentControlScheme = hatchIntakeControlScheme;
+        //currentControlScheme = hatchIntakeControlScheme;
         manipulatorController.setListener(currentControlScheme);
     }
 

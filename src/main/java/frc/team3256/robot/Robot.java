@@ -1,5 +1,7 @@
 package frc.team3256.robot;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3256.robot.auto.PurePursuitTestMode;
 import frc.team3256.robot.operation.TeleopUpdater;
@@ -24,12 +26,17 @@ public class Robot extends TimedRobot {
 	Looper enabledLooper, poseEstimatorLooper;
 	TeleopUpdater teleopUpdater;
 
+
 	/**
 	 * This function is called when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	@Override
 	public void robotInit() {
+		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+		UsbCamera highCamera = CameraServer.getInstance().startAutomaticCapture();
+		camera.setResolution(640, 480);
+		highCamera.setResolution(640, 480);
 		enabledLooper = new Looper(1 / 200D);
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
@@ -85,8 +92,7 @@ public class Robot extends TimedRobot {
 	 * LiveWindow and SmartDashboard integrated updating.
 	 */
 	@Override
-	public void robotPeriodic() {
-
+	public void robotPeriodic(){
 	}
 
 	/**
