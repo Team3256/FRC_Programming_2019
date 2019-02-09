@@ -86,11 +86,11 @@ public class Elevator extends SubsystemBase {
 
 	@Override
 	public void update(double timestamp) {
-		if (getPosition() > kPositionHighCargo) {
-			setPosition(kPositionHighCargo);
-		} else if (getPosition() < kPositionLowCargo) {
-			setPosition(kPositionLowCargo);
-		}
+//		if (getPosition() > kPositionHighCargo) {
+//			setPosition(kPositionHighCargo);
+//		} else if (getPosition() < kPositionLowCargo) {
+//			setPosition(kPositionLowCargo);
+//		}
 	}
 
 	@Override
