@@ -44,6 +44,10 @@ public class HatchPivot extends SubsystemBase {
         ratchetPivot.set(DoubleSolenoid.Value.kForward);
     }
 
+    public void setHatchPivotPower(double speed) {
+        hatchPivot.set(speed);
+    }
+
     public void setPositionFoldIn() {
         hatchPivot.set(ControlMode.Position, angleToSensorUnits(kPositionFoldIn), DemandType.Neutral, 0);
     }
@@ -67,7 +71,7 @@ public class HatchPivot extends SubsystemBase {
 
     @Override
     public void update(double timestamp) {
-        System.out.println("Raw Value: " + hatchPivot.getSelectedSensorPosition(0));
+        System.out.println("Hatch Pivot Raw: " + hatchPivot.getSelectedSensorPosition(0));
         System.out.println("Hatch Pivot Angle: " + getAngle());
     }
 

@@ -1,11 +1,15 @@
 package frc.team3256.robot.teleop.control;
 
+import frc.team3256.robot.subsystems.Elevator;
+import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.teleop.TeleopUpdater;
 import frc.team3256.warriorlib.control.XboxListenerBase;
+import static frc.team3256.robot.constants.ElevatorConstants.kElevatorSpeed;
+import static frc.team3256.robot.constants.HatchConstants.kHatchPivotSpeed;
 
 public class HatchIntakeControlScheme extends XboxListenerBase {
-    //private HatchPivot hatchPivot = HatchPivot.getInstance();
-    //private Elevator elevator = Elevator.getInstance();
+    private HatchPivot hatchPivot = HatchPivot.getInstance();
+    private Elevator elevator = Elevator.getInstance();
 
     @Override
     public void onAPressed() { //elevator.setLowHatchPosition();
@@ -143,16 +147,23 @@ public class HatchIntakeControlScheme extends XboxListenerBase {
     @Override
     public void onLeftJoystick(double x, double y) {
         if (y > 0.25) {
-            //elevator.setOpenLoop(Constants.kElevatorUpManualPower);
-        }
-        if (y < 0.25){
-            //elevator.setOpenLoop(Constants.kElevatorDownManualPower);
+            elevator.setOpenLoop(kElevatorSpeed);
+        } else if (y < -0.25){
+            elevator.setOpenLoop(-kElevatorSpeed);
+        } else {
+            elevator.setOpenLoop(0);
         }
     }
 
     @Override
     public void onRightJoyStick(double x, double y) {
-
+        if (y > 0.25) {
+            hatchPivot.setHatchPivotPower(kHatchPivotSpeed);
+        } else if (y < -0.25) {
+            hatchPivot.setHatchPivotPower(-kHatchPivotSpeed);
+        } else {
+            hatchPivot.setHatchPivotPower(0);
+        }
     }
 
     @Override

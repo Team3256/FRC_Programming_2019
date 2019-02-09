@@ -91,6 +91,7 @@ public class Elevator extends SubsystemBase {
 //		} else if (getPosition() < kPositionLowCargo) {
 //			setPosition(kPositionLowCargo);
 //		}
+		System.out.println("Elevator Raw: " + masterEncoder.getPosition());
 	}
 
 	@Override
