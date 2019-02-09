@@ -67,6 +67,7 @@ public class HatchPivot extends SubsystemBase {
 
     @Override
     public void update(double timestamp) {
+        System.out.println("Raw Value: " + hatchPivot.getSelectedSensorPosition(0));
         System.out.println("Hatch Pivot Angle: " + getAngle());
     }
 
@@ -77,7 +78,7 @@ public class HatchPivot extends SubsystemBase {
 
     @Override
     public void zeroSensors() {
-
+        hatchPivot.setSelectedSensorPosition(0);
     }
 
     @Override
