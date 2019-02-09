@@ -6,8 +6,6 @@ public class ElevatorConstants {
     public static final int kSparkMaxSlaveTwo = 0;
     public static final int kSparkMaxSlaveThree = 0;
 
-    public static final int kElevatorSlot = 0;
-
     public static final double kElevatorP = 0;
     public static final double kElevatorI = 0;
     public static final double kElevatorD = 0;

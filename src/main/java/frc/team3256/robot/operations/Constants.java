@@ -15,7 +15,6 @@ public class Constants {
 	public static final int kRatchetPivotReverse = 0; //TBD
 
 	//Pure Pursuit
-
 	public static final double robotTrack = 27; //inches
 	public static final double spacing = 6; //inches
 	public static final double kA = 0.002; //0.002
