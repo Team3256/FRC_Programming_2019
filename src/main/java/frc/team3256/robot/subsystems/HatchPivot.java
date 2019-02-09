@@ -44,12 +44,16 @@ public class HatchPivot extends SubsystemBase {
         ratchetPivot.set(DoubleSolenoid.Value.kForward);
     }
 
-    public void setFloorIntakePosition() {
+    public void setPositionFoldIn() {
+        hatchPivot.set(ControlMode.Position, angleToSensorUnits(kPositionFoldIn), DemandType.Neutral, 0);
+    }
+
+
+    public void setPositionFloorIntake() {
         hatchPivot.set(ControlMode.Position, angleToSensorUnits(kPositionFloorIntakeHatch), DemandType.Neutral, 0);
     }
 
-    //Default
-    public void setDeployPosition() {
+    public void setPositionDeploy() {
         hatchPivot.set(ControlMode.Position, angleToSensorUnits(kPositionDeployHatch), DemandType.Neutral, 0);
     }
 

@@ -16,4 +16,5 @@ public class HatchConstants {
 
     public static final double kPositionFloorIntakeHatch = 0;
     public static final double kPositionDeployHatch = 0;
+    public static final double kPositionFoldIn = 0;
 }
