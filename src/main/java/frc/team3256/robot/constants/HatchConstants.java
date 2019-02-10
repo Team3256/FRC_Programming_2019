@@ -10,8 +10,8 @@ public class HatchConstants {
     public static final double kHatchPivotSpeed = 0;
 
     public static final int kHatchPivotPort = 0;
-    public static final int kHatchForwardChannel = 0;
-    public static final int kHatchReverseChannel = 0;
+    public static final int kHatchForwardChannel = 4;
+    public static final int kHatchReverseChannel = 3;
 
     public static final int kRatchetForwardChannel = 0;
     public static final int kRatchetReverseChannel = 0;

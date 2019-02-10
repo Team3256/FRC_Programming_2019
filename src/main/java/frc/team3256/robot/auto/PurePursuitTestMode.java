@@ -11,7 +11,7 @@ public class PurePursuitTestMode extends AutoModeBase {
 	protected void routine() throws AutoModeEndedException {
 		System.out.println("STARTED PURE PURSUIT");
 		runAction(new ResetPursuitAction());
-		runAction(new PurePursuitAction());
+		runAction(new PurePursuitAction(0));
 		System.out.println("FINISHED PURE PURSUIT");
 		System.out.println(PoseEstimator.getInstance().getPose());
 	}

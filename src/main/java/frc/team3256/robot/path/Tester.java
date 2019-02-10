@@ -22,7 +22,7 @@ public class Tester {
 		PurePursuitTracker purePursuitTracker = PurePursuitTracker.getInstance();
 		ArrayList<Path> paths = new ArrayList<>();
 		paths.add(p);
-		purePursuitTracker.setPath(paths, Constants.lookaheadDistance);
+		purePursuitTracker.setPaths(paths, Constants.lookaheadDistance);
 		for (Vector v : p.getRobotPath()) {
 			System.out.println("x=" + v.x + " y=" + v.y + " z=" + v.z + " vel=" + v.getVelocity());
 		}

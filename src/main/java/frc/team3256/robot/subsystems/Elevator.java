@@ -9,21 +9,18 @@ import static frc.team3256.robot.constants.ElevatorConstants.*;
 public class Elevator extends SubsystemBase {
 
 	private static Elevator instance;
-	private CANSparkMax master, slaveOne, slaveTwo, slaveThree;
+	private CANSparkMax master, slave;
 	private CANPIDController masterPID;
 	private CANEncoder masterEncoder;
 
 	private Elevator() {
 		master = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
-		slaveOne = SparkMAXUtil.generateSlaveSparkMAX(kSparkMaxSlaveOne, CANSparkMaxLowLevel.MotorType.kBrushless, master);
-		slaveTwo = SparkMAXUtil.generateSlaveSparkMAX(kSparkMaxSlaveTwo, CANSparkMaxLowLevel.MotorType.kBrushless, master);
-		slaveThree = SparkMAXUtil.generateSlaveSparkMAX(kSparkMaxSlaveThree, CANSparkMaxLowLevel.MotorType.kBrushless, master);
+		slave = SparkMAXUtil.generateSlaveSparkMAX(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless, master);
 
 		masterPID = master.getPIDController();
 		masterEncoder = master.getEncoder();
 
-		SparkMAXUtil.setCoastMode(master, slaveOne, slaveTwo, slaveThree);
-
+		SparkMAXUtil.setBrakeMode(master);
 		SparkMAXUtil.setPIDGains(masterPID, 0, kElevatorP, kElevatorI, kElevatorD, kElevatorF, kElevatorIz);
 
 		masterPID.setOutputRange(kElevatorMinOutput, kElevatorMaxOutput);

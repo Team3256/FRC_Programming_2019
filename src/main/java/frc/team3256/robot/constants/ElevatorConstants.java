@@ -1,10 +1,8 @@
 package frc.team3256.robot.constants;
 
 public class ElevatorConstants {
-    public static final int kSparkMaxMaster = 0;
-    public static final int kSparkMaxSlaveOne = 0;
-    public static final int kSparkMaxSlaveTwo = 0;
-    public static final int kSparkMaxSlaveThree = 0;
+    public static final int kSparkMaxMaster = 14;
+    public static final int kSparkMaxSlave = 15;
 
     public static final double kElevatorP = 0;
     public static final double kElevatorI = 0;
@@ -22,7 +20,7 @@ public class ElevatorConstants {
     public static final double kPositionLowCargo = 0;
     public static final double kPositionHomeCargo = 0;
 
-    public static final double kElevatorSpeed = 0;
+    public static final double kElevatorSpeed = 0.2;
     public static final double kElevatorMaxOutput = 1;
     public static final double kElevatorMinOutput = -1;
 }

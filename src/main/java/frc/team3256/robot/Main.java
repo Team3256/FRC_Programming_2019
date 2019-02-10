@@ -29,7 +29,7 @@ public final class Main {
 			work();
 	}
 
-	public static void work() {
+	private static void work() {
 		RobotBase.startRobot(Robot::new);
 	}
 

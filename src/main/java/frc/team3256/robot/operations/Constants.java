@@ -7,8 +7,8 @@ public class Constants {
 	//Solenoids
 	public static final int kDeployHatchForward = 0; //TBD
 	public static final int kDeployHatchReverse = 0; //TBD
-	public static final int kShifterForward = 4; //TBD
-	public static final int kShifterReverse = 3; //TBD
+	public static final int kShifterForward = 5; //TBD
+	public static final int kShifterReverse = 2; //TBD
 	public static final int kHangerForward = 0; //TBD
 	public static final int kHangerReverse = 0; //TBD
 	public static final int kRatchetPivotForward = 0; //TBD

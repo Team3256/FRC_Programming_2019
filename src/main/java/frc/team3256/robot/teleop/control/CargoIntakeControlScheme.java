@@ -1,11 +1,14 @@
 package frc.team3256.robot.teleop.control;
 
+import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.teleop.TeleopUpdater;
 import frc.team3256.warriorlib.control.XboxListenerBase;
 
+import static frc.team3256.robot.constants.ElevatorConstants.kElevatorSpeed;
+
 public class CargoIntakeControlScheme extends XboxListenerBase {
     //private CargoIntake cargoIntake = CargoIntake.getInstance();
-    //private Elevator elevator = Elevator.getInstance();
+    private Elevator elevator = Elevator.getInstance();
 
     private double cargoPivotAccumulator = 0;
     private boolean intaking = false, exhausting = false;
@@ -175,12 +178,11 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
     @Override
     public void onLeftJoystick(double x, double y) {
         if (y > 0.25) {
-            System.out.println("Moving elevator up manually");
-            //elevator.setOpenLoop(Constants.kElevatorUpManualPower);
-        }
-        if (y < -0.25){
-            System.out.println("Moving elevator down manually");
-            //elevator.setOpenLoop(Constants.kElevatorDownManualPower);
+            elevator.setOpenLoop(kElevatorSpeed);
+        } else if (y < -0.25){
+            elevator.setOpenLoop(-kElevatorSpeed);
+        } else {
+            elevator.setOpenLoop(0);
         }
     }
 

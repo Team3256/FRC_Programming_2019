@@ -27,7 +27,7 @@ public class Robot extends TimedRobot {
 	private DriveTrain driveTrain = DriveTrain.getInstance();
 	private Elevator elevator = Elevator.getInstance();
 	private HatchPivot hatchPivot = HatchPivot.getInstance();
-	PigeonIMU gyro = new PigeonIMU(0);
+	private PigeonIMU gyro = new PigeonIMU(11);
 
 	// Pure Pursuit
 	private PurePursuitTracker purePursuitTracker;
