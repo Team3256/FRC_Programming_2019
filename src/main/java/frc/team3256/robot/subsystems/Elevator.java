@@ -1,6 +1,7 @@
 package frc.team3256.robot.subsystems;
 
 import com.revrobotics.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
@@ -22,7 +23,7 @@ public class Elevator extends SubsystemBase {
 		masterPID = master.getPIDController();
 		masterEncoder = master.getEncoder();
 
-		SparkMAXUtil.setBrakeMode(master);
+		SparkMAXUtil.setBrakeMode(master, slave);
 		SparkMAXUtil.setPIDGains(masterPID, 0, kElevatorP, kElevatorI, kElevatorD, kElevatorF, kElevatorIz);
 
 		masterPID.setOutputRange(kElevatorMinOutput, kElevatorMaxOutput);
@@ -70,7 +71,11 @@ public class Elevator extends SubsystemBase {
 
 	@Override
 	public void outputToDashboard() {
+		SmartDashboard.putNumber("elevatorPositionMaster", getPosition());
+		SmartDashboard.putNumber("elevatorPositionSlave", slave.getEncoder().getPosition());
 
+		SmartDashboard.putNumber("elevatorCurrentMaster", master.getOutputCurrent());
+		SmartDashboard.putNumber("elevatorCurrentSlave", slave.getOutputCurrent());
 	}
 
 	@Override
@@ -90,6 +95,7 @@ public class Elevator extends SubsystemBase {
 //		} else if (getPosition() < kPositionLowCargo) {
 //			setPosition(kPositionLowCargo);
 //		}
+		this.outputToDashboard();
 		System.out.println("Elevator Raw: " + masterEncoder.getPosition());
 	}
 

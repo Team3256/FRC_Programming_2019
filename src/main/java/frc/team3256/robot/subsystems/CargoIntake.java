@@ -75,7 +75,7 @@ public class CargoIntake extends SubsystemBase {
 
 	@Override
 	public void zeroSensors() {
-		cargoEncoder.setPosition(0);
+		//cargoEncoder.setPosition(0);
 	}
 
 	@Override
