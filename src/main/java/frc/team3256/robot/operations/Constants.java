@@ -32,9 +32,9 @@ public class Constants {
 	//Curvature Drive
 	public static final double kQuickTurnDeltaLimit = 2.0 / 1000.0 / 12.0 * 20.0;
 	//CAN
-	public static final int kLeftDriveMaster = 2;
-	public static final int kLeftDriveSlave = 3;
-	public static final int kRightDriveMaster = 4;
+    public static final int kLeftDriveMaster = 3;
+    public static final int kLeftDriveSlave = 4;
+    public static final int kRightDriveMaster = 5;
 	public static final int kRightDriveSlave = 6;
 	public static final int kLeftHangDrive = 0;
 	public static final int kRightHangDrive = 0;

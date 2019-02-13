@@ -188,11 +188,11 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public double inchesPerSecToRPM(double inchesPerSec) {
-        return inchesToRotations(inchesPerSec) / 60D;
+        return inchesToRotations(inchesPerSec) * 60D;
     }
 
     public double rpmToInchesPerSec(double rpm) {
-        return rotationsToInches(rpm) * 60D;
+        return rotationsToInches(rpm) / 60D;
     }
 
     public PigeonIMU getGyro() {
