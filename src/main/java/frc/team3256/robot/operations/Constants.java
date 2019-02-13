@@ -1,7 +1,7 @@
 package frc.team3256.robot.operations;
 
 public class Constants {
-
+	public static final double kGearRatio = 6.6 / 1.0; //motor rotations to wheel rotations
 	//Ports: No duplicates in each set
 
 	//Solenoids

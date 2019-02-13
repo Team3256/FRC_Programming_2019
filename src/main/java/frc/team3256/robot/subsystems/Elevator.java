@@ -16,7 +16,9 @@ public class Elevator extends SubsystemBase {
 
 	private Elevator() {
 		master = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
-		slave = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless);
+        slave = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+        slave.follow(master, true);
 
 		masterPID = master.getPIDController();
 		masterEncoder = master.getEncoder();
