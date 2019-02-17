@@ -1,6 +1,10 @@
 package frc.team3256.robot;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANPIDController;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.auto.PurePursuitTestMode;
@@ -21,20 +25,38 @@ import java.util.Collections;
 
 public class Robot extends TimedRobot {
 
-	// Subsystems
-	private DriveTrain driveTrain = DriveTrain.getInstance();
-	private Elevator elevator = Elevator.getInstance();
-	//private HatchPivot hatchPivot = HatchPivot.getInstance();
-	private PigeonIMU gyro = new PigeonIMU(11);
+//	// Subsystems
+//	private DriveTrain driveTrain = DriveTrain.getInstance();
+//	private Elevator elevator = Elevator.getInstance();
+//	//private HatchPivot hatchPivot = HatchPivot.getInstance();
+//	private PigeonIMU gyro = new PigeonIMU(11);
+//
+//	// Pure Pursuit
+//	private PurePursuitTracker purePursuitTracker;
+//	private PoseEstimator poseEstimator;
+//
+//	// Loopers
+//	private Looper enabledLooper, poseEstimatorLooper;
+//	private TeleopUpdater teleopUpdater;
 
-	// Pure Pursuit
-	private PurePursuitTracker purePursuitTracker;
-	private PoseEstimator poseEstimator;
-
-	// Loopers
-	private Looper enabledLooper, poseEstimatorLooper;
-	private TeleopUpdater teleopUpdater;
-
+	private static final int leftSparkPort = 0;
+	private static final int rightSparkPort = 1;
+	private CANSparkMax leftMotor, rightMotor;
+	private CANPIDController leftPIDController, rightPIDController;
+	private CANEncoder leftEncoder, rightEncoder;
+	public static final double kP = 0;
+	public static final double kI = 0;
+	public static final double kD = 0;
+	public static final double kIz = 0;
+	public static final double kFF = 0;
+	public static final double kMaxOutput = 0;
+	public static final double kMinOutput = 0;
+	public static final double maxRPM = 0;
+	public static final double maxVel = 0;
+	public static final double minVel = 0;
+	public static final double maxAccel = 0;
+	public static final double allowedError = 0;
+	public static final int smartMotionSlot = 0;
 
 	/**
 	 * This function is called when the robot is first started up and should be
@@ -42,34 +64,67 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
-		enabledLooper = new Looper(1 / 200D);
-		driveTrain.resetEncoders();
-		driveTrain.resetGyro();
+		leftMotor = new CANSparkMax(leftSparkPort, CANSparkMaxLowLevel.MotorType.kBrushless);
+		rightMotor =  new CANSparkMax(rightSparkPort, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-		enabledLooper.addLoops(driveTrain, elevator);
+		leftPIDController = leftMotor.getPIDController();
+		rightPIDController = rightMotor.getPIDController();
 
-		DriveTrainBase.setDriveTrain(driveTrain);
+		leftEncoder = leftMotor.getEncoder();
+		rightEncoder = leftMotor.getEncoder();
 
-		poseEstimatorLooper = new Looper(1 / 50D);
-		poseEstimator = PoseEstimator.getInstance();
-		poseEstimatorLooper.addLoops(poseEstimator);
+		leftPIDController.setP(kP);
+		leftPIDController.setP(kI);
+		leftPIDController.setP(kD);
+		leftPIDController.setP(kIz);
+		leftPIDController.setP(kFF);
+		leftPIDController.setOutputRange(kMinOutput, kMaxOutput);
+		rightPIDController.setP(kP);
+		rightPIDController.setP(kI);
+		rightPIDController.setP(kD);
+		rightPIDController.setP(kIz);
+		rightPIDController.setP(kFF);
+		rightPIDController.setOutputRange(kMinOutput, kMaxOutput);
 
-		teleopUpdater = TeleopUpdater.getInstance();
+		leftPIDController.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
+		leftPIDController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
+		leftPIDController.setSmartMotionMaxAccel(maxAccel, smartMotionSlot);
+		leftPIDController.setSmartMotionAllowedClosedLoopError(allowedError, smartMotionSlot);
+		rightPIDController.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
+		rightPIDController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
+		rightPIDController.setSmartMotionMaxAccel(maxAccel, smartMotionSlot);
+		rightPIDController.setSmartMotionAllowedClosedLoopError(allowedError, smartMotionSlot);
 
-		PathGenerator pathGenerator = new PathGenerator(Constants.spacing, true);
-		pathGenerator.addPoint(new Vector(0, 0));
-		pathGenerator.addPoint(new Vector(0, 30));
-		pathGenerator.addPoint(new Vector(70, 60));
-		pathGenerator.addPoint(new Vector(70, 80));
-		pathGenerator.addPoint(new Vector(70, 102));
-		pathGenerator.setSmoothingParameters(Constants.a, Constants.b, Constants.tolerance);
-		pathGenerator.setVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
-		Path path = pathGenerator.generatePath();
 
-		purePursuitTracker = PurePursuitTracker.getInstance();
-		purePursuitTracker.setRobotTrack(Constants.robotTrack);
-		//purePursuitTracker.setFeedbackMultiplier(Constants.kP);
-		purePursuitTracker.setPaths(Collections.singletonList(path), Constants.lookaheadDistance);
+
+//		enabledLooper = new Looper(1 / 200D);
+//		driveTrain.resetEncoders();
+//		driveTrain.resetGyro();
+//
+//		enabledLooper.addLoops(driveTrain, elevator);
+//
+//		DriveTrainBase.setDriveTrain(driveTrain);
+//
+//		poseEstimatorLooper = new Looper(1 / 50D);
+//		poseEstimator = PoseEstimator.getInstance();
+//		poseEstimatorLooper.addLoops(poseEstimator);
+//
+//		teleopUpdater = TeleopUpdater.getInstance();
+//
+//		PathGenerator pathGenerator = new PathGenerator(Constants.spacing, true);
+//		pathGenerator.addPoint(new Vector(0, 0));
+//		pathGenerator.addPoint(new Vector(0, 30));
+//		pathGenerator.addPoint(new Vector(70, 60));
+//		pathGenerator.addPoint(new Vector(70, 80));
+//		pathGenerator.addPoint(new Vector(70, 102));
+//		pathGenerator.setSmoothingParameters(Constants.a, Constants.b, Constants.tolerance);
+//		pathGenerator.setVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
+//		Path path = pathGenerator.generatePath();
+//
+//		purePursuitTracker = PurePursuitTracker.getInstance();
+//		purePursuitTracker.setRobotTrack(Constants.robotTrack);
+//		//purePursuitTracker.setFeedbackMultiplier(Constants.kP);
+//		purePursuitTracker.setPaths(Collections.singletonList(path), Constants.lookaheadDistance);
 	}
 
 	/**
@@ -77,15 +132,15 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
-		enabledLooper.stop();
-		poseEstimatorLooper.stop();
-
-		driveTrain.resetGyro();
-		driveTrain.resetEncoders();
-		driveTrain.setBrakeMode();
-
-		poseEstimator.reset();
-		purePursuitTracker.reset();
+//		enabledLooper.stop();
+//		poseEstimatorLooper.stop();
+//
+//		driveTrain.resetGyro();
+//		driveTrain.resetEncoders();
+//		driveTrain.setBrakeMode();
+//
+//		poseEstimator.reset();
+//		purePursuitTracker.reset();
 	}
 
 	/**
@@ -105,20 +160,20 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		enabledLooper.stop();
-
-		driveTrain.setBrakeMode();
-		driveTrain.resetEncoders();
-		driveTrain.resetGyro();
-		poseEstimator.reset();
-		purePursuitTracker.reset();
-
-		poseEstimatorLooper.start();
-		//hatchPivot.zeroSensors();
-
-		AutoModeExecuter autoModeExecuter = new AutoModeExecuter();
-		autoModeExecuter.setAutoMode(new PurePursuitTestMode());
-		autoModeExecuter.start();
+//		enabledLooper.stop();
+//
+//		driveTrain.setBrakeMode();
+//		driveTrain.resetEncoders();
+//		driveTrain.resetGyro();
+//		poseEstimator.reset();
+//		purePursuitTracker.reset();
+//
+//		poseEstimatorLooper.start();
+//		//hatchPivot.zeroSensors();
+//
+//		AutoModeExecuter autoModeExecuter = new AutoModeExecuter();
+//		autoModeExecuter.setAutoMode(new PurePursuitTestMode());
+//		autoModeExecuter.start();
 	}
 
 	/**
@@ -143,8 +198,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		enabledLooper.start();
-		poseEstimatorLooper.start();
+//		enabledLooper.start();
+//		poseEstimatorLooper.start();
 	}
 
 	/**
@@ -152,7 +207,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		teleopUpdater.update();
+		//teleopUpdater.update();
 	}
 
 	/**
@@ -160,10 +215,10 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		poseEstimatorLooper.start();
-		SmartDashboard.putString("POSE", poseEstimator.getPose().toString());
-		double [] ypr = new double[3];
-		gyro.getYawPitchRoll(ypr);
-		System.out.println("Gyro: " + ypr[0]);
+//		poseEstimatorLooper.start();
+//		SmartDashboard.putString("POSE", poseEstimator.getPose().toString());
+//		double [] ypr = new double[3];
+//		gyro.getYawPitchRoll(ypr);
+//		System.out.println("Gyro: " + ypr[0]);
 	}
 }
