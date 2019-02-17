@@ -18,6 +18,7 @@ public class Elevator extends SubsystemBase {
 		master = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
         slave = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless);
 
+		master.setInverted(true);
         slave.follow(master, true);
 
 		masterPID = master.getPIDController();
@@ -96,7 +97,8 @@ public class Elevator extends SubsystemBase {
 //			setPosition(kPositionLowCargo);
 //		}
 		this.outputToDashboard();
-		System.out.println("Elevator Raw: " + masterEncoder.getPosition());
+		//System.out.println("Elevator Raw: " + masterEncoder.getPosition());
+		//System.out.println("Elevator Curr: " + master.getOutputCurrent());
 	}
 
 	@Override

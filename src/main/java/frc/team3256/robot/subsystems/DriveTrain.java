@@ -23,7 +23,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     private PigeonIMU gyro;
 
     private DriveTrain() {
-        gyro = new PigeonIMU(0);
+        gyro = new PigeonIMU(14);
         gyro.setAccumZAngle(0, 0);
         gyro.setYaw(0, 0);
         //        internalGyro = new ADXRS453_Gyro();
@@ -51,7 +51,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         rightMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*Constants.loopTime), 0);
         */
 
-        shifter = new DoubleSolenoid(Constants.kShifterForward, Constants.kShifterReverse);
+        shifter = new DoubleSolenoid(15, Constants.kShifterForward, Constants.kShifterReverse);
 
         //rightSlave2 = TalonSRXUtil.generateSlaveTalon(Constants.kRightDriveSlave2, Constants.kRightDriveMaster);
         //gyro.calibrate();
@@ -68,7 +68,9 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         if (Math.abs(turn) <= 0.15) { //deadband
             turn = 0;
         }
-
+        if (Math.abs(throttle) <= 0.15) {
+            throttle = 0;
+        }
         double angularPower, overPower;
 
         if (quickTurn) {
@@ -114,6 +116,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
             left += overPower * (-1.0 - right);
             right = -1.0;
         }
+        //System.out.println("FEEDING LEFT " + left + " RIGHT " + right);
         return new DrivePower(left, right, highGear);
     }
 
@@ -122,7 +125,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public void setOpenLoop(double leftPower, double rightPower) {
-        leftMaster.set(leftPower);
+        leftMaster.set(leftPower * 0.96743964421);
         rightMaster.set(rightPower);
     }
 
@@ -153,6 +156,14 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     @Override
     public void end(double timestamp) {
         setOpenLoop(0, 0);
+    }
+
+    public double getLeftCurrent() {
+        return leftMaster.getOutputCurrent();
+    }
+
+    public double getRightCurrent() {
+        return rightMaster.getOutputCurrent();
     }
 
     /**
@@ -228,6 +239,26 @@ public class DriveTrain extends DriveTrainBase implements Loop {
 
         leftPIDController.setReference(inchesPerSecToRPM(leftVelInchesPerSec) * Constants.kGearRatio, ControlType.kVelocity);
         rightPIDController.setReference(inchesPerSecToRPM(rightVelInchesPerSec) * Constants.kGearRatio, ControlType.kVelocity);
+    }
+
+    public void turnInPlace(double angle) {
+        boolean right = true;
+        if (angle < 0) {
+            right = false;
+        }
+        double targetRot = ((((Math.abs(angle) / 360) * Constants.robotTrack)) / Constants.kWheelDiameter) * Constants.kGearRatio;
+        double targetLeftPos = 0;
+        double targetRightPos = 0;
+        if (right) {
+            targetLeftPos = leftEncoder.getPosition() + targetRot;
+            targetRightPos = rightEncoder.getPosition() - targetRot;
+        } else {
+            targetLeftPos = leftEncoder.getPosition() - targetRot;
+            targetRightPos = rightEncoder.getPosition() + targetRot;
+        }
+
+        leftPIDController.setReference(targetLeftPos, ControlType.kPosition);
+        rightPIDController.setReference(targetRightPos, ControlType.kPosition);
     }
 
     public void setBrakeMode() {

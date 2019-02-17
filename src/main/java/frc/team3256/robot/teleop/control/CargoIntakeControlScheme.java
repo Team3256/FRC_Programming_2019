@@ -178,8 +178,10 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
     @Override
     public void onLeftJoystick(double x, double y) {
         if (y > 0.25) {
+            System.out.println("Up");
             elevator.setOpenLoop(kElevatorSpeed);
         } else if (y < -0.25){
+            System.out.println("Up");
             elevator.setOpenLoop(-kElevatorSpeed);
         } else {
             elevator.setOpenLoop(0);
