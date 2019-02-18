@@ -1,6 +1,7 @@
 package frc.team3256.robot.subsystems;
 
 import com.revrobotics.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
@@ -15,13 +16,13 @@ public class Elevator extends SubsystemBase {
 
 	private Elevator() {
 		master = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
-		slave = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless);
+        slave = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+		master.setInverted(true);
+        slave.follow(master, true);
 
 		masterPID = master.getPIDController();
 		masterEncoder = master.getEncoder();
-
-		master.setInverted(true);
-		slave.setInverted(true);
 
 		SparkMAXUtil.setBrakeMode(master, slave);
 		SparkMAXUtil.setPIDGains(masterPID, 0, kElevatorP, kElevatorI, kElevatorD, kElevatorF, kElevatorIz);
@@ -72,7 +73,11 @@ public class Elevator extends SubsystemBase {
 
 	@Override
 	public void outputToDashboard() {
+		SmartDashboard.putNumber("elevatorPositionMaster", getPosition());
+		SmartDashboard.putNumber("elevatorPositionSlave", slave.getEncoder().getPosition());
 
+		SmartDashboard.putNumber("elevatorCurrentMaster", master.getOutputCurrent());
+		SmartDashboard.putNumber("elevatorCurrentSlave", slave.getOutputCurrent());
 	}
 
 	@Override
@@ -92,13 +97,9 @@ public class Elevator extends SubsystemBase {
 //		} else if (getPosition() < kPositionLowCargo) {
 //			setPosition(kPositionLowCargo);
 //		}
-		System.out.println(
-				String.format(
-						"Master: %f, Slave: %f",
-						master.getOutputCurrent(),
-						slave.getOutputCurrent()
-				)
-		);
+		this.outputToDashboard();
+		//System.out.println("Elevator Raw: " + masterEncoder.getPosition());
+		//System.out.println("Elevator Curr: " + master.getOutputCurrent());
 	}
 
 	@Override

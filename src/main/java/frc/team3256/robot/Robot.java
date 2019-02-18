@@ -1,12 +1,14 @@
 package frc.team3256.robot;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.auto.PurePursuitTestMode;
+import frc.team3256.robot.operations.Constants;
+import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.teleop.TeleopUpdater;
-import frc.team3256.robot.operations.Constants;
-import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.warriorlib.auto.AutoModeExecuter;
 import frc.team3256.warriorlib.auto.purepursuit.Path;
 import frc.team3256.warriorlib.auto.purepursuit.PathGenerator;
@@ -24,6 +26,8 @@ public class Robot extends TimedRobot {
 	private DriveTrain driveTrain = DriveTrain.getInstance();
 	private Elevator elevator = Elevator.getInstance();
 	private HatchPivot hatchPivot = HatchPivot.getInstance();
+	//private HatchPivot hatchPivot = HatchPivot.getInstance();
+	private PigeonIMU gyro = new PigeonIMU(11);
 
 	// Pure Pursuit
 	private PurePursuitTracker purePursuitTracker;
@@ -44,7 +48,7 @@ public class Robot extends TimedRobot {
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
 
-		enabledLooper.addLoops(driveTrain, elevator, hatchPivot);
+		enabledLooper.addLoops(driveTrain, elevator);
 
 		DriveTrainBase.setDriveTrain(driveTrain);
 
@@ -112,7 +116,7 @@ public class Robot extends TimedRobot {
 		purePursuitTracker.reset();
 
 		poseEstimatorLooper.start();
-		hatchPivot.zeroSensors();
+		//hatchPivot.zeroSensors();
 
 		AutoModeExecuter autoModeExecuter = new AutoModeExecuter();
 		autoModeExecuter.setAutoMode(new PurePursuitTestMode());
@@ -141,9 +145,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		hatchPivot.zeroSensors();
 		enabledLooper.start();
-		poseEstimatorLooper.stop();
+		poseEstimatorLooper.start();
 	}
 
 	/**
@@ -159,5 +162,10 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+		poseEstimatorLooper.start();
+		SmartDashboard.putString("POSE", poseEstimator.getPose().toString());
+		double [] ypr = new double[3];
+		gyro.getYawPitchRoll(ypr);
+		System.out.println("Gyro: " + ypr[0]);
 	}
 }

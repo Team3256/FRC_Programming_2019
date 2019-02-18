@@ -2,7 +2,6 @@ package frc.team3256.robot.teleop;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.team3256.robot.teleop.control.CargoIntakeControlScheme;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.teleop.control.HatchIntakeControlScheme;
 import frc.team3256.warriorlib.control.DrivePower;
@@ -38,8 +37,8 @@ public class TeleopUpdater {
     private void handleDrive() {
         driveTrain.setBrakeMode();
         DrivePower drivePower = DriveTrain.curvatureDrive(
-            -driverController.getY(GenericHID.Hand.kLeft),
-            driverController.getX(GenericHID.Hand.kRight),
+                -driverController.getY(GenericHID.Hand.kLeft) * 0.75,
+                driverController.getX(GenericHID.Hand.kRight) * 0.75,
             driverController.getTriggerAxis(GenericHID.Hand.kRight) > 0.25);
         driveTrain.setHighGear(drivePower.getHighGear());
         driveTrain.setOpenLoop(drivePower.getLeft(), drivePower.getRight());
@@ -68,7 +67,9 @@ public class TeleopUpdater {
 
     public void update() {
         handleDrive();
-        
+        System.out.println("LEFT CURR" + driveTrain.getLeftDistance());
+        System.out.println("RIGHT CURR" + driveTrain.getRightDistance());
+//        System.out.println("LEFT CURR" + driveTrain.getLeftCurrent() + "RIGHT CURR" + driveTrain.getRightCurrent());
         manipulatorController.update();
 
         if(driverController.getBackButtonPressed()){

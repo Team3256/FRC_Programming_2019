@@ -1,14 +1,14 @@
 package frc.team3256.robot.operations;
 
 public class Constants {
-
+	public static final double kGearRatio = 6.6; //motor rotations to wheel rotations (118 / 48) * 6.6 (6.6 should be actual ratio lul)
 	//Ports: No duplicates in each set
 
 	//Solenoids
 	public static final int kDeployHatchForward = 0; //TBD
 	public static final int kDeployHatchReverse = 0; //TBD
-	public static final int kShifterForward = 5; //TBD
-	public static final int kShifterReverse = 2; //TBD
+	public static final int kShifterForward = 6; //TBD
+	public static final int kShifterReverse = 1; //TBD
 	public static final int kHangerForward = 0; //TBD
 	public static final int kHangerReverse = 0; //TBD
 	public static final int kRatchetPivotForward = 0; //TBD
@@ -32,9 +32,9 @@ public class Constants {
 	//Curvature Drive
 	public static final double kQuickTurnDeltaLimit = 2.0 / 1000.0 / 12.0 * 20.0;
 	//CAN
-	public static final int kLeftDriveMaster = 2;
-	public static final int kLeftDriveSlave = 3;
-	public static final int kRightDriveMaster = 4;
+    public static final int kLeftDriveMaster = 3;
+    public static final int kLeftDriveSlave = 4;
+    public static final int kRightDriveMaster = 5;
 	public static final int kRightDriveSlave = 6;
 	public static final int kLeftHangDrive = 0;
 	public static final int kRightHangDrive = 0;
