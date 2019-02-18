@@ -24,7 +24,7 @@ public class HatchPivot extends SubsystemBase {
 
         TalonSRXUtil.configMagEncoder(hatchPivot);
 
-        TalonSRXUtil.setBrakeMode();
+        TalonSRXUtil.setBrakeMode(hatchPivot);
 
         TalonSRXUtil.setPIDGains(hatchPivot, 0, kHatchP, kHatchI, kHatchD, kHatchF);
         hatchPivot.selectProfileSlot(0, 0);

@@ -15,12 +15,15 @@ public class Elevator extends SubsystemBase {
 
 	private Elevator() {
 		master = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
-		slave = SparkMAXUtil.generateSlaveSparkMAX(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless, master);
+		slave = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless);
 
 		masterPID = master.getPIDController();
 		masterEncoder = master.getEncoder();
 
-		SparkMAXUtil.setBrakeMode(master);
+		master.setInverted(true);
+		slave.setInverted(true);
+
+		SparkMAXUtil.setBrakeMode(master, slave);
 		SparkMAXUtil.setPIDGains(masterPID, 0, kElevatorP, kElevatorI, kElevatorD, kElevatorF, kElevatorIz);
 
 		masterPID.setOutputRange(kElevatorMinOutput, kElevatorMaxOutput);
@@ -32,6 +35,7 @@ public class Elevator extends SubsystemBase {
 
 	public void setOpenLoop(double power) {
 		master.set(power);
+		slave.set(-power);
 	}
 
 	public void setPosition(double position) {
@@ -88,7 +92,13 @@ public class Elevator extends SubsystemBase {
 //		} else if (getPosition() < kPositionLowCargo) {
 //			setPosition(kPositionLowCargo);
 //		}
-		System.out.println("Elevator Raw: " + masterEncoder.getPosition());
+		System.out.println(
+				String.format(
+						"Master: %f, Slave: %f",
+						master.getOutputCurrent(),
+						slave.getOutputCurrent()
+				)
+		);
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+//import edu.wpi.first.wpilibj.DoubleSolenoid;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.control.DrivePower;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
@@ -19,7 +19,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     //public ADXRS453_Gyro internalGyro;
     private static double prevTurn = 0.0;
     public WPI_TalonSRX leftMaster, rightMaster, leftSlave, rightSlave, leftHangDrive, rightHangDrive;
-    private DoubleSolenoid shifter;
+    //private DoubleSolenoid shifter;
     private boolean init = false;
     private PigeonIMU gyro;
 
@@ -47,7 +47,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         rightMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*Constants.loopTime), 0);
         */
 
-        shifter = new DoubleSolenoid(Constants.kShifterForward, Constants.kShifterReverse);
+        //shifter = new DoubleSolenoid(Constants.kShifterForward, Constants.kShifterReverse);
 
         TalonSRXUtil.configMagEncoder(leftMaster);
         TalonSRXUtil.configMagEncoder(rightMaster);
@@ -268,7 +268,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public void setHighGear(boolean highGear) {
-        shifter.set(highGear ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
+        //shifter.set(highGear ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
     }
 
     public void setVelocityClosedLoop(double leftVelInchesPerSec, double rightVelInchesPerSec) {

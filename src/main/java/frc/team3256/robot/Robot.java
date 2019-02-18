@@ -1,8 +1,5 @@
 package frc.team3256.robot;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3256.robot.auto.PurePursuitTestMode;
 import frc.team3256.robot.subsystems.Elevator;
@@ -27,7 +24,6 @@ public class Robot extends TimedRobot {
 	private DriveTrain driveTrain = DriveTrain.getInstance();
 	private Elevator elevator = Elevator.getInstance();
 	private HatchPivot hatchPivot = HatchPivot.getInstance();
-	private PigeonIMU gyro = new PigeonIMU(11);
 
 	// Pure Pursuit
 	private PurePursuitTracker purePursuitTracker;
@@ -44,10 +40,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
-		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-		UsbCamera highCamera = CameraServer.getInstance().startAutomaticCapture();
-		camera.setResolution(640, 480);
-		highCamera.setResolution(640, 480);
 		enabledLooper = new Looper(1 / 200D);
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
@@ -149,6 +141,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
+		hatchPivot.zeroSensors();
 		enabledLooper.start();
 		poseEstimatorLooper.stop();
 	}
@@ -166,8 +159,5 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		double [] ypr = new double[3];
-		gyro.getYawPitchRoll(ypr);
-		System.out.println("Gyro: " + ypr[0]);
 	}
 }

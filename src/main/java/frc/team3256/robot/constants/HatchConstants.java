@@ -7,9 +7,9 @@ public class HatchConstants {
     public static final double kHatchF = 0;
     public static final double kHatchIz = 0;
 
-    public static final double kHatchPivotSpeed = 0;
+    public static final double kHatchPivotSpeed = 0.5;
 
-    public static final int kHatchPivotPort = 0;
+    public static final int kHatchPivotPort = 9;
     public static final int kHatchForwardChannel = 4;
     public static final int kHatchReverseChannel = 3;
 

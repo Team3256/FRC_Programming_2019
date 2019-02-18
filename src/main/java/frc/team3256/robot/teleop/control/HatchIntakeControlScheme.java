@@ -8,12 +8,13 @@ import static frc.team3256.robot.constants.ElevatorConstants.kElevatorSpeed;
 import static frc.team3256.robot.constants.HatchConstants.kHatchPivotSpeed;
 
 public class HatchIntakeControlScheme extends XboxListenerBase {
-    private HatchPivot hatchPivot = HatchPivot.getInstance();
+    //private HatchPivot hatchPivot = HatchPivot.getInstance();
     private Elevator elevator = Elevator.getInstance();
 
     @Override
-    public void onAPressed() { //elevator.setLowHatchPosition();
-         }
+    public void onAPressed() {
+        //elevator.setLowHatchPosition();
+    }
 
     @Override
     public void onBPressed() {
@@ -147,9 +148,11 @@ public class HatchIntakeControlScheme extends XboxListenerBase {
     @Override
     public void onLeftJoystick(double x, double y) {
         if (y > 0.25) {
-            elevator.setOpenLoop(kElevatorSpeed);
+            System.out.println("Down");
+            elevator.setOpenLoop(y > kElevatorSpeed ? kElevatorSpeed : y);
         } else if (y < -0.25){
-            elevator.setOpenLoop(-kElevatorSpeed);
+            System.out.println("Up");
+            elevator.setOpenLoop(y < -kElevatorSpeed ? -kElevatorSpeed : y);
         } else {
             elevator.setOpenLoop(0);
         }
@@ -158,11 +161,13 @@ public class HatchIntakeControlScheme extends XboxListenerBase {
     @Override
     public void onRightJoyStick(double x, double y) {
         if (y > 0.25) {
-            hatchPivot.setHatchPivotPower(kHatchPivotSpeed);
+            System.out.println(y);
+            //hatchPivot.setHatchPivotPower(y > kHatchPivotSpeed ? kHatchPivotSpeed : y);
         } else if (y < -0.25) {
-            hatchPivot.setHatchPivotPower(-kHatchPivotSpeed);
+            System.out.println(y);
+            //hatchPivot.setHatchPivotPower(y > kHatchPivotSpeed ? kHatchPivotSpeed : y);
         } else {
-            hatchPivot.setHatchPivotPower(0);
+            //hatchPivot.setHatchPivotPower(0);
         }
     }
 
