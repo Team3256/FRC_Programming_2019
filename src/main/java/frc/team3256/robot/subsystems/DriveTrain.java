@@ -10,6 +10,8 @@ import frc.team3256.warriorlib.loop.Loop;
 import frc.team3256.warriorlib.math.Rotation;
 import frc.team3256.warriorlib.subsystem.DriveTrainBase;
 
+import static frc.team3256.robot.constants.DriveTrainConstants.*;
+
 public class DriveTrain extends DriveTrainBase implements Loop {
 
     private static DriveTrain instance;
@@ -34,10 +36,18 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         rightMaster = SparkMAXUtil.generateGenericSparkMAX(Constants.kRightDriveMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
         rightSlave = SparkMAXUtil.generateSlaveSparkMAX(Constants.kRightDriveSlave, CANSparkMaxLowLevel.MotorType.kBrushless, rightMaster);
 
+
+
         leftEncoder = leftMaster.getEncoder();
         rightEncoder = rightMaster.getEncoder();
         leftPIDController = leftMaster.getPIDController();
         rightPIDController = rightMaster.getPIDController();
+
+        SparkMAXUtil.setPIDGains(leftPIDController, 0, kVelocityP, kVelocityI, kVelocityD, kVelocityF, kVelocityIZone);
+        SparkMAXUtil.setPIDGains(rightPIDController, 0, kVelocityP, kVelocityI, kVelocityD, kVelocityF, kVelocityIZone);
+
+        SparkMAXUtil.setSmartMotionParams(leftPIDController, -kVelocityMaxRPM, kVelocityMaxRPM, kMaxAccel, kAllowedErr, 0);
+        SparkMAXUtil.setSmartMotionParams(rightPIDController, -kVelocityMaxRPM, kVelocityMaxRPM, kMaxAccel, kAllowedErr, 0);
 
         SparkMAXUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
 
@@ -63,8 +73,8 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         return instance == null ? instance = new DriveTrain() : instance;
     }
 
-    public static DrivePower curvatureDrive(double throttle, double turn, boolean quickTurn) {
-        boolean highGear = true;
+    public static DrivePower curvatureDrive(double throttle, double turn, boolean quickTurn, boolean highGear) {
+        //boolean highGear = true;
         if (Math.abs(turn) <= 0.15) { //deadband
             turn = 0;
         }
@@ -125,8 +135,10 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public void setOpenLoop(double leftPower, double rightPower) {
-        leftMaster.set(leftPower * 0.96743964421);
-        rightMaster.set(rightPower);
+        leftPower *= Math.signum(leftPower) * leftPower;
+        rightPower *= Math.signum(rightPower) * rightPower;
+        leftPIDController.setReference(leftPower*kVelocityMaxRPM, ControlType.kSmartVelocity);
+        rightPIDController.setReference(rightPower*kVelocityMaxRPM, ControlType.kSmartVelocity);
     }
 
     public void setHangDrive(double leftPower, double rightPower) {
@@ -173,8 +185,16 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         return rpmToInchesPerSec(leftEncoder.getVelocity()) / Constants.kGearRatio;
     }
 
+    public double getLeftRPM() {
+        return leftEncoder.getVelocity();
+    }
+
     public double getRightVelocity() {
         return rpmToInchesPerSec(rightEncoder.getVelocity()) / Constants.kGearRatio;
+    }
+
+    public double getRightRPM() {
+        return rightEncoder.getVelocity();
     }
 
     public double getLeftDistance() {

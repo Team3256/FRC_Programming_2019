@@ -7,8 +7,8 @@ public class Constants {
 	//Solenoids
 	public static final int kDeployHatchForward = 0; //TBD
 	public static final int kDeployHatchReverse = 0; //TBD
-	public static final int kShifterForward = 6; //TBD
-	public static final int kShifterReverse = 1; //TBD
+	public static final int kShifterForward = 1; // 6
+	public static final int kShifterReverse = 6; // 1
 	public static final int kHangerForward = 0; //TBD
 	public static final int kHangerReverse = 0; //TBD
 	public static final int kRatchetPivotForward = 0; //TBD
@@ -114,6 +114,6 @@ public class Constants {
 	public static final double kCargoPivotFoldInPreset = 0;
 	//Elevator
 	public static double quickStopAccumulator = 0.0; //temporary curv. drive
-	public static double kQuickStopAlpha = 0.1;
-	public static double kQuickStopScalar = 2.0;
+	public static final double kQuickStopAlpha = 0.1;
+	public static final double kQuickStopScalar = 2.0;
 }

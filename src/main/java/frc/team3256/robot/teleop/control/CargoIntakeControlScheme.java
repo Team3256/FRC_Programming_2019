@@ -1,21 +1,22 @@
 package frc.team3256.robot.teleop.control;
 
-import frc.team3256.robot.subsystems.Elevator;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team3256.robot.subsystems.BallShooter;
+import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.robot.teleop.TeleopUpdater;
-import frc.team3256.warriorlib.control.XboxListenerBase;
+import static frc.team3256.robot.constants.CargoConstants.*;
+import static frc.team3256.robot.constants.BallShooterConstants.*;
 
-import static frc.team3256.robot.constants.ElevatorConstants.kElevatorSpeed;
-
-public class CargoIntakeControlScheme extends XboxListenerBase {
-    //private CargoIntake cargoIntake = CargoIntake.getInstance();
-    private Elevator elevator = Elevator.getInstance();
+public class CargoIntakeControlScheme extends CommonControlScheme {
+    private CargoIntake cargoIntake = CargoIntake.getInstance();
+    private BallShooter ballShooter = BallShooter.getInstance();
 
     private double cargoPivotAccumulator = 0;
     private boolean intaking = false, exhausting = false;
 
     @Override
     public void onAPressed() {
-//        elevator.setLowCargoPosition();
+        //elevator.setLowCargoPosition();
         System.out.println("Set low cargo position");
     }
 
@@ -63,30 +64,32 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
 
     @Override
     public void onStartPressed() {
-        getController().setRumble(1.0);
-        Thread thread = new Thread(() -> {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            getController().setRumble(0);
-        });
-        thread.start();
+        getController().setRumbleForDuration(1.0, 300);
         TeleopUpdater.getInstance().changeToHatchControlScheme();
     }
 
     // Score Cargo
     @Override
     public void onLeftShoulderPressed() {
-        System.out.println("Score cargo");
-        //cargoIntake.setScorePower(Constants.kCargoScorePower);
+        ballShooter.setPower(-1);
     }
 
     @Override
     public void onRightShoulderPressed() {
-
+        ballShooter.setPower(kShootSpeed);
     }
+
+    @Override
+    public void onLeftShoulderReleased() {
+        System.out.println("Stop scoring cargo");
+        ballShooter.setPower(0);
+    }
+
+    @Override
+    public void onRightShoulderReleased() {
+        ballShooter.setPower(0);
+    }
+
 
     @Override
     public void onAReleased() {
@@ -138,53 +141,42 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
 
     }
 
-    @Override
-    public void onLeftShoulderReleased() {
-        System.out.println("Stop scoring cargo");
-        //cargoIntake.setScorePower(0);
-    }
+    private double leftTrigger = 0.0;
+    private double rightTrigger = 0.0;
 
-    @Override
-    public void onRightShoulderReleased() {
-
-    }
-
+    private boolean leftChanged = false;
     // Exhaust Cargo on hold
     @Override
     public void onLeftTrigger(double value) {
-//        if (value > 0.25 && !intaking) {
-//            exhausting = true;
-//            System.out.println("Exhausting cargo");
-//            cargoIntake.setIntakePower(-0.4);
-//        } else if (exhausting) {
-//            cargoIntake.setIntakePower(0);
-//            exhausting = false;
-//        }
+        leftTrigger = value;
+        if (value > 0.25 && !leftChanged) {
+            System.out.println("Exhausting cargo");
+            cargoIntake.exhaust();
+            leftChanged = true;
+        }
+        if (value < 0.25) {
+            leftChanged = false;
+        }
+        if (value < 0.25 && rightTrigger < 0.25) {
+            cargoIntake.stop();
+        }
     }
 
+    private boolean rightChanged = false;
     // Intake Cargo on hold
     @Override
     public void onRightTrigger(double value) {
-//        if (value > 0.25 && !exhausting) {
-//            intaking = true;
-//            System.out.println("Intaking cargo");
-//            cargoIntake.setIntakePower(0.4);
-//        } else if (intaking) {
-//            cargoIntake.setIntakePower(0);
-//            intaking = false;
-//        }
-    }
-
-    @Override
-    public void onLeftJoystick(double x, double y) {
-        if (y > 0.25) {
-            System.out.println("Up");
-            elevator.setOpenLoop(kElevatorSpeed);
-        } else if (y < -0.25){
-            System.out.println("Up");
-            elevator.setOpenLoop(-kElevatorSpeed);
-        } else {
-            elevator.setOpenLoop(0);
+        rightTrigger = value;
+        if (value > 0.25 && !rightChanged) {
+            System.out.println("Intaking cargo");
+            cargoIntake.intake();
+            rightChanged = true;
+        }
+        if (value < 0.25) {
+            rightChanged = false;
+        }
+        if (value < 0.25 && leftTrigger < 0.25) {
+            cargoIntake.stop();
         }
     }
 
@@ -192,21 +184,17 @@ public class CargoIntakeControlScheme extends XboxListenerBase {
     // -Y: Move Pivot Down
     @Override
     public void onRightJoyStick(double x, double y) {
-//        if (y > 0.25) {
-//            System.out.println("Moving cargo pivot up manually");
-//            cargoPivotAccumulator += 0.005;
-//            cargoPivotAccumulator = Math.max(0, Math.min(.5, cargoPivotAccumulator));
-//            cargoIntake.setPivotPower(-cargoPivotAccumulator);
-//        } else if (y < -0.25) {
-//            System.out.println("Moving cargo pivot down manually");
-//            cargoPivotAccumulator += 0.005;
-//            cargoPivotAccumulator = Math.max(0, Math.min(.5, cargoPivotAccumulator));
-//            cargoIntake.setPivotPower(cargoPivotAccumulator);
-//        } else {
-//            cargoIntake.setPivotPower(0);
-//            cargoPivotAccumulator -= 0.005;
-//            cargoPivotAccumulator = Math.max(0, cargoPivotAccumulator);
-//        }
+        if (y > 0.25) {
+            System.out.println("Moving cargo pivot up manually");
+            SmartDashboard.putNumber("Cargo boi", 1);
+            cargoIntake.setPivotPower(kPivotSpeed);
+        } else if (y < -0.25) {
+            SmartDashboard.putNumber("Cargo boi", -1);
+            cargoIntake.setPivotPower(-kPivotSpeed);
+        } else {
+            SmartDashboard.putNumber("Cargo boi", 0);
+            cargoIntake.setPivotPower(0);
+        }
     }
 
     @Override

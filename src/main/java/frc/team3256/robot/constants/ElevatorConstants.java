@@ -4,9 +4,9 @@ public class ElevatorConstants {
     public static final int kSparkMaxMaster = 1;
     public static final int kSparkMaxSlave = 2;
 
-    public static final double kElevatorP = 0;
-    public static final double kElevatorI = 0;
-    public static final double kElevatorD = 0;
+    public static final double kElevatorP = 0.1;
+    public static final double kElevatorI = 1e-4;
+    public static final double kElevatorD = 1;
     public static final double kElevatorF = 0;
     public static final double kElevatorIz = 0;
 
@@ -19,7 +19,7 @@ public class ElevatorConstants {
     public static final double kPositionLowCargo = 0;
     public static final double kPositionHomeCargo = 0;
 
-    public static final double kElevatorSpeed = 0.3;
+    public static final double kElevatorSpeed = 0.25;
     public static final double kElevatorMaxOutput = 1;
     public static final double kElevatorMinOutput = -1;
 }

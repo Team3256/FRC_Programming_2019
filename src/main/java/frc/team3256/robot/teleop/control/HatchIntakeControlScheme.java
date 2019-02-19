@@ -7,9 +7,8 @@ import frc.team3256.warriorlib.control.XboxListenerBase;
 import static frc.team3256.robot.constants.ElevatorConstants.kElevatorSpeed;
 import static frc.team3256.robot.constants.HatchConstants.kHatchPivotSpeed;
 
-public class HatchIntakeControlScheme extends XboxListenerBase {
+public class HatchIntakeControlScheme extends CommonControlScheme {
     private HatchPivot hatchPivot = HatchPivot.getInstance();
-    private Elevator elevator = Elevator.getInstance();
 
     @Override
     public void onAPressed() { //elevator.setLowHatchPosition();
@@ -97,7 +96,23 @@ public class HatchIntakeControlScheme extends XboxListenerBase {
     }
 
     @Override
-    public void onStartPressed() { TeleopUpdater.getInstance().changeToCargoControlScheme(); }
+    public void onStartPressed() {
+        Thread thread = new Thread(() -> {
+            try {
+                getController().setRumble(1.0);
+                Thread.sleep(125);
+                getController().setRumble(0);
+                Thread.sleep(50);
+                getController().setRumble(1.0);
+                Thread.sleep(125);
+                getController().setRumble(0);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+        TeleopUpdater.getInstance().changeToCargoControlScheme();
+    }
 
     @Override
     public void onSelectedReleased() {
@@ -140,18 +155,6 @@ public class HatchIntakeControlScheme extends XboxListenerBase {
             //hatchPivot.deployHatch();
         }
         else { //hatchPivot.closeHatch();
-        }
-    }
-
-    // Move elevator manually
-    @Override
-    public void onLeftJoystick(double x, double y) {
-        if (y > 0.25) {
-            elevator.setOpenLoop(kElevatorSpeed);
-        } else if (y < -0.25){
-            elevator.setOpenLoop(-kElevatorSpeed);
-        } else {
-            elevator.setOpenLoop(0);
         }
     }
 

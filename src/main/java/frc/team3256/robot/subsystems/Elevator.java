@@ -27,7 +27,11 @@ public class Elevator extends SubsystemBase {
 		SparkMAXUtil.setBrakeMode(master, slave);
 		SparkMAXUtil.setPIDGains(masterPID, 0, kElevatorP, kElevatorI, kElevatorD, kElevatorF, kElevatorIz);
 
-		masterPID.setOutputRange(kElevatorMinOutput, kElevatorMaxOutput);
+		masterEncoder.setPosition(0);
+	}
+
+	public void resetEncoder() {
+		masterEncoder.setPosition(0);
 	}
 
 	public static Elevator getInstance() {
@@ -35,6 +39,11 @@ public class Elevator extends SubsystemBase {
 	}
 
 	public void setOpenLoop(double power) {
+//		if ((power < 0 && masterEncoder.getPosition() <= 2) || (power > 0 && masterEncoder.getPosition() >= 195)) {
+//			master.set(0);
+//		} else {
+//			master.set(power);
+//		}
 		master.set(power);
 	}
 
@@ -86,7 +95,8 @@ public class Elevator extends SubsystemBase {
 
 	@Override
 	public void init(double timestamp) {
-
+		master.setIdleMode(CANSparkMax.IdleMode.kBrake);
+		slave.setIdleMode(CANSparkMax.IdleMode.kBrake);
 	}
 
 	@Override
@@ -97,12 +107,28 @@ public class Elevator extends SubsystemBase {
 //			setPosition(kPositionLowCargo);
 //		}
 		this.outputToDashboard();
-		//System.out.println("Elevator Raw: " + masterEncoder.getPosition());
-		//System.out.println("Elevator Curr: " + master.getOutputCurrent());
+		System.out.println("Elevator Raw: " + masterEncoder.getPosition());
+		System.out.println("Elevator Curr: " + master.getOutputCurrent());
 	}
 
 	@Override
 	public void end(double timestamp) {
 
+	}
+
+	public void closedLoopUp() {
+		if (getPosition() > 195) {
+			setPosition(195);
+		} else {
+			setPosition(getPosition() + 0.05);
+		}
+	}
+
+	public void closedLoopDown() {
+		if (getPosition() < 1) {
+			setPosition(0);
+		} else {
+			setPosition(getPosition() - 0.05);
+		}
 	}
 }
