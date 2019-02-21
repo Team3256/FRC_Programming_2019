@@ -19,9 +19,9 @@ public class HatchPivot extends SubsystemBase {
 
     private HatchPivot() {
         hatchPivot = TalonSRXUtil.generateGenericTalon(kHatchPivotPort);
-        //deployHatch = new DoubleSolenoid(kHatchForwardChannel, kHatchReverseChannel);
 
-        //ratchetPivot = new DoubleSolenoid(Constants.kRatchetPivotForward, Constants.kRatchetPivotReverse);
+        deployHatch = new DoubleSolenoid(15, kHatchForwardChannel, kHatchReverseChannel);
+        ratchetPivot = new DoubleSolenoid(15, kRatchetForwardChannel, kRatchetReverseChannel);
 
         TalonSRXUtil.configMagEncoder(hatchPivot);
 
@@ -46,14 +46,14 @@ public class HatchPivot extends SubsystemBase {
     }
 
     public void deployHatch() {
-        //deployHatch.set(DoubleSolenoid.Value.kForward);
+        deployHatch.set(DoubleSolenoid.Value.kForward);
     }
 
     public void closeHatch() {
-        //deployHatch.close();
+        deployHatch.set(DoubleSolenoid.Value.kReverse);
     }
 
-    public void startRatchet() {
+    public void unratchet() {
         ratchetPivot.set(DoubleSolenoid.Value.kReverse);
     }
 

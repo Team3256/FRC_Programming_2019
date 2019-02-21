@@ -5,10 +5,7 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.auto.AutoTestMode;
 import frc.team3256.robot.auto.PurePursuitTestMode;
@@ -57,19 +54,8 @@ public class Robot extends TimedRobot {
 	private CANSparkMax leftMotor, rightMotor;
 	private CANPIDController leftPIDController, rightPIDController;
 	private CANEncoder leftEncoder, rightEncoder;
-	public static final double kP = 5e-5;
-	public static final double kI = 1e-6;
-	public static final double kD = 0;
-	public static final double kIz = 0;
-	public static final double kFF = 0.000156;
-	public static final double kMaxOutput = 1;
-	public static final double kMinOutput = -1;
-	public static final double maxRPM = 3910;
-	public static final double maxVel = 0;
-	public static final double minVel = 0;
-	public static final double maxAccel = 0;
-	public static final double allowedError = 0;
-	public static final int smartMotionSlot = 0;
+
+	private Compressor compressor;
 
 	/**
 	 * This function is called when the robot is first started up and should be
@@ -113,7 +99,6 @@ public class Robot extends TimedRobot {
 //		rightPIDController.setSmartMotionMaxAccel(maxAccel, smartMotionSlot);
 //		rightPIDController.setSmartMotionAllowedClosedLoopError(allowedError, smartMotionSlot);
 
-
 		enabledLooper = new Looper(1 / 200D);
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
@@ -143,6 +128,9 @@ public class Robot extends TimedRobot {
 		//purePursuitTracker.setFeedbackMultiplier(Constants.kP);
 		purePursuitTracker.setPaths(Collections.singletonList(path), Constants.lookaheadDistance);
 		*/
+
+		//Compressor compressor = new Compressor(15);
+		//compressor.setClosedLoopControl(true);
 	}
 
 	/**

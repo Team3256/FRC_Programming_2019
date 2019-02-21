@@ -5,14 +5,10 @@ public class Constants {
 	//Ports: No duplicates in each set
 
 	//Solenoids
-	public static final int kDeployHatchForward = 0; //TBD
-	public static final int kDeployHatchReverse = 0; //TBD
 	public static final int kShifterForward = 1; // 6
 	public static final int kShifterReverse = 6; // 1
 	public static final int kHangerForward = 0; //TBD
 	public static final int kHangerReverse = 0; //TBD
-	public static final int kRatchetPivotForward = 0; //TBD
-	public static final int kRatchetPivotReverse = 0; //TBD
 
 	//Pure Pursuit
 	public static final double robotTrack = 27; //inches

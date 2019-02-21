@@ -12,7 +12,6 @@ public abstract class CommonControlScheme extends XboxListenerBase {
 
     @Override
     public void onLeftJoystick(double x, double y) {
-        /*
         SmartDashboard.putNumber("ElevatorSpeed", kElevatorSpeed);
         if (y > 0.25) {
             System.out.println("Up");
@@ -25,6 +24,5 @@ public abstract class CommonControlScheme extends XboxListenerBase {
         } else {
             elevator.setOpenLoop(0);
         }
-        */
     }
 }

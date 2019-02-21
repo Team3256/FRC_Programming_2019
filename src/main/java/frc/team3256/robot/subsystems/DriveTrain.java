@@ -36,8 +36,6 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         rightMaster = SparkMAXUtil.generateGenericSparkMAX(Constants.kRightDriveMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
         rightSlave = SparkMAXUtil.generateSlaveSparkMAX(Constants.kRightDriveSlave, CANSparkMaxLowLevel.MotorType.kBrushless, rightMaster);
 
-
-
         leftEncoder = leftMaster.getEncoder();
         rightEncoder = rightMaster.getEncoder();
         leftPIDController = leftMaster.getPIDController();
@@ -62,6 +60,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         */
 
         shifter = new DoubleSolenoid(15, Constants.kShifterForward, Constants.kShifterReverse);
+        //shifter = new DoubleSolenoid(15, 3, 4);
 
         //rightSlave2 = TalonSRXUtil.generateSlaveTalon(Constants.kRightDriveSlave2, Constants.kRightDriveMaster);
         //gyro.calibrate();
@@ -89,7 +88,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
                 Constants.quickStopAccumulator = (1 - Constants.kQuickStopAlpha) * Constants.quickStopAccumulator + Constants.kQuickStopAlpha * clamp(turn) * Constants.kQuickStopScalar;
             }
             overPower = 1.0;
-            angularPower = turn / 1.1;
+            angularPower = turn/kAngularPowerScalar;
             if (Math.abs(turn - prevTurn) > Constants.kQuickTurnDeltaLimit) {
                 //System.out.println("TURN: " + turn);
                 //System.out.println("PREVIOUS TURN: " + prevTurn);
@@ -101,7 +100,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
             }
         } else {
             overPower = 0.0;
-            angularPower = Math.abs(throttle) * turn - Constants.quickStopAccumulator;
+            angularPower = (Math.abs(throttle) * turn - Constants.quickStopAccumulator)/kAngularPowerScalar;
             if (Constants.quickStopAccumulator > 1) {
                 Constants.quickStopAccumulator -= 1;
             } else if (Constants.quickStopAccumulator < -1) {
@@ -135,10 +134,10 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public void setOpenLoop(double leftPower, double rightPower) {
-        leftPower *= Math.signum(leftPower) * leftPower;
-        rightPower *= Math.signum(rightPower) * rightPower;
-        leftPIDController.setReference(leftPower*kVelocityMaxRPM, ControlType.kSmartVelocity);
-        rightPIDController.setReference(rightPower*kVelocityMaxRPM, ControlType.kSmartVelocity);
+        leftPower *= leftPower * leftPower;
+        rightPower *= rightPower * rightPower;
+        leftPIDController.setReference(leftPower*kVelocityMaxRPM, ControlType.kVelocity);
+        rightPIDController.setReference(rightPower*kVelocityMaxRPM, ControlType.kVelocity);
     }
 
     public void setHangDrive(double leftPower, double rightPower) {

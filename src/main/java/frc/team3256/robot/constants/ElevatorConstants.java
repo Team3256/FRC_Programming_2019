@@ -19,7 +19,8 @@ public class ElevatorConstants {
     public static final double kPositionLowCargo = 0;
     public static final double kPositionHomeCargo = 0;
 
-    public static final double kElevatorSpeed = 0.25;
-    public static final double kElevatorMaxOutput = 1;
-    public static final double kElevatorMinOutput = -1;
+    public static final double kElevatorMaxPosition = 195; // 195
+    public static final double kElevatorMinPosition = 1; // 1
+
+    public static final double kElevatorSpeed = 0.3;
 }

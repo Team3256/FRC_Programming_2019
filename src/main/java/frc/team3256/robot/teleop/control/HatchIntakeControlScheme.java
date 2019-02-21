@@ -1,5 +1,6 @@
 package frc.team3256.robot.teleop.control;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.teleop.TeleopUpdater;
@@ -12,7 +13,7 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
 
     @Override
     public void onAPressed() { //elevator.setLowHatchPosition();
-         }
+    }
 
     @Override
     public void onBPressed() {
@@ -100,11 +101,11 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
         Thread thread = new Thread(() -> {
             try {
                 getController().setRumble(1.0);
-                Thread.sleep(125);
+                Thread.sleep(120);
                 getController().setRumble(0);
-                Thread.sleep(50);
+                Thread.sleep(60);
                 getController().setRumble(1.0);
-                Thread.sleep(125);
+                Thread.sleep(120);
                 getController().setRumble(0);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -146,15 +147,25 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
 
     @Override
     public void onLeftTrigger(double value) {
-
+        if(value > 0.25) {
+            SmartDashboard.putBoolean("Hatch Ratchet", true);
+            hatchPivot.ratchet();
+        }
+        else {
+            SmartDashboard.putBoolean("Hatch Ratchet", false);
+            hatchPivot.unratchet();
+        }
     }
 
     @Override
     public void onRightTrigger(double value) {
         if(value > 0.25) {
-            //hatchPivot.deployHatch();
+            SmartDashboard.putBoolean("Hatch Actuator", true);
+            hatchPivot.deployHatch();
         }
-        else { //hatchPivot.closeHatch();
+        else {
+            SmartDashboard.putBoolean("Hatch Actuator", false);
+            hatchPivot.closeHatch();
         }
     }
 

@@ -17,7 +17,7 @@ public class BallShooter extends SubsystemBase {
     private BallShooter() {
         shooterMaster = TalonSRXUtil.generateGenericTalon(11);
         shooterSlave = TalonSRXUtil.generateSlaveTalon(12, 11);
-        shooterSlave.setInverted(true);
+        shooterSlave.setInverted(false);
     }
 
     public static BallShooter getInstance() {

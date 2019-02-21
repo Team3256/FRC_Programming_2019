@@ -101,14 +101,7 @@ public class Elevator extends SubsystemBase {
 
 	@Override
 	public void update(double timestamp) {
-//		if (getPosition() > kPositionHighCargo) {
-//			setPosition(kPositionHighCargo);
-//		} else if (getPosition() < kPositionLowCargo) {
-//			setPosition(kPositionLowCargo);
-//		}
 		this.outputToDashboard();
-		System.out.println("Elevator Raw: " + masterEncoder.getPosition());
-		System.out.println("Elevator Curr: " + master.getOutputCurrent());
 	}
 
 	@Override
@@ -117,15 +110,15 @@ public class Elevator extends SubsystemBase {
 	}
 
 	public void closedLoopUp() {
-		if (getPosition() > 195) {
-			setPosition(195);
+		if (getPosition() > kElevatorMaxPosition) {
+			setPosition(kElevatorMaxPosition);
 		} else {
 			setPosition(getPosition() + 0.05);
 		}
 	}
 
 	public void closedLoopDown() {
-		if (getPosition() < 1) {
+		if (getPosition() < kElevatorMinPosition) {
 			setPosition(0);
 		} else {
 			setPosition(getPosition() - 0.05);

@@ -29,7 +29,7 @@ public class TeleopUpdater {
     private TeleopUpdater() {
         cargoIntakeControlScheme = new CargoIntakeControlScheme();
         hatchIntakeControlScheme = new HatchIntakeControlScheme();
-        currentControlScheme = cargoIntakeControlScheme;
+        currentControlScheme = hatchIntakeControlScheme;
 
         driverController = new XboxController(0);
         manipulatorController = new XboxControllerObserver(1);
@@ -80,9 +80,10 @@ public class TeleopUpdater {
         SmartDashboard.putNumber("Left RPM", driveTrain.getLeftRPM());
         SmartDashboard.putNumber("Right RPM", driveTrain.getRightRPM());
         SmartDashboard.putNumber("RPM Difference", driveTrain.getLeftRPM() - driveTrain.getRightRPM());
-
+        /*
         if(driverController.getBackButtonPressed()){
             handleHangDrive();
         }
+        */
     }
 }
