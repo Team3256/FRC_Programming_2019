@@ -1,8 +1,7 @@
-package frc.team3256.robot.subsystems;
+package frc.team3256.robot.subsystems.cargointake;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.*;
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
@@ -101,7 +100,6 @@ public class CargoIntake extends SubsystemBase {
         }
 
 		if (checkForBall && cargoIntake.getOutputCurrent() > 3.0 && cargoIntake.getOutputCurrent() < 5.0) {
-			System.out.println("Ball time");
 			SmartDashboard.putBoolean("BallTime", true);
 			this.stop();
 			checkForBall = false;

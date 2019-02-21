@@ -80,7 +80,7 @@ public class HatchPivot extends SubsystemBase {
 
     private double angleToSensorUnits(double degrees) { return (degrees / 360) * Constants.kMagEncoderTicksTalon * HatchConstants.kHatchPivotGearRatio; }
 
-    private double sensorUnitsToAngle(double ticks) { return (ticks / Constants.kMagEncoderTicksTalon) / HatchConstants.kHatchPivotGearRatio * 360; }
+    private double sensorUnitsToAngle(double ticks) { return ((ticks / Constants.kMagEncoderTicksTalon) / HatchConstants.kHatchPivotGearRatio) * 360; }
 
     public double getAngle() {
         return sensorUnitsToAngle(hatchPivot.getSelectedSensorPosition(0));

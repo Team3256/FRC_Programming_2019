@@ -1,6 +1,6 @@
 package frc.team3256.robot.auto.action;
 
-import frc.team3256.robot.subsystems.Elevator;
+import frc.team3256.robot.subsystems.elevator.Elevator;
 import frc.team3256.warriorlib.auto.action.Action;
 
 public class ZeroElevatorAction implements Action {

@@ -1,4 +1,4 @@
-package frc.team3256.robot.subsystems;
+package frc.team3256.robot.subsystems.elevator;
 
 import com.revrobotics.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,6 +25,7 @@ public class Elevator extends SubsystemBase {
 		masterEncoder = master.getEncoder();
 
 		SparkMAXUtil.setBrakeMode(master, slave);
+
 		SparkMAXUtil.setPIDGains(masterPID, 0, kElevatorP, kElevatorI, kElevatorD, kElevatorF, kElevatorIz);
 
 		masterEncoder.setPosition(0);
@@ -51,32 +52,8 @@ public class Elevator extends SubsystemBase {
 		masterPID.setReference(position, ControlType.kPosition);
 	}
 
-	private double getPosition() {
+	public double getPosition() {
 		return masterEncoder.getPosition();
-	}
-
-	public void setPositionHighCargo() {
-		setPosition(kPositionHighCargo);
-	}
-
-	public void setPositionMidCargo() {
-		setPosition(kPositionMidCargo);
-	}
-
-	public void setPositionLowCargo() {
-		setPosition(kPositionLowCargo);
-	}
-
-	public void setPositionHighHatch() {
-		setPosition(kPositionHighHatch);
-	}
-
-	public void setPositionMidHatch() {
-		setPosition(kPositionMidHatch);
-	}
-
-	public void setPositionLowHatch() {
-		setPosition(kPositionLowHatch);
 	}
 
 	@Override
@@ -90,7 +67,7 @@ public class Elevator extends SubsystemBase {
 
 	@Override
 	public void zeroSensors() {
-
+		masterEncoder.setPosition(0);
 	}
 
 	@Override
@@ -106,9 +83,6 @@ public class Elevator extends SubsystemBase {
 //		} else if (getPosition() < kPositionLowCargo) {
 //			setPosition(kPositionLowCargo);
 //		}
-		this.outputToDashboard();
-		System.out.println("Elevator Raw: " + masterEncoder.getPosition());
-		System.out.println("Elevator Curr: " + master.getOutputCurrent());
 	}
 
 	@Override
