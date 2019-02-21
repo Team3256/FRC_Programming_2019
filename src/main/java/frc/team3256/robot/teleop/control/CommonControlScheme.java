@@ -1,11 +1,7 @@
 package frc.team3256.robot.teleop.control;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3256.robot.constants.ElevatorConstants;
-import frc.team3256.robot.subsystems.Elevator;
+import frc.team3256.robot.subsystems.elevator.Elevator;
 import frc.team3256.warriorlib.control.XboxListenerBase;
-
-import static frc.team3256.robot.constants.ElevatorConstants.kElevatorSpeed;
 
 public abstract class CommonControlScheme extends XboxListenerBase {
     protected Elevator elevator = Elevator.getInstance();

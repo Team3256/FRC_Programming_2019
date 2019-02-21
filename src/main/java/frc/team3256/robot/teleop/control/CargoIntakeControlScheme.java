@@ -2,7 +2,7 @@ package frc.team3256.robot.teleop.control;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.BallShooter;
-import frc.team3256.robot.subsystems.CargoIntake;
+import frc.team3256.robot.subsystems.cargointake.CargoIntake;
 import frc.team3256.robot.teleop.TeleopUpdater;
 import static frc.team3256.robot.constants.CargoConstants.*;
 import static frc.team3256.robot.constants.BallShooterConstants.*;

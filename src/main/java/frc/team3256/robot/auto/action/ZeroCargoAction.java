@@ -1,8 +1,7 @@
 package frc.team3256.robot.auto.action;
 
 import edu.wpi.first.wpilibj.Timer;
-import frc.team3256.robot.subsystems.CargoIntake;
-import frc.team3256.robot.subsystems.HatchPivot;
+import frc.team3256.robot.subsystems.cargointake.CargoIntake;
 import frc.team3256.warriorlib.auto.action.Action;
 
 public class ZeroCargoAction implements Action {

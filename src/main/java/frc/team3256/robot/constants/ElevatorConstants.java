@@ -11,6 +11,10 @@ public class ElevatorConstants {
     public static final double kElevatorIz = 0;
 
     public static final double kDropPreset = 10.0;
+
+    public static final double kPositionMax = 195;
+    public static final double kPositionMin = 1;
+
     public static final double kPositionHighHatch = 0;
     public static final double kPositionMidHatch = 0;
     public static final double kPositionLowHatch = 0;

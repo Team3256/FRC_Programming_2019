@@ -1,11 +1,9 @@
 package frc.team3256.robot.teleop.control;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.teleop.TeleopUpdater;
-import frc.team3256.warriorlib.control.XboxListenerBase;
-import static frc.team3256.robot.constants.ElevatorConstants.kElevatorSpeed;
+
 import static frc.team3256.robot.constants.HatchConstants.kHatchPivotSpeed;
 
 public class HatchIntakeControlScheme extends CommonControlScheme {
@@ -127,17 +125,15 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
 
     @Override
     public void onLeftShoulderPressed() {
-
+        hatchPivot.deployHatch();
     }
 
     @Override
     public void onRightShoulderPressed() {
-        //hatchPivot.setFloorIntakePosition();
     }
 
     @Override
     public void onLeftShoulderReleased() {
-        //hatchPivot.setDeployPosition();
     }
 
     @Override
