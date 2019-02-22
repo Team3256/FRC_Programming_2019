@@ -11,6 +11,6 @@ import java.util.Arrays;
 public class AutoTestMode extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
-        runAction(new ParallelAction(Arrays.asList(new ZeroCargoAction(), new ZeroHatchAction())));
+        runAction(new ParallelAction(Arrays.asList(new ZeroHatchAction())));
     }
 }

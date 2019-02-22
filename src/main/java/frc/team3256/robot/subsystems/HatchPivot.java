@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.constants.HatchConstants;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
@@ -29,6 +30,7 @@ public class HatchPivot extends SubsystemBase {
 
         TalonSRXUtil.setPIDGains(hatchPivot, 0, kHatchP, kHatchI, kHatchD, kHatchF);
         hatchPivot.selectProfileSlot(0, 0);
+        hatchPivot.setSensorPhase(true);
     }
 
     public static HatchPivot getInstance() {return instance == null ? instance = new HatchPivot(): instance;}
@@ -49,7 +51,7 @@ public class HatchPivot extends SubsystemBase {
         deployHatch.set(DoubleSolenoid.Value.kForward);
     }
 
-    public void closeHatch() {
+    public void retractHatch() {
         deployHatch.set(DoubleSolenoid.Value.kReverse);
     }
 
@@ -78,9 +80,9 @@ public class HatchPivot extends SubsystemBase {
         hatchPivot.set(ControlMode.Position, angleToSensorUnits(kPositionDeployHatch), DemandType.Neutral, 0);
     }
 
-    private double angleToSensorUnits(double degrees) { return (degrees / 360) * Constants.kMagEncoderTicksTalon * HatchConstants.kHatchPivotGearRatio; }
+    private double angleToSensorUnits(double degrees) { return (degrees) * Constants.kMagEncoderTicksTalon / HatchConstants.kHatchPivotGearRatio / (2 * Math.PI); }
 
-    private double sensorUnitsToAngle(double ticks) { return ((ticks / Constants.kMagEncoderTicksTalon) / HatchConstants.kHatchPivotGearRatio) * 360; }
+    private double sensorUnitsToAngle(double ticks) { return Math.PI * 2 * ((ticks / Constants.kMagEncoderTicksTalon) * HatchConstants.kHatchPivotGearRatio); }
 
     public double getAngle() {
         return sensorUnitsToAngle(hatchPivot.getSelectedSensorPosition(0));
@@ -90,6 +92,8 @@ public class HatchPivot extends SubsystemBase {
     public void update(double timestamp) {
         //System.out.println("Hatch Pivot Raw: " + hatchPivot.getSelectedSensorPosition(0));
         //System.out.println("Hatch Pivot Angle: " + getAngle());
+        SmartDashboard.putNumber("Hatch Position", hatchPivot.getSelectedSensorPosition(0));
+        SmartDashboard.putNumber("Hatch Angle", getAngle());
     }
 
     @Override
@@ -104,7 +108,7 @@ public class HatchPivot extends SubsystemBase {
 
     @Override
     public void init(double timestamp) {
-
+        hatchPivot.setSelectedSensorPosition(0,0,0);
     }
 
     @Override

@@ -6,8 +6,11 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.auto.AutoTestMode;
+import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.subsystems.BallShooter;
+import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.subsystems.cargointake.CargoIntake;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.elevator.Elevator;
@@ -25,8 +28,7 @@ public class Robot extends TimedRobot {
 	private Elevator elevator = Elevator.getInstance();
 	private CargoIntake cargoIntake = CargoIntake.getInstance();
 	private BallShooter ballShooter = BallShooter.getInstance();
-	//private HatchPivot hatchPivot = HatchPivot.getInstance();
-	private PigeonIMU gyro = new PigeonIMU(11);
+	private HatchPivot hatchPivot = HatchPivot.getInstance();
 
 	// Pure Pursuit
 	private PurePursuitTracker purePursuitTracker;
@@ -52,7 +54,7 @@ public class Robot extends TimedRobot {
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
 
-		enabledLooper.addLoops(driveTrain, cargoIntake, ballShooter);
+		enabledLooper.addLoops(driveTrain, cargoIntake, hatchPivot, ballShooter);
 
 		DriveTrainBase.setDriveTrain(driveTrain);
 
@@ -61,6 +63,8 @@ public class Robot extends TimedRobot {
 		poseEstimatorLooper.addLoops(poseEstimator);
 
 		teleopUpdater = TeleopUpdater.getInstance();
+
+		SmartDashboard.putBoolean("visionEnabled", false);
 
 		/*
 		PathGenerator pathGenerator = new PathGenerator(Constants.spacing, true);
@@ -141,6 +145,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+
 	}
 
 	/**
@@ -166,5 +171,10 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+	}
+
+	@Override
+	public void disabledPeriodic() {
+
 	}
 }

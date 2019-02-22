@@ -205,8 +205,8 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public void resetEncoders() {
-        leftEncoder.setPosition(0);
-        rightEncoder.setPosition(0);
+        leftMaster.setEncPosition(0);
+        rightMaster.setEncPosition(0);
     }
 
     public double inchesToRotations(double inches) {

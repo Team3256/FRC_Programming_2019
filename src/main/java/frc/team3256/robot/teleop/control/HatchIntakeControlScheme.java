@@ -130,50 +130,39 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
 
     @Override
     public void onRightShoulderPressed() {
+        hatchPivot.setPositionFloorIntake();
+        System.out.println("INTAKING");
     }
 
     @Override
     public void onLeftShoulderReleased() {
+        hatchPivot.retractHatch();
     }
 
     @Override
     public void onRightShoulderReleased() {
-
+        hatchPivot.setPositionDeploy();
+        System.out.println("DEPLOYING");
     }
 
     @Override
     public void onLeftTrigger(double value) {
-        if(value > 0.25) {
-            SmartDashboard.putBoolean("Hatch Ratchet", true);
-            hatchPivot.ratchet();
-        }
-        else {
-            SmartDashboard.putBoolean("Hatch Ratchet", false);
-            hatchPivot.unratchet();
-        }
     }
 
     @Override
     public void onRightTrigger(double value) {
-        if(value > 0.25) {
-            SmartDashboard.putBoolean("Hatch Actuator", true);
-            hatchPivot.deployHatch();
-        }
-        else {
-            SmartDashboard.putBoolean("Hatch Actuator", false);
-            hatchPivot.closeHatch();
-        }
+
     }
 
     @Override
     public void onRightJoyStick(double x, double y) {
-        if (y > 0.25) {
-            hatchPivot.setHatchPivotPower(kHatchPivotSpeed);
-        } else if (y < -0.25) {
-            hatchPivot.setHatchPivotPower(-kHatchPivotSpeed);
-        } else {
-            hatchPivot.setHatchPivotPower(0);
-        }
+//        if (y > 0.25) {
+//            hatchPivot.setHatchPivotPower(kHatchPivotSpeed);
+//        } else if (y < -0.25) {
+//            hatchPivot.setHatchPivotPower(-kHatchPivotSpeed);
+//        } else {
+//            hatchPivot.setHatchPivotPower(0);
+//        }
     }
 
     @Override
