@@ -10,4 +10,7 @@ public class DriveTrainConstants {
     public static final double kMaxAccel = 1000;
     public static final double kAllowedErr = 0;
     public static final double kAngularPowerScalar = 1.7;
+    public static final double turnkP = 0;
+    public static final double turnkI = 0;
+    public static final double turnkD = 0;
 }

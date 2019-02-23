@@ -4,6 +4,7 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.*;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import frc.team3256.robot.operations.Constants;
+import frc.team3256.robot.operations.PIDController;
 import frc.team3256.warriorlib.control.DrivePower;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 import frc.team3256.warriorlib.loop.Loop;
@@ -23,6 +24,9 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     private DoubleSolenoid shifter;
     private boolean init = false;
     private PigeonIMU gyro;
+    private PIDController turnPIDController = new PIDController(turnkP, turnkI, turnkD);
+    private double turnInPlaceOutput = Double.MAX_VALUE;
+
 
     private DriveTrain() {
         gyro = new PigeonIMU(14);
@@ -264,23 +268,20 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public void turnInPlace(double angle) {
-        boolean right = true;
-        if (angle < 0) {
-            right = false;
-        }
-        double targetRot = ((((Math.abs(angle) / 360) * Constants.robotTrack)) / Constants.kWheelDiameter) * Constants.kGearRatio;
-        double targetLeftPos = 0;
-        double targetRightPos = 0;
-        if (right) {
-            targetLeftPos = leftEncoder.getPosition() + targetRot;
-            targetRightPos = rightEncoder.getPosition() - targetRot;
-        } else {
-            targetLeftPos = leftEncoder.getPosition() - targetRot;
-            targetRightPos = rightEncoder.getPosition() + targetRot;
-        }
+        double output = turnPIDController.calculatePID(angle, getAngle());
+        turnInPlaceOutput = output;
+        leftMaster.set(output);
+        rightMaster.set(-output);
+    }
 
-        leftPIDController.setReference(targetLeftPos, ControlType.kPosition);
-        rightPIDController.setReference(targetRightPos, ControlType.kPosition);
+    public boolean isTurnInPlaceFinished() {
+        return Math.abs(turnInPlaceOutput) < 0.02;
+    }
+
+    public void resetTurnInPlace() {
+        turnPIDController.resetPID();
+        turnInPlaceOutput = Double.MAX_VALUE;
+
     }
 
     public void setBrakeMode() {
