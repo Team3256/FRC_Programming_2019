@@ -66,6 +66,9 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         //gyro.calibrate();
         rightMaster.setInverted(false);
         leftMaster.setInverted(true);
+
+        leftMaster.setClosedLoopRampRate(0.7);
+        rightMaster.setClosedLoopRampRate(0.7);
     }
 
     public static DriveTrain getInstance() {
@@ -161,7 +164,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
 
     @Override
     public void update(double timestamp) {
-
+        this.outputToDashboard();
     }
 
     @Override

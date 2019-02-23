@@ -2,9 +2,9 @@ package frc.team3256.robot.constants;
 
 public class HatchConstants {
     public static final double kHatchP = 0.7;
-    public static final double kHatchI = 0.00011;
-    public static final double kHatchD = 0.0007;
-    public static final double kHatchF = 0;
+    public static final double kHatchI = 0.0001;
+    public static final double kHatchD = 0.0;
+    public static final double kHatchF = 0.0;
     public static final double kHatchIz = 0;
 
     public static final double kHatchPivotSpeed = 0.2;

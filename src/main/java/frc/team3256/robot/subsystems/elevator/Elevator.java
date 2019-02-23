@@ -2,13 +2,10 @@ package frc.team3256.robot.subsystems.elevator;
 
 import com.revrobotics.*;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
-
-import javax.naming.ldap.Control;
 
 import static frc.team3256.robot.constants.ElevatorConstants.*;
 
@@ -24,17 +21,17 @@ public class Elevator extends SubsystemBase {
 
 	private Elevator() {
 		hallEffect = new DigitalInput(Constants.kHallEffectPort);
-		hallEffect.requestInterrupts(new InterruptHandlerFunction<Elevator>() {
-			@Override
-			public void interruptFired(int interruptAssertedMask, Elevator param) {
-				System.out.println("HOMED");
-				masterEncoder.setPosition(0);
-				homed = true;
-				master.set(0);
-			}
-		});
-		hallEffect.setUpSourceEdge(false, true);
-		hallEffect.enableInterrupts();
+//		hallEffect.requestInterrupts(new InterruptHandlerFunction<Elevator>() {
+//			@Override
+//			public void interruptFired(int interruptAssertedMask, Elevator param) {
+//				System.out.println("HOMED");
+//				masterEncoder.setPosition(0);
+//				homed = true;
+//				master.set(0);
+//			}
+//		});
+//		hallEffect.setUpSourceEdge(false, true);
+//		hallEffect.enableInterrupts();
 
 		master = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
         slave = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -49,11 +46,11 @@ public class Elevator extends SubsystemBase {
 
 		SparkMAXUtil.setPIDGains(masterPID, 0, kElevatorP, kElevatorI, kElevatorD, kElevatorF, kElevatorIz);
 		SparkMAXUtil.setSmartMotionParams(masterPID, kMinOutputVelocity, kSmartMotionMaxVel, kSmartMotionMaxAccel, kSmartMotionAllowedClosedLoopError, 0);
-		masterEncoder.setPosition(0);
+        master.setEncPosition(0);
 	}
 
 	public void resetEncoder() {
-		masterEncoder.setPosition(0);
+        master.setEncPosition(0);
 	}
 
 	public static Elevator getInstance() {
@@ -66,7 +63,7 @@ public class Elevator extends SubsystemBase {
 
 	public void setPosition(double position) {
 		//masterPID.setReference(position, ControlType.kPosition);
-		masterPID.setReference(position, ControlType.kSmartMotion, 0,0);
+        masterPID.setReference(position, ControlType.kSmartMotion, 0);
 	}
 
 	public double getPosition() {
@@ -76,11 +73,16 @@ public class Elevator extends SubsystemBase {
 	@Override
 	public void outputToDashboard() {
 		SmartDashboard.putNumber("elevatorPositionMaster", getPosition());
+        SmartDashboard.putNumber("ElevatorSpeed", master.getEncoder().getVelocity());
 		SmartDashboard.putNumber("elevatorPositionSlave", slave.getEncoder().getPosition());
 
 		SmartDashboard.putNumber("elevatorCurrentMaster", master.getOutputCurrent());
 		SmartDashboard.putNumber("elevatorCurrentSlave", slave.getOutputCurrent());
-		SmartDashboard.putBoolean("hallEffect", hallEffect.get());
+        SmartDashboard.putBoolean("hallEffect", getHallEffectTriggered());
+    }
+
+    public boolean getHallEffectTriggered() {
+        return !hallEffect.get();
 	}
 
 	public void zeroSensors() {
@@ -98,22 +100,6 @@ public class Elevator extends SubsystemBase {
 
 	public void end(double timestamp) {
 
-	}
-
-	public void onUp() {
-		if (getPosition() < kPositionMax) {
-			setPosition(getPosition() + 0.5);
-		} else {
-			setPosition(kPositionMax);
-		}
-	}
-
-	public void onDown() {
-		if (getPosition() > kPositionMin) {
-			setPosition(getPosition() - 0.5);
-		} else {
-			setPosition(kPositionMin);
-		}
 	}
 	
 	public void setPositionHighCargo() {

@@ -1,6 +1,5 @@
 package frc.team3256.robot.teleop.control;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.teleop.TeleopUpdater;
 
@@ -10,7 +9,8 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
     private HatchPivot hatchPivot = HatchPivot.getInstance();
 
     @Override
-    public void onAPressed() { //elevator.setLowHatchPosition();
+    public void onAPressed() {
+        elevator.setPositionLowHatch();
     }
 
     @Override
@@ -21,7 +21,7 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
     // Home elevator
     @Override
     public void onXPressed() {
-        //elevator.setPosition(0);
+        elevator.setPosition(0);
     }
 
     @Override
@@ -155,14 +155,14 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
     }
 
     @Override
-    public void onRightJoyStick(double x, double y) {
-//        if (y > 0.25) {
-//            hatchPivot.setHatchPivotPower(kHatchPivotSpeed);
-//        } else if (y < -0.25) {
-//            hatchPivot.setHatchPivotPower(-kHatchPivotSpeed);
-//        } else {
-//            hatchPivot.setHatchPivotPower(0);
-//        }
+    public void onRightJoystick(double x, double y) {
+        if (y > 0.25) {
+            hatchPivot.setHatchPivotPower(kHatchPivotSpeed);
+        } else if (y < -0.25) {
+            hatchPivot.setHatchPivotPower(-kHatchPivotSpeed);
+        } else {
+            hatchPivot.setHatchPivotPower(0);
+        }
     }
 
     @Override

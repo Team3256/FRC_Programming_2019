@@ -93,6 +93,7 @@ public class HatchPivot extends SubsystemBase {
         //System.out.println("Hatch Pivot Raw: " + hatchPivot.getSelectedSensorPosition(0));
         //System.out.println("Hatch Pivot Angle: " + getAngle());
         SmartDashboard.putNumber("Hatch Position", hatchPivot.getSelectedSensorPosition(0));
+        SmartDashboard.putNumber("Hatch Target", hatchPivot.getClosedLoopError());
         SmartDashboard.putNumber("Hatch Angle", getAngle());
     }
 

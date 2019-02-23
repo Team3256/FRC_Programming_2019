@@ -8,21 +8,22 @@ public class ZeroElevatorAction implements Action {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return elevator.getHallEffectTriggered();
     }
 
     @Override
     public void update() {
-        //if (elevator.getVelocity() < 1)
+
     }
 
     @Override
     public void done() {
-
+        elevator.setOpenLoop(0);
+        elevator.resetEncoder();
     }
 
     @Override
     public void start() {
-        elevator.setOpenLoop(-0.25);
+        elevator.setOpenLoop(-0.1);
     }
 }

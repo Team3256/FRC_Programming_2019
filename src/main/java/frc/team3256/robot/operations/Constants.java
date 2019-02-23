@@ -20,8 +20,8 @@ public class Constants {
 	public static final double tolerance = 0.001;
 	public static final double loopTime = 1.0 / 200.0; //how often Looper updates
 	public static final double lookaheadDistance = 21;
-	public static final double maxAccel = 100; //max robot acceleration
-	public static final double maxVel = 276; //max robot velocity
+	public static final double maxAccel = 25; //max robot acceleration
+	public static final double maxVel = 75; //max robot velocity
 	public static final double kV = 1 / maxVel; // 1/max robot speed
 	public static final double maxVelk = 3; //generally between 1-5
 

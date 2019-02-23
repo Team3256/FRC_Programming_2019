@@ -4,8 +4,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.BallShooter;
 import frc.team3256.robot.subsystems.cargointake.CargoIntake;
 import frc.team3256.robot.teleop.TeleopUpdater;
-import static frc.team3256.robot.constants.CargoConstants.*;
-import static frc.team3256.robot.constants.BallShooterConstants.*;
+
+import static frc.team3256.robot.constants.BallShooterConstants.kShootSpeed;
+import static frc.team3256.robot.constants.CargoConstants.kPivotSpeed;
 
 public class CargoIntakeControlScheme extends CommonControlScheme {
     private CargoIntake cargoIntake = CargoIntake.getInstance();
@@ -140,50 +141,26 @@ public class CargoIntakeControlScheme extends CommonControlScheme {
     public void onStartReleased() {
 
     }
-
-    private double leftTrigger = 0.0;
-    private double rightTrigger = 0.0;
-
-    private boolean leftChanged = false;
     // Exhaust Cargo on hold
     @Override
     public void onLeftTrigger(double value) {
-        leftTrigger = value;
-        if (value > 0.25 && !leftChanged) {
-            System.out.println("Exhausting cargo");
+        if (value > 0.25)
             cargoIntake.exhaust();
-            leftChanged = true;
-        }
-        if (value < 0.25) {
-            leftChanged = false;
-        }
-        if (value < 0.25 && rightTrigger < 0.25) {
-            cargoIntake.stop();
-        }
+        else cargoIntake.setIntakePower(0);
     }
 
-    private boolean rightChanged = false;
     // Intake Cargo on hold
     @Override
     public void onRightTrigger(double value) {
-        rightTrigger = value;
-        if (value > 0.25 && !rightChanged) {
-            System.out.println("Intaking cargo");
+        if (value > 0.25)
             cargoIntake.intake();
-            rightChanged = true;
-        }
-        if (value < 0.25) {
-            rightChanged = false;
-        }
-        if (value < 0.25 && leftTrigger < 0.25) {
-            cargoIntake.stop();
-        }
+        else cargoIntake.setIntakePower(0);
     }
 
     // +Y: Move Pivot Up
     // -Y: Move Pivot Down
     @Override
-    public void onRightJoyStick(double x, double y) {
+    public void onRightJoystick(double x, double y) {
         if (y > 0.25) {
             System.out.println("Moving cargo pivot up manually");
             SmartDashboard.putNumber("Cargo boi", 1);
