@@ -2,7 +2,7 @@ package frc.team3256.robot.operations;
 
 public class Constants {
 	public static final double kGearRatio = 6.6; //motor rotations to wheel rotations (118 / 48) * 6.6 (6.6 should be actual ratio lul)
-	//Ports: No duplicates in each set
+	//Ports: No duplicates in each set ///////////////////////// WORKING: 6.6
 
 	//Solenoids
 	public static final int kShifterForward = 1; // 6
@@ -21,7 +21,7 @@ public class Constants {
 	public static final double loopTime = 1.0 / 200.0; //how often Looper updates
 	public static final double lookaheadDistance = 21;
 	public static final double maxAccel = 25; //max robot acceleration
-	public static final double maxVel = 75; //max robot velocity
+	public static final double maxVel = 60; //max robot velocity
 	public static final double kV = 1 / maxVel; // 1/max robot speed
 	public static final double maxVelk = 3; //generally between 1-5
 

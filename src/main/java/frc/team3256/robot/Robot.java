@@ -1,5 +1,6 @@
 package frc.team3256.robot;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
@@ -47,6 +48,7 @@ public class Robot extends TimedRobot {
 	private CANEncoder leftEncoder, rightEncoder;
 
 	private Compressor compressor;
+	private double count = 0;
 
 	/**
 	 * This function is called when the robot is first started up and should be
@@ -177,14 +179,20 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-	}
-
-	@Override
-	public void disabledPeriodic() {
+		if (count == 0) {
+			driveTrain.resetGyro();
+		}
 		poseEstimatorLooper.start();
 		SmartDashboard.putNumber("Pose X", poseEstimator.getPose().x);
 		SmartDashboard.putNumber("Pose Y", poseEstimator.getPose().y);
 		SmartDashboard.putNumber("left_enc", driveTrain.getLeftDistance());
 		SmartDashboard.putNumber("right_enc", driveTrain.getRightDistance());
+		System.out.println("right encoder:" + driveTrain.getRightDistance());
+		System.out.println("left encoder:" + driveTrain.getLeftDistance());
+	}
+
+	@Override
+	public void disabledPeriodic() {
+
 	}
 }
