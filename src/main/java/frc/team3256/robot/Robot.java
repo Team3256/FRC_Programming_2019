@@ -73,11 +73,26 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putBoolean("visionEnabled", false);
 
 		PathGenerator pathGenerator = new PathGenerator(Constants.spacing, true);
-		pathGenerator.addPoint(new Vector(0, 0));
-		pathGenerator.addPoint(new Vector(0, 100));
+//		pathGenerator.addPoint(new Vector(0, 0));
+//		pathGenerator.addPoint(new Vector(0, 100));
 //		pathGenerator.addPoint(new Vector(70, 60));
 //		pathGenerator.addPoint(new Vector(70, 80));
 //		pathGenerator.addPoint(new Vector(70, 102));
+		pathGenerator.addPoint(new Vector(0,0));
+		pathGenerator.addPoint(new Vector(0,3.211716));
+		pathGenerator.addPoint(new Vector(0,10.420763));
+		pathGenerator.addPoint(new Vector(-2.621082,23.100732));
+		pathGenerator.addPoint(new Vector(-7.725668,40.840927));
+		pathGenerator.addPoint(new Vector(-16.317134,61.614042));
+		pathGenerator.addPoint(new Vector(-27.160984,83.810593));
+		pathGenerator.addPoint(new Vector(-37.658183,105.74539));
+		pathGenerator.addPoint(new Vector(-45.461634,125.795271));
+		pathGenerator.addPoint(new Vector(-49.781664,142.353346));
+		pathGenerator.addPoint(new Vector(-51.8,153.73625));
+		pathGenerator.addPoint(new Vector(-51.8,159.98876));
+		pathGenerator.addPoint(new Vector(-51.8,162.622725));
+		pathGenerator.addPoint(new Vector(-51.8,163.233182));
+
 		pathGenerator.setSmoothingParameters(Constants.a, Constants.b, Constants.tolerance);
 		pathGenerator.setVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
 		Path path = pathGenerator.generatePath();
