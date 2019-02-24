@@ -26,6 +26,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     private PigeonIMU gyro;
     private PIDController turnPIDController = new PIDController(turnkP, turnkI, turnkD);
     private double turnInPlaceOutput = Double.MAX_VALUE;
+    private DriveStraightController driveStraightController = new DriveStraightController();
 
 
     private DriveTrain() {
@@ -282,6 +283,43 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         turnPIDController.resetPID();
         turnInPlaceOutput = Double.MAX_VALUE;
 
+    }
+
+    public void configureDriveStraight(double startVel, double endVel, double distance, double angle){
+        driveStraightController.setSetpoint(startVel, endVel, distance, angle);
+        if (controlMode != DriveControlMode.DRIVE_STRAIGHT){
+            controlMode = DriveControlMode.DRIVE_STRAIGHT;
+            TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
+            resetNominal();
+            setHighGear(true);
+        }
+        TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
+        disableRamp();
+        updateDriveStraight();
+    }
+
+    public boolean isDriveStraightFinished() {
+        return driveStraightController.isFinished();
+    }
+
+    public void updateDriveStraight() {
+        if (controlMode != DriveControlMode.DRIVE_STRAIGHT) {
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!");
+            return;
+        }
+        if (driveStraightController.isFinished()) {
+            System.out.println("----------------------");
+            setOpenLoop(0, 0);
+            return;
+        }
+        //System.out.println("Updating....");
+        DrivePower output = driveStraightController.update(getAverageDistance(), getAngle().degrees());
+        leftMaster.set(ControlMode.PercentOutput, output.getLeft());
+        rightMaster.set(ControlMode.PercentOutput, output.getRight());
+    }
+
+    public void resetDriveStraightController() {
+        driveStraightController.resetController();
     }
 
     public void setBrakeMode() {
