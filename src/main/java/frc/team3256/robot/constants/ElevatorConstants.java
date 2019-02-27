@@ -4,6 +4,7 @@ public class ElevatorConstants {
     public static final int kSparkMaxMaster = 1;
     public static final int kSparkMaxSlave = 2;
 
+
     public static final double kElevatorP = 0.00016; //0.00016
     public static final double kElevatorI = 0; //0
     public static final double kElevatorD = 0.0004; //0.0004
@@ -32,4 +33,5 @@ public class ElevatorConstants {
     public static final double kElevatorMinPosition = 0; // 1
 
     public static final double kElevatorSpeed = 0.3;
+    public static final int kHallEffectPort = 0;
 }

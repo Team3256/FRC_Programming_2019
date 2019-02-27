@@ -3,7 +3,6 @@ package frc.team3256.robot.subsystems;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.*;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.control.DrivePower;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 import frc.team3256.warriorlib.loop.Loop;
@@ -15,9 +14,8 @@ import static frc.team3256.robot.constants.DriveTrainConstants.*;
 public class DriveTrain extends DriveTrainBase implements Loop {
 
     private static DriveTrain instance;
-    //public ADXRS453_Gyro internalGyro;
     private static double prevTurn = 0.0;
-    private CANSparkMax leftMaster, rightMaster, leftSlave, rightSlave, leftHangDrive, rightHangDrive;
+    private CANSparkMax leftMaster, rightMaster, leftSlave, rightSlave;
     private CANEncoder leftEncoder, rightEncoder;
     private CANPIDController leftPIDController, rightPIDController;
     private DoubleSolenoid shifter;
@@ -30,11 +28,11 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         gyro.setYaw(0, 0);
         //        internalGyro = new ADXRS453_Gyro();
         //        internalGyro.startCalibrate();
-        leftMaster = SparkMAXUtil.generateGenericSparkMAX(Constants.kLeftDriveMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
-        leftSlave = SparkMAXUtil.generateSlaveSparkMAX(Constants.kLeftDriveSlave, CANSparkMaxLowLevel.MotorType.kBrushless, leftMaster);
-        //leftSlave2 = TalonSRXUtil.generateSlaveTalon(Constants.kLeftDriveSlave2, Constants.kLeftDriveMaster);
-        rightMaster = SparkMAXUtil.generateGenericSparkMAX(Constants.kRightDriveMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
-        rightSlave = SparkMAXUtil.generateSlaveSparkMAX(Constants.kRightDriveSlave, CANSparkMaxLowLevel.MotorType.kBrushless, rightMaster);
+        leftMaster = SparkMAXUtil.generateGenericSparkMAX(kLeftDriveMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
+        leftSlave = SparkMAXUtil.generateSlaveSparkMAX(kLeftDriveSlave, CANSparkMaxLowLevel.MotorType.kBrushless, leftMaster);
+        //leftSlave2 = TalonSRXUtil.generateSlaveTalon(kLeftDriveSlave2, kLeftDriveMaster);
+        rightMaster = SparkMAXUtil.generateGenericSparkMAX(kRightDriveMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
+        rightSlave = SparkMAXUtil.generateSlaveSparkMAX(kRightDriveSlave, CANSparkMaxLowLevel.MotorType.kBrushless, rightMaster);
 
         leftEncoder = leftMaster.getEncoder();
         rightEncoder = rightMaster.getEncoder();
@@ -49,26 +47,23 @@ public class DriveTrain extends DriveTrainBase implements Loop {
 
         SparkMAXUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
 
-//        leftHangDrive = TalonSRXUtil.generateGenericTalon(Constants.kLeftHangDrive);
-//        rightHangDrive = TalonSRXUtil.generateGenericTalon(Constants.kRightHangDrive);
+        /*leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*loopTime), 0);
+        rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*loopTime), 0);
 
-        /*leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*Constants.loopTime), 0);
-        rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*Constants.loopTime), 0);
-
-        leftMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*Constants.loopTime), 0);
-        rightMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*Constants.loopTime), 0);
+        leftMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*loopTime), 0);
+        rightMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*loopTime), 0);
         */
 
-        shifter = new DoubleSolenoid(15, Constants.kShifterForward, Constants.kShifterReverse);
+        shifter = new DoubleSolenoid(15, kShifterForward, kShifterReverse);
         //shifter = new DoubleSolenoid(15, 3, 4);
 
-        //rightSlave2 = TalonSRXUtil.generateSlaveTalon(Constants.kRightDriveSlave2, Constants.kRightDriveMaster);
+        //rightSlave2 = TalonSRXUtil.generateSlaveTalon(kRightDriveSlave2, kRightDriveMaster);
         //gyro.calibrate();
         rightMaster.setInverted(false);
         leftMaster.setInverted(true);
 
-        leftMaster.setClosedLoopRampRate(0.7);
-        rightMaster.setClosedLoopRampRate(0.7);
+//        leftMaster.setClosedLoopRampRate(0.0);
+//        rightMaster.setClosedLoopRampRate(0.0);
     }
 
     public static DriveTrain getInstance() {
@@ -88,28 +83,28 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         if (quickTurn) {
             highGear = false;
             if (Math.abs(throttle) < 0.2) {
-                Constants.quickStopAccumulator = (1 - Constants.kQuickStopAlpha) * Constants.quickStopAccumulator + Constants.kQuickStopAlpha * clamp(turn) * Constants.kQuickStopScalar;
+                quickStopAccumulator = (1 - kQuickStopAlpha) * quickStopAccumulator + kQuickStopAlpha * clamp(turn) * kQuickStopScalar;
             }
             overPower = 1.0;
             angularPower = turn/kAngularPowerScalar;
-            if (Math.abs(turn - prevTurn) > Constants.kQuickTurnDeltaLimit) {
+            if (Math.abs(turn - prevTurn) > kQuickTurnDeltaLimit) {
                 //System.out.println("TURN: " + turn);
                 //System.out.println("PREVIOUS TURN: " + prevTurn);
                 if (turn > 0) {
-                    angularPower = prevTurn + Constants.kQuickTurnDeltaLimit;
+                    angularPower = prevTurn + kQuickTurnDeltaLimit;
                     //System.out.println("ANGULAR POWER: " + angularPower);
                 } else
-                    angularPower = prevTurn - Constants.kQuickTurnDeltaLimit;
+                    angularPower = prevTurn - kQuickTurnDeltaLimit;
             }
         } else {
             overPower = 0.0;
-            angularPower = (Math.abs(throttle) * turn - Constants.quickStopAccumulator)/kAngularPowerScalar;
-            if (Constants.quickStopAccumulator > 1) {
-                Constants.quickStopAccumulator -= 1;
-            } else if (Constants.quickStopAccumulator < -1) {
-                Constants.quickStopAccumulator += 1;
+            angularPower = (Math.abs(throttle) * turn - quickStopAccumulator)/kAngularPowerScalar;
+            if (quickStopAccumulator > 1) {
+                quickStopAccumulator -= 1;
+            } else if (quickStopAccumulator < -1) {
+                quickStopAccumulator += 1;
             } else {
-                Constants.quickStopAccumulator = 0.0;
+                quickStopAccumulator = 0.0;
             }
         }
         prevTurn = turn;
@@ -184,7 +179,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
      * Native NEO unit is RPM so convert it to inches per second
      */
     public double getLeftVelocity() {
-        return rpmToInchesPerSec(leftEncoder.getVelocity()) / Constants.kGearRatio;
+        return rpmToInchesPerSec(leftEncoder.getVelocity()) / kGearRatio;
     }
 
     public double getLeftRPM() {
@@ -192,7 +187,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public double getRightVelocity() {
-        return rpmToInchesPerSec(rightEncoder.getVelocity()) / Constants.kGearRatio;
+        return rpmToInchesPerSec(rightEncoder.getVelocity()) / kGearRatio;
     }
 
     public double getRightRPM() {
@@ -200,11 +195,11 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public double getLeftDistance() {
-        return rotationsToInches(leftEncoder.getPosition()) / Constants.kGearRatio;
+        return rotationsToInches(leftEncoder.getPosition()) / kGearRatio;
     }
 
     public double getRightDistance() {
-        return rotationsToInches(rightEncoder.getPosition()) / Constants.kGearRatio;
+        return rotationsToInches(rightEncoder.getPosition()) / kGearRatio;
     }
 
     public void resetEncoders() {
@@ -213,11 +208,11 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public double inchesToRotations(double inches) {
-        return inches / (Constants.kWheelDiameter * Math.PI);
+        return inches / (kWheelDiameter * Math.PI);
     }
 
     public double rotationsToInches(double rotations) {
-        return rotations * Math.PI * Constants.kWheelDiameter;
+        return rotations * Math.PI * kWheelDiameter;
     }
 
     public double inchesPerSecToRPM(double inchesPerSec) {
@@ -259,28 +254,8 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         leftMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(leftOutput));
         rightMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(rightOutput));*/
 
-        leftPIDController.setReference(inchesPerSecToRPM(leftVelInchesPerSec) * Constants.kGearRatio, ControlType.kVelocity);
-        rightPIDController.setReference(inchesPerSecToRPM(rightVelInchesPerSec) * Constants.kGearRatio, ControlType.kVelocity);
-    }
-
-    public void turnInPlace(double angle) {
-        boolean right = true;
-        if (angle < 0) {
-            right = false;
-        }
-        double targetRot = ((((Math.abs(angle) / 360) * Constants.robotTrack)) / Constants.kWheelDiameter) * Constants.kGearRatio;
-        double targetLeftPos = 0;
-        double targetRightPos = 0;
-        if (right) {
-            targetLeftPos = leftEncoder.getPosition() + targetRot;
-            targetRightPos = rightEncoder.getPosition() - targetRot;
-        } else {
-            targetLeftPos = leftEncoder.getPosition() - targetRot;
-            targetRightPos = rightEncoder.getPosition() + targetRot;
-        }
-
-        leftPIDController.setReference(targetLeftPos, ControlType.kPosition);
-        rightPIDController.setReference(targetRightPos, ControlType.kPosition);
+        leftPIDController.setReference(inchesPerSecToRPM(leftVelInchesPerSec) * kGearRatio, ControlType.kVelocity);
+        rightPIDController.setReference(inchesPerSecToRPM(rightVelInchesPerSec) * kGearRatio, ControlType.kVelocity);
     }
 
     public void setBrakeMode() {

@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "idea"
-    id "edu.wpi.first.GradleRIO" version "2019.2.1"
+    id "edu.wpi.first.GradleRIO" version "2019.3.2"
 }
 
 def ROBOT_MAIN_CLASS = "frc.team3256.robot.Main"
@@ -47,7 +47,7 @@ dependencies {
     compile wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
-    compile 'com.github.Team3256:warriorlib:e07a8f46dd'
+    compile 'com.github.Team3256:warriorlib:5fb3f13654'
 }
 
 // Setting up Jar File. In this case, adding all libraries into the main jar ('fat jar')

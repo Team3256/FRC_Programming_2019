@@ -1,16 +1,13 @@
 package frc.team3256.robot.teleop.control;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3256.robot.subsystems.BallShooter;
-import frc.team3256.robot.subsystems.cargointake.CargoIntake;
+import frc.team3256.robot.subsystems.CargoIntake;
+import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.teleop.TeleopUpdater;
 
-import static frc.team3256.robot.constants.BallShooterConstants.kShootSpeed;
-import static frc.team3256.robot.constants.CargoConstants.kPivotSpeed;
 
 public class CargoIntakeControlScheme extends CommonControlScheme {
     private CargoIntake cargoIntake = CargoIntake.getInstance();
-    private BallShooter ballShooter = BallShooter.getInstance();
+    private HatchPivot hatchPivot = HatchPivot.getInstance();
 
     private double cargoPivotAccumulator = 0;
     private boolean intaking = false, exhausting = false;
@@ -72,23 +69,22 @@ public class CargoIntakeControlScheme extends CommonControlScheme {
     // Score Cargo
     @Override
     public void onLeftShoulderPressed() {
-        ballShooter.setPower(-1);
+
     }
 
     @Override
     public void onRightShoulderPressed() {
-        ballShooter.setPower(kShootSpeed);
+        hatchPivot.setPositionFloorIntake();
     }
 
     @Override
     public void onLeftShoulderReleased() {
-        System.out.println("Stop scoring cargo");
-        ballShooter.setPower(0);
+
     }
 
     @Override
     public void onRightShoulderReleased() {
-        ballShooter.setPower(0);
+
     }
 
 
@@ -156,24 +152,6 @@ public class CargoIntakeControlScheme extends CommonControlScheme {
             cargoIntake.intake();
         else cargoIntake.setIntakePower(0);
     }
-
-    // +Y: Move Pivot Up
-    // -Y: Move Pivot Down
-    @Override
-    public void onRightJoystick(double x, double y) {
-        if (y > 0.25) {
-            System.out.println("Moving cargo pivot up manually");
-            SmartDashboard.putNumber("Cargo boi", 1);
-            cargoIntake.setPivotPower(kPivotSpeed);
-        } else if (y < -0.25) {
-            SmartDashboard.putNumber("Cargo boi", -1);
-            cargoIntake.setPivotPower(-kPivotSpeed);
-        } else {
-            SmartDashboard.putNumber("Cargo boi", 0);
-            cargoIntake.setPivotPower(0);
-        }
-    }
-
     @Override
     public void onLeftJoystickPressed() {
 

@@ -5,8 +5,8 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team3256.robot.constants.DriveTrainConstants;
 import frc.team3256.robot.constants.HatchConstants;
-import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
@@ -29,8 +29,13 @@ public class HatchPivot extends SubsystemBase {
         TalonSRXUtil.setBrakeMode();
 
         TalonSRXUtil.setPIDGains(hatchPivot, 0, kHatchP, kHatchI, kHatchD, kHatchF);
+
+        hatchPivot.configMotionCruiseVelocity(18000, 0);
+        hatchPivot.configMotionAcceleration(12000, 0); //12000
+
         hatchPivot.selectProfileSlot(0, 0);
         hatchPivot.setSensorPhase(true);
+        //hatchPivot.configSetParameter(ParamEnum.nom)
     }
 
     public static HatchPivot getInstance() {return instance == null ? instance = new HatchPivot(): instance;}
@@ -68,21 +73,20 @@ public class HatchPivot extends SubsystemBase {
     }
 
     public void setPositionFoldIn() {
-        hatchPivot.set(ControlMode.Position, angleToSensorUnits(kPositionFoldIn), DemandType.Neutral, 0);
+        hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionFoldIn), DemandType.ArbitraryFeedForward, 0);
     }
 
-
     public void setPositionFloorIntake() {
-        hatchPivot.set(ControlMode.Position, angleToSensorUnits(kPositionFloorIntakeHatch), DemandType.Neutral, 0);
+        hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionFloorIntakeHatch), DemandType.ArbitraryFeedForward, 0);
     }
 
     public void setPositionDeploy() {
-        hatchPivot.set(ControlMode.Position, angleToSensorUnits(kPositionDeployHatch), DemandType.Neutral, 0);
+        hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionDeployHatch), DemandType.ArbitraryFeedForward, 0);
     }
 
-    private double angleToSensorUnits(double degrees) { return (degrees) * Constants.kMagEncoderTicksTalon / HatchConstants.kHatchPivotGearRatio / (2 * Math.PI); }
+    private double angleToSensorUnits(double degrees) { return (degrees) * DriveTrainConstants.kMagEncoderTicksTalon / HatchConstants.kHatchPivotGearRatio / (2 * Math.PI); }
 
-    private double sensorUnitsToAngle(double ticks) { return Math.PI * 2 * ((ticks / Constants.kMagEncoderTicksTalon) * HatchConstants.kHatchPivotGearRatio); }
+    private double sensorUnitsToAngle(double ticks) { return Math.PI * 2 * ((ticks / DriveTrainConstants.kMagEncoderTicksTalon) * HatchConstants.kHatchPivotGearRatio); }
 
     public double getAngle() {
         return sensorUnitsToAngle(hatchPivot.getSelectedSensorPosition(0));

@@ -1,9 +1,8 @@
-package frc.team3256.robot.subsystems.elevator;
+package frc.team3256.robot.subsystems;
 
 import com.revrobotics.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
@@ -20,7 +19,7 @@ public class Elevator extends SubsystemBase {
 	private boolean homed = false;
 
 	private Elevator() {
-		hallEffect = new DigitalInput(Constants.kHallEffectPort);
+		hallEffect = new DigitalInput(kHallEffectPort);
 //		hallEffect.requestInterrupts(new InterruptHandlerFunction<Elevator>() {
 //			@Override
 //			public void interruptFired(int interruptAssertedMask, Elevator param) {

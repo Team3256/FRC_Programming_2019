@@ -1,30 +1,17 @@
 package frc.team3256.robot;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
-import com.revrobotics.CANSparkMax;
-import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team3256.robot.auto.AutoTestMode;
 import frc.team3256.robot.auto.PurePursuitTestMode;
-import frc.team3256.robot.operations.Constants;
-import frc.team3256.robot.subsystems.BallShooter;
-import frc.team3256.robot.subsystems.DriveTrain;
-import frc.team3256.robot.subsystems.HatchPivot;
-import frc.team3256.robot.subsystems.cargointake.CargoIntake;
-import frc.team3256.robot.subsystems.elevator.Elevator;
+import frc.team3256.robot.subsystems.*;
 import frc.team3256.robot.teleop.TeleopUpdater;
 import frc.team3256.warriorlib.auto.AutoModeExecuter;
-import frc.team3256.warriorlib.auto.purepursuit.Path;
-import frc.team3256.warriorlib.auto.purepursuit.PathGenerator;
 import frc.team3256.warriorlib.auto.purepursuit.PoseEstimator;
 import frc.team3256.warriorlib.auto.purepursuit.PurePursuitTracker;
 import frc.team3256.warriorlib.loop.Looper;
-import frc.team3256.warriorlib.math.Vector;
 import frc.team3256.warriorlib.subsystem.DriveTrainBase;
-
-import java.util.Collections;
 
 public class Robot extends TimedRobot {
 
@@ -32,23 +19,19 @@ public class Robot extends TimedRobot {
 	private DriveTrain driveTrain = DriveTrain.getInstance();
 	private Elevator elevator = Elevator.getInstance();
 	private CargoIntake cargoIntake = CargoIntake.getInstance();
-	private BallShooter ballShooter = BallShooter.getInstance();
 	private HatchPivot hatchPivot = HatchPivot.getInstance();
 
 	// Pure Pursuit
-	private PurePursuitTracker purePursuitTracker;
+	private PurePursuitTracker purePursuitTracker = PurePursuitTracker.getInstance();
 	private PoseEstimator poseEstimator;
 
 	// Loopers
-	private Looper enabledLooper, poseEstimatorLooper;
+	private Looper teleopLooper, poseEstimatorLooper;
 	private TeleopUpdater teleopUpdater;
 
-	private CANSparkMax leftMotor, rightMotor;
-	private CANPIDController leftPIDController, rightPIDController;
-	private CANEncoder leftEncoder, rightEncoder;
-
-	private Compressor compressor;
-	private double count = 0;
+	//Auto Teleop control
+	private AutoModeExecuter autoModeExecuter;
+	private boolean maintainAutoExecution = false;
 
 	/**
 	 * This function is called when the robot is first started up and should be
@@ -56,54 +39,21 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
-		enabledLooper = new Looper(1 / 200D);
+		DriveTrainBase.setDriveTrain(driveTrain);
+
+		teleopLooper = new Looper(1 / 200D);
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
 
-		enabledLooper.addLoops(driveTrain, cargoIntake, hatchPivot, ballShooter, elevator);
-
-		DriveTrainBase.setDriveTrain(driveTrain);
+		teleopLooper.addLoops(driveTrain, cargoIntake, hatchPivot, elevator);
 
 		poseEstimatorLooper = new Looper(1 / 50D);
 		poseEstimator = PoseEstimator.getInstance();
 		poseEstimatorLooper.addLoops(poseEstimator);
 
 		teleopUpdater = TeleopUpdater.getInstance();
-
 		SmartDashboard.putBoolean("visionEnabled", false);
-
-		PathGenerator pathGenerator = new PathGenerator(Constants.spacing, true);
-//		pathGenerator.addPoint(new Vector(0, 0));
-//		pathGenerator.addPoint(new Vector(0, 100));
-//		pathGenerator.addPoint(new Vector(70, 60));
-//		pathGenerator.addPoint(new Vector(70, 80));
-//		pathGenerator.addPoint(new Vector(70, 102));
-		pathGenerator.addPoint(new Vector(0,0));
-		pathGenerator.addPoint(new Vector(0,3.211716));
-		pathGenerator.addPoint(new Vector(0,10.420763));
-		pathGenerator.addPoint(new Vector(-2.621082,23.100732));
-		pathGenerator.addPoint(new Vector(-7.725668,40.840927));
-		pathGenerator.addPoint(new Vector(-16.317134,61.614042));
-		pathGenerator.addPoint(new Vector(-27.160984,83.810593));
-		pathGenerator.addPoint(new Vector(-37.658183,105.74539));
-		pathGenerator.addPoint(new Vector(-45.461634,125.795271));
-		pathGenerator.addPoint(new Vector(-49.781664,142.353346));
-		pathGenerator.addPoint(new Vector(-51.8,153.73625));
-		pathGenerator.addPoint(new Vector(-51.8,159.98876));
-		pathGenerator.addPoint(new Vector(-51.8,162.622725));
-		pathGenerator.addPoint(new Vector(-51.8,163.233182));
-
-		pathGenerator.setSmoothingParameters(Constants.a, Constants.b, Constants.tolerance);
-		pathGenerator.setVelocities(Constants.maxVel, Constants.maxAccel, Constants.maxVelk);
-		Path path = pathGenerator.generatePath();
-
-		purePursuitTracker = PurePursuitTracker.getInstance();
-		purePursuitTracker.setRobotTrack(Constants.robotTrack);
-		//purePursuitTracker.setFeedbackMultiplier(Constants.kP);
-		purePursuitTracker.setPaths(Collections.singletonList(path), Constants.lookaheadDistance);
-
-		//Compressor compressor = new Compressor(15);
-		//compressor.setClosedLoopControl(true);
+		SmartDashboard.putBoolean("autoEnabled", false);
 	}
 
 	/**
@@ -111,16 +61,10 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
-		enabledLooper.stop();
-		poseEstimatorLooper.stop();
+		teleopLooper.stop();
 
-		driveTrain.resetGyro();
-		driveTrain.resetEncoders();
 		driveTrain.setCoastMode();
 		driveTrain.setHighGear(true);
-
-		poseEstimator.reset();
-		purePursuitTracker.reset();
 	}
 
 	/**
@@ -140,24 +84,29 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-//		AutoModeExecuter autoModeExecuter = new AutoModeExecuter();
-//		autoModeExecuter.setAutoMode(new AutoTestMode());
-//		autoModeExecuter.start();
-
-		enabledLooper.stop();
-
-		driveTrain.setBrakeMode();
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
+		driveTrain.setBrakeMode();
+		hatchPivot.zeroSensors();
+
 		poseEstimator.reset();
 		purePursuitTracker.reset();
 
-		poseEstimatorLooper.start();
-		//hatchPivot.zeroSensors();
+		SmartDashboard.putString("alliance", DriverStation.getInstance().getAlliance().name());
 
-		AutoModeExecuter autoModeExecuter = new AutoModeExecuter();
-		autoModeExecuter.setAutoMode(new PurePursuitTestMode());
-		autoModeExecuter.start();
+		if (SmartDashboard.getBoolean("autoEnabled", false)) {
+			maintainAutoExecution = true;
+			teleopLooper.stop();
+
+			poseEstimatorLooper.start();
+
+			autoModeExecuter = new AutoModeExecuter();
+			autoModeExecuter.setAutoMode(new AutoTestMode());
+			autoModeExecuter.start();
+		}
+		else {
+			teleopLooper.start();
+		}
 	}
 
 	/**
@@ -167,8 +116,26 @@ public class Robot extends TimedRobot {
 	public void autonomousPeriodic() {
 		SmartDashboard.putNumber("Pose X", poseEstimator.getPose().x);
 		SmartDashboard.putNumber("Pose Y", poseEstimator.getPose().y);
-		SmartDashboard.putNumber("left_enc", driveTrain.getLeftDistance());
-		SmartDashboard.putNumber("right_enc", driveTrain.getRightDistance());
+		SmartDashboard.putNumber("left enc", driveTrain.getLeftDistance());
+		SmartDashboard.putNumber("right enc", driveTrain.getRightDistance());
+		SmartDashboard.putNumber("angle", driveTrain.getAngle());
+
+		boolean stopAuto = teleopUpdater.getDriverController().getAButtonPressed();
+		//basic logic below: keep executing auto until we disable it or it finishes, and don't allow it to be re-enabled
+		if (!maintainAutoExecution) {
+			teleopUpdater.update();
+		} else if (!SmartDashboard.getBoolean("autoEnabled", false) || stopAuto || autoModeExecuter.isFinished()) {
+			maintainAutoExecution = false;
+			if (!autoModeExecuter.isFinished()) {
+				autoModeExecuter.stop();
+				//make sure all our subsystems stop
+				elevator.setOpenLoop(0);
+				cargoIntake.setIntakePower(0);
+				hatchPivot.setHatchPivotPower(0);
+			}
+			poseEstimatorLooper.stop();
+			teleopLooper.start();
+		}
 	}
 
 	/**
@@ -176,9 +143,9 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		enabledLooper.start();
-		//elevator.setPosition(198);
-		//poseEstimatorLooper.start();
+		driveTrain.setBrakeMode();
+		poseEstimatorLooper.stop();
+		teleopLooper.start();
 	}
 
 	/**
@@ -194,20 +161,21 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		if (count == 0) {
-			driveTrain.resetGyro();
-		}
 		poseEstimatorLooper.start();
-		SmartDashboard.putNumber("Pose X", poseEstimator.getPose().x);
-		SmartDashboard.putNumber("Pose Y", poseEstimator.getPose().y);
-		SmartDashboard.putNumber("left_enc", driveTrain.getLeftDistance());
-		SmartDashboard.putNumber("right_enc", driveTrain.getRightDistance());
-		System.out.println("right encoder:" + driveTrain.getRightDistance());
-		System.out.println("left encoder:" + driveTrain.getLeftDistance());
+		SmartDashboard.putString("Pose", poseEstimator.getPose().toString());
+		cargoIntake.setIntakePower(0.5);
+//		SmartDashboard.putNumber("Pose X", poseEstimator.getPose().x);
+//		SmartDashboard.putNumber("Pose Y", poseEstimator.getPose().y);
+//		SmartDashboard.putNumber("left_enc", driveTrain.getLeftDistance());
+//		SmartDashboard.putNumber("right_enc", driveTrain.getRightDistance());
+//		System.out.println("right encoder:" + driveTrain.getRightDistance());
+//		System.out.println("left encoder:" + driveTrain.getLeftDistance());
 	}
 
 	@Override
 	public void disabledPeriodic() {
-
+		SmartDashboard.putNumber("angle", driveTrain.getAngle());
+		SmartDashboard.putNumber("hatchPivot", hatchPivot.getAngle());
+		SmartDashboard.putBoolean("hallEffect", elevator.getHallEffectTriggered());
 	}
 }

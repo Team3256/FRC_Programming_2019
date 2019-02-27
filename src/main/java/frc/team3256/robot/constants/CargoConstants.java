@@ -1,8 +1,8 @@
 package frc.team3256.robot.constants;
 
 public class CargoConstants {
-    public static final int kIntake = 10;
-    public static final int kPivot = 9;
+    public static final int kIntake = 12;
+    public static final int kIntakeSlave = 11;
 
     public static final double kPivotP = 0;
     public static final double kPivotI = 0;

@@ -50,18 +50,6 @@ public class TeleopUpdater {
         driveTrain.setOpenLoop(drivePower.getLeft(), drivePower.getRight());
     }
 
-    private void handleHangDrive(){
-        driveTrain.setBrakeMode();
-        DrivePower drivePower = DriveTrain.curvatureDrive(
-                -driverController.getY(GenericHID.Hand.kLeft),
-                driverController.getX(GenericHID.Hand.kRight),
-                driverController.getTriggerAxis(GenericHID.Hand.kRight) > 0.25,
-                driverController.getTriggerAxis(GenericHID.Hand.kLeft) > 0.25
-        );
-        driveTrain.setHighGear(drivePower.getHighGear());
-        driveTrain.setHangDrive(drivePower.getLeft(), drivePower.getRight());
-    }
-
     public void changeToCargoControlScheme() {
         SmartDashboard.putString("ControlScheme", "Cargo");
         currentControlScheme = cargoIntakeControlScheme;
@@ -80,10 +68,9 @@ public class TeleopUpdater {
         SmartDashboard.putNumber("Left RPM", driveTrain.getLeftRPM());
         SmartDashboard.putNumber("Right RPM", driveTrain.getRightRPM());
         SmartDashboard.putNumber("RPM Difference", driveTrain.getLeftRPM() - driveTrain.getRightRPM());
-        /*
-        if(driverController.getBackButtonPressed()){
-            handleHangDrive();
-        }
-        */
+    }
+
+    public XboxController getDriverController() {
+        return driverController;
     }
 }
