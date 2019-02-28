@@ -22,14 +22,12 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     private DoubleSolenoid shifter;
     private boolean init = false;
     private PigeonIMU gyro;
-    private PIDController turnPIDController = new PIDController(turnkP, turnkI, turnkD);
-    private double turnInPlaceOutput = Double.MAX_VALUE;
-
+    private PIDController turnPIDController = new PIDController(kTurnP, kTurnI, kTurnD);
 
     private DriveTrain() {
-        gyro = new PigeonIMU(14);
-        gyro.setAccumZAngle(0, 0);
-        gyro.setYaw(0, 0);
+        //gyro = new PigeonIMU(14);
+        //gyro.setAccumZAngle(0, 0);
+        //gyro.setYaw(0, 0);
         //        internalGyro = new ADXRS453_Gyro();
         //        internalGyro.startCalibrate();
         leftMaster = SparkMAXUtil.generateGenericSparkMAX(kLeftDriveMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -232,9 +230,10 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public double getAngle() {
-        double[] ypr = new double[3];
-        gyro.getYawPitchRoll(ypr);
-        return ypr[0];
+        return 0;
+//        double[] ypr = new double[3];
+//        gyro.getYawPitchRoll(ypr);
+//        return ypr[0];
         //        return -internalGyro.getAngle();
     }
 
@@ -260,23 +259,6 @@ public class DriveTrain extends DriveTrainBase implements Loop {
 
         leftPIDController.setReference(inchesPerSecToRPM(leftVelInchesPerSec) * kGearRatio, ControlType.kVelocity);
         rightPIDController.setReference(inchesPerSecToRPM(rightVelInchesPerSec) * kGearRatio, ControlType.kVelocity);;
-    }
-
-    public void turnInPlace(double angle) {
-        double output = turnPIDController.calculatePID(angle, getAngle());
-        turnInPlaceOutput = output;
-        leftMaster.set(output);
-        rightMaster.set(-output);
-    }
-
-    public boolean isTurnInPlaceFinished() {
-        return Math.abs(turnInPlaceOutput) < 0.02;
-    }
-
-    public void resetTurnInPlace() {
-        turnPIDController.resetPID();
-        turnInPlaceOutput = Double.MAX_VALUE;
-
     }
 
     public void setBrakeMode() {

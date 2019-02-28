@@ -21,16 +21,22 @@ public class ElevatorConstants {
     public static final double kPositionMax = 195;
     public static final double kPositionMin = 0;
 
-    public static final double kPositionHighHatch = 0;
-    public static final double kPositionMidHatch = 0;
-    public static final double kPositionLowHatch = 50;
-    public static final double kPositionHighCargo = 0;
-    public static final double kPositionMidCargo = 0;
-    public static final double kPositionLowCargo = 0;
+    public static final double kPositionHighHatch = 78;
+    public static final double kPositionMidHatch = 50;
+    public static final double kPositionLowHatch = 22;
+    public static final double kPositionHighCargo = 75;
+    public static final double kPositionMidCargo = 47;
+    public static final double kPositionLowCargo = 19;
+    public static final double kHookOffset = 5.0;
     public static final double kPositionHomeCargo = 0;
+    public static final double kUnhookOffset = 3.5;
+    public static final double kElevatorSpoolSize = 1.5;
+    public static final double kElevatorGearRatio = 1.0 / 15.0;
 
     public static final double kElevatorMaxPosition = 195; // 195
     public static final double kElevatorMinPosition = 0; // 1
+    private static final double kHookPositionOffset = -0; //has to be negative
+    public static final double kHatchHumanPlayerPosition = 19.0 + kHookPositionOffset;
 
     public static final double kElevatorSpeed = 0.3;
     public static final int kHallEffectPort = 0;

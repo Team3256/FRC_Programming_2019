@@ -4,8 +4,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.auto.AutoTestMode;
-import frc.team3256.robot.auto.PurePursuitTestMode;
-import frc.team3256.robot.subsystems.*;
+import frc.team3256.robot.subsystems.CargoIntake;
+import frc.team3256.robot.subsystems.DriveTrain;
+import frc.team3256.robot.subsystems.Elevator;
+import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.teleop.TeleopUpdater;
 import frc.team3256.warriorlib.auto.AutoModeExecuter;
 import frc.team3256.warriorlib.auto.purepursuit.PoseEstimator;
@@ -87,14 +89,14 @@ public class Robot extends TimedRobot {
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
 		driveTrain.setBrakeMode();
-		hatchPivot.zeroSensors();
+		//hatchPivot.zeroSensors();
 
 		poseEstimator.reset();
 		purePursuitTracker.reset();
 
 		SmartDashboard.putString("alliance", DriverStation.getInstance().getAlliance().name());
 
-		if (SmartDashboard.getBoolean("autoEnabled", false)) {
+		if (SmartDashboard.getBoolean("autoEnabled", true)) {
 			maintainAutoExecution = true;
 			teleopLooper.stop();
 
@@ -131,7 +133,7 @@ public class Robot extends TimedRobot {
 				//make sure all our subsystems stop
 				elevator.setOpenLoop(0);
 				cargoIntake.setIntakePower(0);
-				hatchPivot.setHatchPivotPower(0);
+				//hatchPivot.setHatchPivotPower(0);
 			}
 			poseEstimatorLooper.stop();
 			teleopLooper.start();

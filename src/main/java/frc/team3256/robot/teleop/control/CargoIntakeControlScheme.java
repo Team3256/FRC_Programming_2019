@@ -1,37 +1,35 @@
 package frc.team3256.robot.teleop.control;
 
 import frc.team3256.robot.subsystems.CargoIntake;
-import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.teleop.TeleopUpdater;
 
 
 public class CargoIntakeControlScheme extends CommonControlScheme {
     private CargoIntake cargoIntake = CargoIntake.getInstance();
-    private HatchPivot hatchPivot = HatchPivot.getInstance();
+    //private HatchPivot hatchPivot = HatchPivot.getInstance();
 
     private double cargoPivotAccumulator = 0;
     private boolean intaking = false, exhausting = false;
 
     @Override
     public void onAPressed() {
-        //elevator.setLowCargoPosition();
+        elevator.setPositionLowCargo();
         System.out.println("Set low cargo position");
     }
 
     @Override
     public void onBPressed() {
-        System.out.println("Set mid cargo position");
-        //elevator.setMidCargoPosition();
+        elevator.setPositionHome();
     }
 
     @Override
     public void onXPressed() {
-        System.out.println("Home elevator");
-        //elevator.setPosition(0);
+        elevator.setPositionMidCargo();
     }
 
     @Override
     public void onYPressed() {
+        elevator.setPositionHighCargo();
         System.out.println("Set high cargo position");
         //elevator.setHighCargoPosition();
     }
@@ -74,7 +72,6 @@ public class CargoIntakeControlScheme extends CommonControlScheme {
 
     @Override
     public void onRightShoulderPressed() {
-        hatchPivot.setPositionFloorIntake();
     }
 
     @Override
@@ -148,9 +145,13 @@ public class CargoIntakeControlScheme extends CommonControlScheme {
     // Intake Cargo on hold
     @Override
     public void onRightTrigger(double value) {
+        hatchPivot.setPositionCargoIntake();
         if (value > 0.25)
             cargoIntake.intake();
-        else cargoIntake.setIntakePower(0);
+        else {
+            cargoIntake.setIntakePower(0);
+            hatchPivot.setPositionDeploy();
+        }
     }
     @Override
     public void onLeftJoystickPressed() {

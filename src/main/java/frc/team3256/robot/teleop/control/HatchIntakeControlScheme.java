@@ -1,30 +1,27 @@
 package frc.team3256.robot.teleop.control;
 
-import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.teleop.TeleopUpdater;
 
 public class HatchIntakeControlScheme extends CommonControlScheme {
-    private HatchPivot hatchPivot = HatchPivot.getInstance();
-
     @Override
     public void onAPressed() {
-        //elevator.setPositionLowHatch();
+        elevator.setPositionLowHatch();
     }
 
     @Override
     public void onBPressed() {
-        //elevator.setMidHatchPosition();
+        elevator.setPositionHome();
     }
 
     // Home elevator
     @Override
     public void onXPressed() {
-        //elevator.setPosition(0);
+        elevator.setPositionMidHatch();
     }
 
     @Override
     public void onYPressed() {
-        //elevator.setHighHatchPosition();
+        elevator.setPositionHighHatch();
     }
 
     @Override
@@ -108,6 +105,7 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
             }
         });
         thread.start();
+        hatchPivot.setPositionDeploy();
         TeleopUpdater.getInstance().changeToCargoControlScheme();
     }
 
@@ -128,19 +126,36 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
 
     @Override
     public void onRightShoulderPressed() {
-        hatchPivot.setPositionFloorIntake();
-        System.out.println("INTAKING");
+        elevator.setPositionIntakeHatch();
+        hatchPivot.deployHatch();
     }
 
     @Override
     public void onLeftShoulderReleased() {
-        hatchPivot.retractHatch();
+        elevator.setPositionUnhookHatch();
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(750);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            hatchPivot.retractHatch();
+        });
+        thread.start();
     }
 
     @Override
     public void onRightShoulderReleased() {
-        hatchPivot.setPositionDeploy();
-        System.out.println("DEPLOYING");
+        elevator.setPositionHookHatch();
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(750);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            hatchPivot.retractHatch();
+        });
+        thread.start();
     }
 
     @Override
@@ -149,7 +164,6 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
 
     @Override
     public void onRightTrigger(double value) {
-
     }
 
     @Override

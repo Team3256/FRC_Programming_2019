@@ -14,6 +14,7 @@ public class Elevator extends SubsystemBase {
 	private CANSparkMax master, slave;
 	private CANPIDController masterPID;
 	private CANEncoder masterEncoder;
+	private double elevatorTarget = 6;
 
 	private DigitalInput hallEffect;
 	private boolean homed = false;
@@ -62,7 +63,13 @@ public class Elevator extends SubsystemBase {
 
 	public void setPosition(double position) {
 		//masterPID.setReference(position, ControlType.kPosition);
+		elevatorTarget = 6;
         masterPID.setReference(position, ControlType.kSmartMotion, 0);
+	}
+
+	public void setPositionInches(double inches) {
+		elevatorTarget = inches;
+		masterPID.setReference(inchesToRotations(inches), ControlType.kSmartMotion);
 	}
 
 	public double getPosition() {
@@ -71,13 +78,14 @@ public class Elevator extends SubsystemBase {
 
 	@Override
 	public void outputToDashboard() {
-		SmartDashboard.putNumber("elevatorPositionMaster", getPosition());
+		SmartDashboard.putNumber("ElevatorPositionMaster", getPosition());
         SmartDashboard.putNumber("ElevatorSpeed", master.getEncoder().getVelocity());
-		SmartDashboard.putNumber("elevatorPositionSlave", slave.getEncoder().getPosition());
+		SmartDashboard.putNumber("ElevatorPositionSlave", slave.getEncoder().getPosition());
 
-		SmartDashboard.putNumber("elevatorCurrentMaster", master.getOutputCurrent());
-		SmartDashboard.putNumber("elevatorCurrentSlave", slave.getOutputCurrent());
-        SmartDashboard.putBoolean("hallEffect", getHallEffectTriggered());
+		SmartDashboard.putNumber("ElevatorCurrent", master.getOutputCurrent());
+		SmartDashboard.putNumber("ElevatorCurrentSlave", slave.getOutputCurrent());
+		SmartDashboard.putBoolean("HallEffect", getHallEffectTriggered());
+		SmartDashboard.putNumber("SpoolInches", rotationToInches(getPosition()));
     }
 
     public boolean getHallEffectTriggered() {
@@ -102,26 +110,54 @@ public class Elevator extends SubsystemBase {
 	}
 	
 	public void setPositionHighCargo() {
-		setPosition(kPositionHighCargo);
+		setPositionInches(kPositionHighCargo);
 	}
 
 	public void setPositionMidCargo() {
-		setPosition(kPositionMidCargo);
+		setPositionInches(kPositionMidCargo);
 	}
 
 	public void setPositionLowCargo() {
-		setPosition(kPositionLowCargo);
+		setPositionInches(kPositionLowCargo);
 	}
 	
 	public void setPositionHighHatch() {
-		setPosition(kPositionHighHatch);
+		setPositionInches(kPositionHighHatch);
 	}
 
 	public void setPositionMidHatch() {
-		setPosition(kPositionMidHatch);
+		setPositionInches(kPositionMidHatch);
 	}
 
 	public void setPositionLowHatch() {
-		setPosition(kPositionLowHatch);
+		setPositionInches(kPositionLowHatch);
 	}
+
+	public void setPositionIntakeHatch() {
+		setPositionInches(kHatchHumanPlayerPosition);
+	}
+
+	public void setPositionHookHatch() {
+		setPositionInches(elevatorTarget + kHookOffset);
+	}
+
+	public void setPositionUnhookHatch() {
+		setPositionInches(elevatorTarget - kUnhookOffset);
+	}
+
+	public void setPositionHome() {
+		setPosition(0);
+	}
+
+	public double rotationToInches(double rotations) {
+		return (((rotations * kElevatorGearRatio) * kElevatorSpoolSize * Math.PI) + 6.0);
+	}
+
+	public double inchesToRotations(double inches) {
+		return (inches - 6.0) / Math.PI / kElevatorGearRatio / kElevatorSpoolSize;
+	}
+
+	//distances from ground
+	//19.0 - distance to center of hatch human player
+	//24.0 - distance to where we need to lift up to hook hatch on arm from human player
 }

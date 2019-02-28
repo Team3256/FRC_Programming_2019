@@ -72,13 +72,14 @@ public class HatchPivot extends SubsystemBase {
         hatchPivot.set(speed);
     }
 
+    public void setPositionCargoIntake() {
+        hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionCargoIntake), DemandType.ArbitraryFeedForward, 0);
+    }
+
     public void setPositionFoldIn() {
         hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionFoldIn), DemandType.ArbitraryFeedForward, 0);
     }
 
-    public void setPositionFloorIntake() {
-        hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionFloorIntakeHatch), DemandType.ArbitraryFeedForward, 0);
-    }
 
     public void setPositionDeploy() {
         hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionDeployHatch), DemandType.ArbitraryFeedForward, 0);
