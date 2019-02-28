@@ -1,15 +1,15 @@
 package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import frc.team3256.robot.operations.Constants;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
+import static frc.team3256.robot.constants.DriveTrainConstants.*;
 
 public class Hanger extends SubsystemBase {
     private static Hanger instance;
     private DoubleSolenoid hang;
 
     private Hanger() {
-        hang = new DoubleSolenoid(Constants.kHangerForward, Constants.kHangerReverse);
+        hang = new DoubleSolenoid(kHangerForward, kHangerReverse);
     }
 
     public static Hanger getInstance() { return instance == null ? instance = new Hanger() : instance; }

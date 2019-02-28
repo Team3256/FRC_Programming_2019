@@ -1,8 +1,8 @@
 package frc.team3256.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.revrobotics.*;
-import frc.team3256.warriorlib.hardware.SparkMAXUtil;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
@@ -11,63 +11,63 @@ import static frc.team3256.robot.constants.CargoConstants.*;
 public class CargoIntake extends SubsystemBase {
 
 	private static CargoIntake instance;
-	private WPI_TalonSRX cargoIntake;
-	private CANSparkMax cargoPivot;
-	private CANPIDController cargoPID;
-	private CANEncoder cargoEncoder;
+	private WPI_TalonSRX cargoIntakeLeft, cargoIntakeRight;
+
+	private double previousOutputCurrent = 0.0;
+
+	private double checkForBallAfter = 0.0;
 
 	private CargoIntake() {
-		cargoIntake = TalonSRXUtil.generateGenericTalon(kIntake);
-		cargoPivot = SparkMAXUtil.generateGenericSparkMAX(kPivot, CANSparkMaxLowLevel.MotorType.kBrushless);
-		SparkMAXUtil.setBrakeMode(cargoPivot);
-		cargoPID = cargoPivot.getPIDController();
-		cargoEncoder = cargoPivot.getEncoder();
+		cargoIntakeLeft = TalonSRXUtil.generateGenericTalon(kIntake);
+		cargoIntakeLeft.setInverted(false);
 
-		SparkMAXUtil.setPIDGains(cargoPID, 0, kPivotP, kPivotI, kPivotD, kPivotF, kPivotIz);
-		cargoPID.setOutputRange(kPivotMinOutput, kPivotMaxOutput);
+		cargoIntakeRight = TalonSRXUtil.generateGenericTalon(kIntakeSlave);
+		cargoIntakeRight.setInverted(true);
+	}
+
+	@Override
+	public void init(double timestamp) {
 	}
 
 	public static CargoIntake getInstance() {
 		return instance == null ? instance = new CargoIntake() : instance;
 	}
 
+	public void intake() {
+		this.setIntakePower(kIntakeSpeed);
+		checkForBallAfter = Timer.getFPGATimestamp() + 0.2;
+	}
+
+	public void exhaust() {
+		this.setIntakePower(-kIntakeSpeed);
+	}
+
+	public void stop() {
+		this.setIntakePower(0);
+	}
+
 	@Override
 	public void update(double timestamp) {
-		System.out.println("Cargo Pivot Pos: " + getPosition());
-	}
+		SmartDashboard.putNumber("CargoOutputCurrent", cargoIntakeLeft.getOutputCurrent());
+		SmartDashboard.putNumber("CargoBusVoltage", cargoIntakeLeft.getBusVoltage());
+		SmartDashboard.putNumber("VoltageChange", (cargoIntakeLeft.getOutputCurrent() - previousOutputCurrent ) / (15 - 0));
+		SmartDashboard.putNumber("CheckForBallAfter", checkForBallAfter);
 
-	public void setPositionFoldIn() {
+		if (checkForBallAfter != -1 && Timer.getFPGATimestamp() > checkForBallAfter && cargoIntakeLeft.getOutputCurrent() > 3.0 && cargoIntakeLeft.getOutputCurrent() < 5.0) {
+			SmartDashboard.putBoolean("BallTime", true);
+			this.stop();
+			checkForBallAfter = -1;
+		} else {
+			SmartDashboard.putBoolean("BallTime", false);
+		}
 
-	}
-
-	public void setPositionElevatorExchange() {
-
-	}
-
-	public void setPositionElevatorClearance() {
-
-	}
-
-	public void setPositionFloorIntake() {
-
+		previousOutputCurrent = cargoIntakeLeft.getOutputCurrent();
 	}
 
 	public void setIntakePower(double power) {
-		cargoIntake.set(power);
+		cargoIntakeLeft.set(power);
+		cargoIntakeRight.set(power);
 	}
-
-	public void setPivotPower(double power) {
-		cargoPivot.set(power);
-	}
-
-	private void setPosition(double position) {
-		cargoPID.setReference(position, ControlType.kPosition);
-	}
-
-	private double getPosition() {
-		return cargoEncoder.getPosition();
-	}
-
 	@Override
 	public void outputToDashboard() {
 
@@ -75,17 +75,10 @@ public class CargoIntake extends SubsystemBase {
 
 	@Override
 	public void zeroSensors() {
-		//cargoEncoder.(0);
-		//cargoEncoder.setPosition(0);
-	}
-
-	@Override
-	public void init(double timestamp) {
 	}
 
 	@Override
 	public void end(double timestamp) {
-
 	}
 
 	public void setPivotFloorPosition() {

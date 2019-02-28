@@ -2,7 +2,9 @@ package frc.team3256.robot.teleop;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.DriveTrain;
+import frc.team3256.robot.teleop.control.CargoIntakeControlScheme;
 import frc.team3256.robot.teleop.control.HatchIntakeControlScheme;
 import frc.team3256.warriorlib.control.DrivePower;
 import frc.team3256.warriorlib.control.XboxControllerObserver;
@@ -14,7 +16,7 @@ public class TeleopUpdater {
     private XboxController driverController;
     private XboxControllerObserver manipulatorController;
 
-    //private CargoIntakeControlScheme cargoIntakeControlScheme;
+    private CargoIntakeControlScheme cargoIntakeControlScheme;
     private HatchIntakeControlScheme hatchIntakeControlScheme;
 
     private XboxListenerBase currentControlScheme;
@@ -25,55 +27,50 @@ public class TeleopUpdater {
     }
 
     private TeleopUpdater() {
-        //cargoIntakeControlScheme = new CargoIntakeControlScheme();
+        cargoIntakeControlScheme = new CargoIntakeControlScheme();
         hatchIntakeControlScheme = new HatchIntakeControlScheme();
         currentControlScheme = hatchIntakeControlScheme;
 
         driverController = new XboxController(0);
         manipulatorController = new XboxControllerObserver(1);
         manipulatorController.setListener(currentControlScheme);
+
+        cargoIntakeControlScheme.setController(manipulatorController);
+        hatchIntakeControlScheme.setController(manipulatorController);
     }
 
     private void handleDrive() {
         driveTrain.setBrakeMode();
         DrivePower drivePower = DriveTrain.curvatureDrive(
-                -driverController.getY(GenericHID.Hand.kLeft) * 0.75,
-                driverController.getX(GenericHID.Hand.kRight) * 0.75,
-            driverController.getTriggerAxis(GenericHID.Hand.kRight) > 0.25);
+                -driverController.getY(GenericHID.Hand.kLeft),
+                driverController.getX(GenericHID.Hand.kRight),
+            driverController.getTriggerAxis(GenericHID.Hand.kRight) > 0.25,
+                driverController.getTriggerAxis(GenericHID.Hand.kLeft) > 0.25);
         driveTrain.setHighGear(drivePower.getHighGear());
         driveTrain.setOpenLoop(drivePower.getLeft(), drivePower.getRight());
     }
 
-    private void handleHangDrive(){
-        driveTrain.setBrakeMode();
-        DrivePower drivePower = DriveTrain.curvatureDrive(
-                -driverController.getY(GenericHID.Hand.kLeft),
-                driverController.getX(GenericHID.Hand.kRight),
-                driverController.getTriggerAxis(GenericHID.Hand.kRight) > 0.25
-        );
-        driveTrain.setHighGear(drivePower.getHighGear());
-        driveTrain.setHangDrive(drivePower.getLeft(), drivePower.getRight());
-    }
-
     public void changeToCargoControlScheme() {
-        //currentControlScheme = cargoIntakeControlScheme;
+        SmartDashboard.putString("ControlScheme", "Cargo");
+        currentControlScheme = cargoIntakeControlScheme;
         manipulatorController.setListener(currentControlScheme);
     }
 
     public void changeToHatchControlScheme() {
-        //currentControlScheme = hatchIntakeControlScheme;
+        SmartDashboard.putString("ControlScheme", "Hatch");
+        currentControlScheme = hatchIntakeControlScheme;
         manipulatorController.setListener(currentControlScheme);
     }
 
     public void update() {
         handleDrive();
-        System.out.println("LEFT CURR" + driveTrain.getLeftDistance());
-        System.out.println("RIGHT CURR" + driveTrain.getRightDistance());
-//        System.out.println("LEFT CURR" + driveTrain.getLeftCurrent() + "RIGHT CURR" + driveTrain.getRightCurrent());
         manipulatorController.update();
+        SmartDashboard.putNumber("Left RPM", driveTrain.getLeftRPM());
+        SmartDashboard.putNumber("Right RPM", driveTrain.getRightRPM());
+        SmartDashboard.putNumber("RPM Difference", driveTrain.getLeftRPM() - driveTrain.getRightRPM());
+    }
 
-        if(driverController.getBackButtonPressed()){
-            handleHangDrive();
-        }
+    public XboxController getDriverController() {
+        return driverController;
     }
 }

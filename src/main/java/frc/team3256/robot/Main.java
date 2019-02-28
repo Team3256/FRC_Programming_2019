@@ -34,7 +34,7 @@ public final class Main {
 	}
 
 	/**
-	 * 'cuz all robot code deserves a little humor
+	 * 'cuz all robot code deserves purePursuitA little humor
 	 */
 	private static boolean robotExists() {
 		try {

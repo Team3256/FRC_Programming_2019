@@ -1,35 +1,28 @@
 package frc.team3256.robot.teleop.control;
 
-import frc.team3256.robot.subsystems.Elevator;
-import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.teleop.TeleopUpdater;
-import frc.team3256.warriorlib.control.XboxListenerBase;
-import static frc.team3256.robot.constants.ElevatorConstants.kElevatorSpeed;
-import static frc.team3256.robot.constants.HatchConstants.kHatchPivotSpeed;
 
-public class HatchIntakeControlScheme extends XboxListenerBase {
-    //private HatchPivot hatchPivot = HatchPivot.getInstance();
-    private Elevator elevator = Elevator.getInstance();
+public class HatchIntakeControlScheme extends CommonControlScheme {
 
     @Override
     public void onAPressed() {
-        //elevator.setLowHatchPosition();
+        elevator.setPositionLowHatch();
     }
 
     @Override
     public void onBPressed() {
-        //elevator.setMidHatchPosition();
+        elevator.setPositionHome();
     }
 
     // Home elevator
     @Override
     public void onXPressed() {
-        //elevator.setPosition(0);
+        elevator.setPositionMidHatch();
     }
 
     @Override
     public void onYPressed() {
-        //elevator.setHighHatchPosition();
+        elevator.setPositionHighHatch();
     }
 
     @Override
@@ -98,7 +91,24 @@ public class HatchIntakeControlScheme extends XboxListenerBase {
     }
 
     @Override
-    public void onStartPressed() { TeleopUpdater.getInstance().changeToCargoControlScheme(); }
+    public void onStartPressed() {
+        Thread thread = new Thread(() -> {
+            try {
+                getController().setRumble(1.0);
+                Thread.sleep(120);
+                getController().setRumble(0);
+                Thread.sleep(60);
+                getController().setRumble(1.0);
+                Thread.sleep(120);
+                getController().setRumble(0);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+        hatchPivot.setPositionDeploy();
+        TeleopUpdater.getInstance().changeToCargoControlScheme();
+    }
 
     @Override
     public void onSelectedReleased() {
@@ -112,63 +122,50 @@ public class HatchIntakeControlScheme extends XboxListenerBase {
 
     @Override
     public void onLeftShoulderPressed() {
-
+        hatchPivot.deployHatch();
     }
 
     @Override
     public void onRightShoulderPressed() {
-        //hatchPivot.setFloorIntakePosition();
+        elevator.setPositionIntakeHatch();
+        hatchPivot.deployHatch();
     }
 
     @Override
     public void onLeftShoulderReleased() {
-        //hatchPivot.setDeployPosition();
+        elevator.setPositionUnhookHatch();
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(750);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            hatchPivot.retractHatch();
+        });
+        thread.start();
     }
 
     @Override
     public void onRightShoulderReleased() {
-
+        elevator.setPositionHookHatch();
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(750);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            hatchPivot.retractHatch();
+        });
+        thread.start();
     }
 
     @Override
     public void onLeftTrigger(double value) {
-
     }
 
     @Override
     public void onRightTrigger(double value) {
-        if(value > 0.25) {
-            //hatchPivot.deployHatch();
-        }
-        else { //hatchPivot.closeHatch();
-        }
-    }
 
-    // Move elevator manually
-    @Override
-    public void onLeftJoystick(double x, double y) {
-        if (y > 0.25) {
-            System.out.println("Down");
-            elevator.setOpenLoop(y > kElevatorSpeed ? kElevatorSpeed : y);
-        } else if (y < -0.25){
-            System.out.println("Up");
-            elevator.setOpenLoop(y < -kElevatorSpeed ? -kElevatorSpeed : y);
-        } else {
-            elevator.setOpenLoop(0);
-        }
-    }
-
-    @Override
-    public void onRightJoyStick(double x, double y) {
-        if (y > 0.25) {
-            System.out.println(y);
-            //hatchPivot.setHatchPivotPower(y > kHatchPivotSpeed ? kHatchPivotSpeed : y);
-        } else if (y < -0.25) {
-            System.out.println(y);
-            //hatchPivot.setHatchPivotPower(y > kHatchPivotSpeed ? kHatchPivotSpeed : y);
-        } else {
-            //hatchPivot.setHatchPivotPower(0);
-        }
     }
 
     @Override
