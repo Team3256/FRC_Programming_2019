@@ -1,5 +1,6 @@
 package frc.team3256.robot.teleop.control;
 
+import edu.wpi.first.wpilibj.XboxController;
 import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.warriorlib.control.XboxListenerBase;

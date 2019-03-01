@@ -1,6 +1,5 @@
 package frc.team3256.robot.teleop;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.DriveTrain;
@@ -67,6 +66,10 @@ public class TeleopUpdater {
         SmartDashboard.putString("ControlScheme", "Hatch");
         currentControlScheme = hatchIntakeControlScheme;
         manipulatorController.setListener(currentControlScheme);
+    }
+
+    public XboxController getDriverController() {
+        return driverController.getXboxController();
     }
 
     public void update() {

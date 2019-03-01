@@ -96,7 +96,7 @@ public class Robot extends TimedRobot {
 
 		SmartDashboard.putString("alliance", DriverStation.getInstance().getAlliance().name());
 
-		if (SmartDashboard.getBoolean("autoEnabled", true)) {
+		if (SmartDashboard.getBoolean("autoEnabled", false)) {
 			maintainAutoExecution = true;
 			teleopLooper.stop();
 
@@ -122,7 +122,7 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("right enc", driveTrain.getRightDistance());
 		SmartDashboard.putNumber("angle", driveTrain.getAngle());
 
-		boolean stopAuto = false;
+		boolean stopAuto = TeleopUpdater.getInstance().getDriverController().getAButtonPressed();
 		//basic logic below: keep executing auto until we disable it or it finishes, and don't allow it to be re-enabled
 		if (!maintainAutoExecution) {
 			teleopUpdater.update();
