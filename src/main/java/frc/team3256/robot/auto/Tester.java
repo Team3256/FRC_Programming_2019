@@ -1,4 +1,4 @@
-package frc.team3256.robot.path;
+package frc.team3256.robot.auto;
 
 import frc.team3256.warriorlib.auto.purepursuit.Path;
 import frc.team3256.warriorlib.auto.purepursuit.PathGenerator;
