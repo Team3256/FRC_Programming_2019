@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.auto.AutoTestMode;
+import frc.team3256.robot.auto.Paths;
 import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.Elevator;
@@ -41,6 +42,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
+		Paths.getCenterRightDoubleCargoHatch();
 		DriveTrainBase.setDriveTrain(driveTrain);
 
 		teleopLooper = new Looper(1 / 200D);

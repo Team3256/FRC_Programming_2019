@@ -9,7 +9,11 @@ import java.util.List;
 import static frc.team3256.robot.constants.DriveTrainConstants.*;
 
 public abstract class Paths {
+    private static List<Path> centerRightDoubleCargoHatch;
+
     public static List<Path> getCenterRightDoubleCargoHatch() {
+        if (centerRightDoubleCargoHatch != null)
+            return centerRightDoubleCargoHatch;
         PathGenerator firstSegment = new PathGenerator(spacing, true);
 
         firstSegment.addPoint(new Vector(0,0));
@@ -98,6 +102,7 @@ public abstract class Paths {
 
         Path backThreePath = backSegmentThree.generatePath();
 
-        return Arrays.asList(firstSegmentPath, backOnePath, secondSegmentPath, backTwoPath, thirdSegmentPath, backThreePath);
+        centerRightDoubleCargoHatch = Arrays.asList(firstSegmentPath, backOnePath, secondSegmentPath, backTwoPath, thirdSegmentPath, backThreePath);
+        return centerRightDoubleCargoHatch;
     }
 }

@@ -15,7 +15,7 @@ import frc.team3256.warriorlib.auto.purepursuit.ResetPursuitAction;
 
 import static frc.team3256.robot.auto.Paths.getCenterRightDoubleCargoHatch;
 
-public class PurePursuitTestMode extends AutoModeBase {
+public class RightDoubleFrontHatchAutoMode extends AutoModeBase {
 	@Override
 	protected void routine() throws AutoModeEndedException {
 
