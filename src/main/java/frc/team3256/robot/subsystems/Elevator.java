@@ -53,17 +53,20 @@ public class Elevator extends SubsystemBase {
 
 	public void setPosition(double position) {
 		//masterPID.setReference(position, ControlType.kPosition);
-		elevatorTarget = 6;
+		elevatorTarget = rotationToInches(position);
         masterPID.setReference(position, ControlType.kSmartMotion, 0);
 	}
 
 	public void setPositionInches(double inches) {
-		elevatorTarget = inches;
-		masterPID.setReference(inchesToRotations(inches), ControlType.kSmartMotion);
+		setPosition(inchesToRotations(inches));
 	}
 
 	public double getPosition() {
 		return masterEncoder.getPosition();
+	}
+
+	public void moveToTarget() {
+		masterPID.setReference(elevatorTarget, ControlType.kSmartMotion);
 	}
 
 	@Override

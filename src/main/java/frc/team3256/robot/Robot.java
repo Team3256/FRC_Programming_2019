@@ -126,14 +126,15 @@ public class Robot extends TimedRobot {
 		//basic logic below: keep executing auto until we disable it or it finishes, and don't allow it to be re-enabled
 		if (!maintainAutoExecution) {
 			teleopUpdater.update();
-		} else if (!SmartDashboard.getBoolean("autoEnabled", false) || stopAuto || autoModeExecuter.isFinished()) {
+		} else if (stopAuto || autoModeExecuter.isFinished()) {
 			maintainAutoExecution = false;
 			if (!autoModeExecuter.isFinished()) {
 				autoModeExecuter.stop();
 				//make sure all our subsystems stop
-				elevator.setOpenLoop(0);
+				elevator.moveToTarget();
 				cargoIntake.setIntakePower(0);
-				//hatchPivot.setHatchPivotPower(0);
+				driveTrain.setOpenLoop(0, 0);
+				hatchPivot.setHatchPivotPower(0);
 			}
 			poseEstimatorLooper.stop();
 			teleopLooper.start();

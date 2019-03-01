@@ -14,6 +14,8 @@ public abstract class CommonControlScheme extends XboxListenerBase {
     protected HatchPivot hatchPivot = HatchPivot.getInstance();
     protected CargoIntake cargoIntake = CargoIntake.getInstance();
 
+    private double lastRightTrigger = 0;
+
     // Move elevator
     @Override
     public void onLeftJoystick(double x, double y) {
@@ -53,12 +55,13 @@ public abstract class CommonControlScheme extends XboxListenerBase {
     @Override
     public void onRightTrigger(double value) {
         hatchPivot.setPositionCargoIntake();
-        if (value > 0.25)
+        if (value > 0.25 && value - lastRightTrigger > 0) {
             cargoIntake.intake();
-        else {
+        } else {
             cargoIntake.setIntakePower(0);
             hatchPivot.setPositionDeploy();
         }
+        lastRightTrigger = value;
     }
 
     @Override

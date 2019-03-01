@@ -56,11 +56,21 @@ public class CargoIntake extends SubsystemBase {
 		if (
 				(checkForBallAfter != -1) &&
 				(Timer.getFPGATimestamp() > checkForBallAfter) &&
-				(cargoIntakeLeft.getOutputCurrent() > 3.0) &&
-				(cargoIntakeLeft.getOutputCurrent() < 5.0)
+				(cargoIntakeLeft.getOutputCurrent() > 1.0)
 		) {
 			SmartDashboard.putBoolean("BallTime", true);
-			this.stop();
+			Thread thread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					CargoIntake.getInstance().stop();
+				}
+			});
+			thread.start();
 			checkForBallAfter = -1;
 		} else {
 			SmartDashboard.putBoolean("BallTime", false);
@@ -73,7 +83,7 @@ public class CargoIntake extends SubsystemBase {
 		cargoIntakeLeft.set(power);
 		cargoIntakeRight.set(power);
 	}
-	
+
 	@Override
 	public void outputToDashboard() {
 
