@@ -48,12 +48,17 @@ public class CargoIntake extends SubsystemBase {
 
 	@Override
 	public void update(double timestamp) {
+		SmartDashboard.putNumber("CheckForBallAfter", checkForBallAfter);
 		SmartDashboard.putNumber("CargoOutputCurrent", cargoIntakeLeft.getOutputCurrent());
 		SmartDashboard.putNumber("CargoBusVoltage", cargoIntakeLeft.getBusVoltage());
-		SmartDashboard.putNumber("VoltageChange", (cargoIntakeLeft.getOutputCurrent() - previousOutputCurrent ) / (15 - 0));
-		SmartDashboard.putNumber("CheckForBallAfter", checkForBallAfter);
+		SmartDashboard.putNumber("CargoVoltageChange", (cargoIntakeLeft.getOutputCurrent() - previousOutputCurrent ) / (15 - 0));
 
-		if (checkForBallAfter != -1 && Timer.getFPGATimestamp() > checkForBallAfter && cargoIntakeLeft.getOutputCurrent() > 3.0 && cargoIntakeLeft.getOutputCurrent() < 5.0) {
+		if (
+				(checkForBallAfter != -1) &&
+				(Timer.getFPGATimestamp() > checkForBallAfter) &&
+				(cargoIntakeLeft.getOutputCurrent() > 3.0) &&
+				(cargoIntakeLeft.getOutputCurrent() < 5.0)
+		) {
 			SmartDashboard.putBoolean("BallTime", true);
 			this.stop();
 			checkForBallAfter = -1;
@@ -68,6 +73,7 @@ public class CargoIntake extends SubsystemBase {
 		cargoIntakeLeft.set(power);
 		cargoIntakeRight.set(power);
 	}
+	
 	@Override
 	public void outputToDashboard() {
 
@@ -79,16 +85,5 @@ public class CargoIntake extends SubsystemBase {
 
 	@Override
 	public void end(double timestamp) {
-	}
-
-	public void setPivotFloorPosition() {
-	}
-
-	public void setPivotTransferPosition() {
-
-	}
-
-	public void setPivotFoldInPosition() {
-
 	}
 }
