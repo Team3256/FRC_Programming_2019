@@ -14,7 +14,6 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
         elevator.setPositionHome();
     }
 
-    // Home elevator
     @Override
     public void onXPressed() {
         elevator.setPositionMidHatch();
@@ -117,54 +116,6 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
 
     @Override
     public void onStartReleased() {
-
-    }
-
-    @Override
-    public void onLeftShoulderPressed() {
-        hatchPivot.deployHatch();
-    }
-
-    @Override
-    public void onRightShoulderPressed() {
-        elevator.setPositionIntakeHatch();
-        hatchPivot.deployHatch();
-    }
-
-    @Override
-    public void onLeftShoulderReleased() {
-        elevator.setPositionUnhookHatch();
-        Thread thread = new Thread(() -> {
-            try {
-                Thread.sleep(750);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            hatchPivot.retractHatch();
-        });
-        thread.start();
-    }
-
-    @Override
-    public void onRightShoulderReleased() {
-        elevator.setPositionHookHatch();
-        Thread thread = new Thread(() -> {
-            try {
-                Thread.sleep(750);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            hatchPivot.retractHatch();
-        });
-        thread.start();
-    }
-
-    @Override
-    public void onLeftTrigger(double value) {
-    }
-
-    @Override
-    public void onRightTrigger(double value) {
 
     }
 

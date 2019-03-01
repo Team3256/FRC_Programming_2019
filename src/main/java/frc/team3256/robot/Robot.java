@@ -122,7 +122,7 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("right enc", driveTrain.getRightDistance());
 		SmartDashboard.putNumber("angle", driveTrain.getAngle());
 
-		boolean stopAuto = teleopUpdater.getDriverController().getAButtonPressed();
+		boolean stopAuto = false;
 		//basic logic below: keep executing auto until we disable it or it finishes, and don't allow it to be re-enabled
 		if (!maintainAutoExecution) {
 			teleopUpdater.update();

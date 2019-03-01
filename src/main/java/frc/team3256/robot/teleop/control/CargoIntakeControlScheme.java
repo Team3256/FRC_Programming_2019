@@ -1,20 +1,12 @@
 package frc.team3256.robot.teleop.control;
 
-import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.robot.teleop.TeleopUpdater;
 
 
 public class CargoIntakeControlScheme extends CommonControlScheme {
-    private CargoIntake cargoIntake = CargoIntake.getInstance();
-    //private HatchPivot hatchPivot = HatchPivot.getInstance();
-
-    private double cargoPivotAccumulator = 0;
-    private boolean intaking = false, exhausting = false;
-
     @Override
     public void onAPressed() {
         elevator.setPositionLowCargo();
-        System.out.println("Set low cargo position");
     }
 
     @Override
@@ -22,6 +14,7 @@ public class CargoIntakeControlScheme extends CommonControlScheme {
         elevator.setPositionHome();
     }
 
+    // Home elevator
     @Override
     public void onXPressed() {
         elevator.setPositionMidCargo();
@@ -30,8 +23,6 @@ public class CargoIntakeControlScheme extends CommonControlScheme {
     @Override
     public void onYPressed() {
         elevator.setPositionHighCargo();
-        System.out.println("Set high cargo position");
-        //elevator.setHighCargoPosition();
     }
 
     @Override
@@ -54,8 +45,6 @@ public class CargoIntakeControlScheme extends CommonControlScheme {
 
     @Override
     public void onSelectedPressed() {
-        System.out.println("Cargo intake set fold in position");
-        //cargoIntake.setPivotFoldInPosition();
     }
 
     @Override
@@ -64,7 +53,6 @@ public class CargoIntakeControlScheme extends CommonControlScheme {
         TeleopUpdater.getInstance().changeToHatchControlScheme();
     }
 
-    // Score Cargo
     @Override
     public void onLeftShoulderPressed() {
 
@@ -134,25 +122,7 @@ public class CargoIntakeControlScheme extends CommonControlScheme {
     public void onStartReleased() {
 
     }
-    // Exhaust Cargo on hold
-    @Override
-    public void onLeftTrigger(double value) {
-        if (value > 0.25)
-            cargoIntake.exhaust();
-        else cargoIntake.setIntakePower(0);
-    }
 
-    // Intake Cargo on hold
-    @Override
-    public void onRightTrigger(double value) {
-        hatchPivot.setPositionCargoIntake();
-        if (value > 0.25)
-            cargoIntake.intake();
-        else {
-            cargoIntake.setIntakePower(0);
-            hatchPivot.setPositionDeploy();
-        }
-    }
     @Override
     public void onLeftJoystickPressed() {
 

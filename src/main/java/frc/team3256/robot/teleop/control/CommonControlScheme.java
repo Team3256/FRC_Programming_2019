@@ -1,6 +1,7 @@
 package frc.team3256.robot.teleop.control;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.warriorlib.control.XboxListenerBase;
@@ -11,7 +12,9 @@ import static frc.team3256.robot.constants.HatchConstants.kHatchPivotSpeed;
 public abstract class CommonControlScheme extends XboxListenerBase {
     protected Elevator elevator = Elevator.getInstance();
     protected HatchPivot hatchPivot = HatchPivot.getInstance();
+    protected CargoIntake cargoIntake = CargoIntake.getInstance();
 
+    // Move elevator
     @Override
     public void onLeftJoystick(double x, double y) {
         SmartDashboard.putNumber("ElevatorSpeed", kElevatorSpeed);
@@ -26,6 +29,7 @@ public abstract class CommonControlScheme extends XboxListenerBase {
         }
     }
 
+    // Move pivot (inverted)
     @Override
     public void onRightJoystick(double x, double y) {
         if (y > 0.25) {
@@ -35,5 +39,66 @@ public abstract class CommonControlScheme extends XboxListenerBase {
         } else {
             hatchPivot.setHatchPivotPower(0);
         }
+    }
+
+    // Exhaust Cargo on hold
+    @Override
+    public void onLeftTrigger(double value) {
+        if (value > 0.25)
+            cargoIntake.exhaust();
+        else cargoIntake.setIntakePower(0);
+    }
+
+    // Intake Cargo on hold
+    @Override
+    public void onRightTrigger(double value) {
+        hatchPivot.setPositionCargoIntake();
+        if (value > 0.25)
+            cargoIntake.intake();
+        else {
+            cargoIntake.setIntakePower(0);
+            hatchPivot.setPositionDeploy();
+        }
+    }
+
+    @Override
+    public void onLeftShoulderPressed() {
+        hatchPivot.deployHatch();
+    }
+
+    // Set position to unhook, then retract
+    @Override
+    public void onLeftShoulderReleased() {
+        elevator.setPositionUnhookHatch();
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(750);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            hatchPivot.retractHatch();
+        });
+        thread.start();
+    }
+
+    @Override
+    public void onRightShoulderPressed() {
+        elevator.setPositionIntakeHatch();
+        hatchPivot.deployHatch();
+    }
+
+    // Set the position to hook, then retract
+    @Override
+    public void onRightShoulderReleased() {
+        elevator.setPositionHookHatch();
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(750);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            hatchPivot.retractHatch();
+        });
+        thread.start();
     }
 }
