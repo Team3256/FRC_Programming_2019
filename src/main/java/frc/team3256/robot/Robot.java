@@ -46,6 +46,7 @@ public class Robot extends TimedRobot {
 		teleopLooper = new Looper(1 / 200D);
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
+		hatchPivot.zeroSensors();
 
 		teleopLooper.addLoops(driveTrain, cargoIntake, hatchPivot, elevator);
 
@@ -67,6 +68,11 @@ public class Robot extends TimedRobot {
 
 		driveTrain.setCoastMode();
 		driveTrain.setHighGear(true);
+
+		elevator.setPositionHome();
+		cargoIntake.setIntakePower(0);
+		driveTrain.setOpenLoop(0, 0);
+		hatchPivot.setPositionDeploy();
 	}
 
 	/**
@@ -131,10 +137,10 @@ public class Robot extends TimedRobot {
 			if (!autoModeExecuter.isFinished()) {
 				autoModeExecuter.stop();
 				//make sure all our subsystems stop
-				elevator.moveToTarget();
+				elevator.setPositionHome();
 				cargoIntake.setIntakePower(0);
 				driveTrain.setOpenLoop(0, 0);
-				hatchPivot.setHatchPivotPower(0);
+				hatchPivot.setPositionDeploy();
 			}
 			poseEstimatorLooper.stop();
 			teleopLooper.start();

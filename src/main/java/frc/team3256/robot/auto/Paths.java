@@ -18,7 +18,7 @@ public abstract class Paths {
         firstSegment.addPoint(new Vector(-51.8,110));
         firstSegment.addPoint(new Vector(-51.8,120));
         firstSegment.addPoint(new Vector(-51.8,130));
-        firstSegment.addPoint(new Vector(-51.8,136));
+        firstSegment.addPoint(new Vector(-51.8,135)); // correct value: 136
 
         firstSegment.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
         firstSegment.setVelocities(maxVel, maxAccel, maxVelk);
@@ -81,14 +81,23 @@ public abstract class Paths {
         thirdSegment.addPoint(new Vector(-26.209281,123.442865));
         thirdSegment.addPoint(new Vector(-28.958754,127));
         thirdSegment.addPoint(new Vector(-28.958754,131));
-        thirdSegment.addPoint(new Vector(-28.958754,136.483182));
+        thirdSegment.addPoint(new Vector(-28.958754,136));
 
         thirdSegment.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
         thirdSegment.setVelocities(maxVel, maxAccel, maxVelk);
 
         Path thirdSegmentPath = thirdSegment.generatePath();
 
+        PathGenerator backSegmentThree = new PathGenerator(spacing, false);
 
-        return Arrays.asList(firstSegmentPath, backOnePath, secondSegmentPath, backTwoPath, thirdSegmentPath);
+        backSegmentThree.addPoint(new Vector(-28.958754,136));
+        backSegmentThree.addPoint(new Vector(-28.958754,131));
+
+        backSegmentThree.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
+        backSegmentThree.setVelocities(maxVel, maxAccel, maxVelk);
+
+        Path backThreePath = backSegmentThree.generatePath();
+
+        return Arrays.asList(firstSegmentPath, backOnePath, secondSegmentPath, backTwoPath, thirdSegmentPath, backThreePath);
     }
 }
