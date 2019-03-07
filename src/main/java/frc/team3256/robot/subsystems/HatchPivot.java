@@ -80,7 +80,6 @@ public class HatchPivot extends SubsystemBase {
         hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionFoldIn), DemandType.ArbitraryFeedForward, 0);
     }
 
-
     public void setPositionDeploy() {
         hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionDeployHatch), DemandType.ArbitraryFeedForward, 0);
     }
@@ -100,6 +99,7 @@ public class HatchPivot extends SubsystemBase {
         SmartDashboard.putNumber("Hatch Position", hatchPivot.getSelectedSensorPosition(0));
         SmartDashboard.putNumber("Hatch Target", hatchPivot.getClosedLoopError());
         SmartDashboard.putNumber("Hatch Angle", getAngle());
+        SmartDashboard.putNumber("Hatch Wanted Encoder", angleToSensorUnits(kPositionStarting));
     }
 
     @Override
@@ -109,16 +109,19 @@ public class HatchPivot extends SubsystemBase {
 
     @Override
     public void zeroSensors() {
-        hatchPivot.setSelectedSensorPosition(0);
+        hatchPivot.setSelectedSensorPosition((int) angleToSensorUnits(kHatchAngleOffset));
     }
-
     @Override
     public void init(double timestamp) {
-        hatchPivot.setSelectedSensorPosition(0,0,0);
+        //hatchPivot.setSelectedSensorPosition((int) angleToSensorUnits(kPositionStarting),0,0);
     }
 
     @Override
     public void end(double timestamp) {
 
+    }
+
+    public double getEncoderValue() {
+        return hatchPivot.getSelectedSensorPosition(0);
     }
 }

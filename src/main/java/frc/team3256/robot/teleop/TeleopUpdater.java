@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.teleop.control.CargoIntakeControlScheme;
 import frc.team3256.robot.teleop.control.DriverControlScheme;
+import frc.team3256.robot.teleop.control.GameCubeControllerObserver;
 import frc.team3256.robot.teleop.control.HatchIntakeControlScheme;
 import frc.team3256.warriorlib.control.DrivePower;
 import frc.team3256.warriorlib.control.XboxControllerObserver;
@@ -14,7 +15,7 @@ public class TeleopUpdater {
     private DriveTrain driveTrain = DriveTrain.getInstance();
 
     private XboxControllerObserver driverController;
-    private XboxControllerObserver manipulatorController;
+    private GameCubeControllerObserver manipulatorController;
 
     private CargoIntakeControlScheme cargoIntakeControlScheme;
     private HatchIntakeControlScheme hatchIntakeControlScheme;
@@ -29,26 +30,26 @@ public class TeleopUpdater {
 
     private TeleopUpdater() {
         driverController = new XboxControllerObserver(0);
-        manipulatorController = new XboxControllerObserver(1);
+        manipulatorController = new GameCubeControllerObserver(1);
 
         cargoIntakeControlScheme = new CargoIntakeControlScheme();
         hatchIntakeControlScheme = new HatchIntakeControlScheme();
 
-        currentControlScheme = hatchIntakeControlScheme;
+        currentControlScheme = cargoIntakeControlScheme;
         manipulatorController.setListener(currentControlScheme);
 
         driverControlScheme = new DriverControlScheme();
         driverController.setListener(driverControlScheme);
         driverControlScheme.setController(driverController);
 
-        cargoIntakeControlScheme.setController(manipulatorController);
-        hatchIntakeControlScheme.setController(manipulatorController);
+        //cargoIntakeControlScheme.setController(manipulatorController);
+        //hatchIntakeControlScheme.setController(manipulatorController);
     }
 
     private void handleDrive() {
         driveTrain.setBrakeMode();
         DrivePower drivePower = DriveTrain.curvatureDrive(
-                -driverControlScheme.getLeftY(),
+                driverControlScheme.getLeftY(),
                 driverControlScheme.getRightX(),
                 driverControlScheme.isQuickTurn(),
                 driverControlScheme.isHighGear());
@@ -68,15 +69,16 @@ public class TeleopUpdater {
         manipulatorController.setListener(currentControlScheme);
     }
 
-    public XboxController getDriverController() {
-        return driverController.getXboxController();
-    }
-
     public void update() {
         handleDrive();
         manipulatorController.update();
+        driverController.update();
         SmartDashboard.putNumber("Left RPM", driveTrain.getLeftRPM());
         SmartDashboard.putNumber("Right RPM", driveTrain.getRightRPM());
         SmartDashboard.putNumber("RPM Difference", driveTrain.getLeftRPM() - driveTrain.getRightRPM());
+    }
+
+    public XboxController getDriverController() {
+        return driverController.getXboxController();
     }
 }

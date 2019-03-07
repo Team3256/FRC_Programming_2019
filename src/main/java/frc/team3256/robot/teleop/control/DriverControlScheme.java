@@ -1,6 +1,6 @@
 package frc.team3256.robot.teleop.control;
 
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.warriorlib.control.XboxListenerBase;
@@ -167,6 +167,7 @@ public class DriverControlScheme extends XboxListenerBase {
     @Override
     public void onLeftTrigger(double value) {
         highGear = value > 0.25;
+        SmartDashboard.putBoolean("HighGear", highGear);
     }
 
     @Override

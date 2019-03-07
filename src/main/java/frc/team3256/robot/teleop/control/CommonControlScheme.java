@@ -2,8 +2,8 @@ package frc.team3256.robot.teleop.control;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.CargoIntake;
-import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.subsystems.Elevator;
+import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.warriorlib.control.XboxListenerBase;
 
 import static frc.team3256.robot.constants.ElevatorConstants.kElevatorSpeed;
@@ -54,6 +54,7 @@ public abstract class CommonControlScheme extends XboxListenerBase {
     // Intake Cargo on hold
     @Override
     public void onRightTrigger(double value) {
+        System.out.println("Right trigger");
         hatchPivot.setPositionCargoIntake();
         if (value > 0.25 && value - lastRightTrigger > 0) {
             cargoIntake.intake();
@@ -103,5 +104,10 @@ public abstract class CommonControlScheme extends XboxListenerBase {
             hatchPivot.retractHatch();
         });
         thread.start();
+    }
+
+    @Override
+    public void onSelectedPressed() {
+        hatchPivot.zeroSensors();
     }
 }

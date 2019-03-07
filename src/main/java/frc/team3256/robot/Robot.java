@@ -3,7 +3,7 @@ package frc.team3256.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3256.robot.auto.AutoTestMode;
+import frc.team3256.robot.auto.BaselineAutoMode;
 import frc.team3256.robot.auto.Paths;
 import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.robot.subsystems.DriveTrain;
@@ -34,7 +34,7 @@ public class Robot extends TimedRobot {
 
 	//Auto Teleop control
 	private AutoModeExecuter autoModeExecuter;
-	private boolean maintainAutoExecution = false;
+	private boolean maintainAutoExecution = true;
 
 	/**
 	 * This function is called when the robot is first started up and should be
@@ -42,13 +42,16 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
+//		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+//		camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 640, 360, 15);
+
 		Paths.getCenterRightDoubleCargoHatch();
+		Paths.getBaselineAutoPath();
 		DriveTrainBase.setDriveTrain(driveTrain);
 
 		teleopLooper = new Looper(1 / 200D);
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
-		hatchPivot.zeroSensors();
 
 		teleopLooper.addLoops(driveTrain, cargoIntake, hatchPivot, elevator);
 
@@ -58,7 +61,10 @@ public class Robot extends TimedRobot {
 
 		teleopUpdater = TeleopUpdater.getInstance();
 		SmartDashboard.putBoolean("visionEnabled", false);
-		SmartDashboard.putBoolean("autoEnabled", false);
+		SmartDashboard.putBoolean("autoEnabled", true);
+		SmartDashboard.putString("ControlScheme", "Cargo");
+
+		hatchPivot.zeroSensors();
 	}
 
 	/**
@@ -111,10 +117,11 @@ public class Robot extends TimedRobot {
 			poseEstimatorLooper.start();
 
 			autoModeExecuter = new AutoModeExecuter();
-			autoModeExecuter.setAutoMode(new AutoTestMode());
+			autoModeExecuter.setAutoMode(new BaselineAutoMode());
 			autoModeExecuter.start();
 		}
 		else {
+			maintainAutoExecution = false;
 			teleopLooper.start();
 		}
 	}
@@ -124,12 +131,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		SmartDashboard.putNumber("Pose X", poseEstimator.getPose().x);
-		SmartDashboard.putNumber("Pose Y", poseEstimator.getPose().y);
-		SmartDashboard.putNumber("left enc", driveTrain.getLeftDistance());
-		SmartDashboard.putNumber("right enc", driveTrain.getRightDistance());
-		SmartDashboard.putNumber("angle", driveTrain.getAngle());
-
 		boolean stopAuto = TeleopUpdater.getInstance().getDriverController().getAButtonPressed();
 		//basic logic below: keep executing auto until we disable it or it finishes, and don't allow it to be re-enabled
 		if (!maintainAutoExecution) {
@@ -173,20 +174,18 @@ public class Robot extends TimedRobot {
 	@Override
 	public void testPeriodic() {
 		poseEstimatorLooper.start();
-		SmartDashboard.putString("Pose", poseEstimator.getPose().toString());
-		cargoIntake.setIntakePower(0.5);
+//		SmartDashboard.putString("Pose", poseEstimator.getPose().toString());
+		//cargoIntake.setIntakePower(0.5);
 //		SmartDashboard.putNumber("Pose X", poseEstimator.getPose().x);
 //		SmartDashboard.putNumber("Pose Y", poseEstimator.getPose().y);
-//		SmartDashboard.putNumber("left_enc", driveTrain.getLeftDistance());
-//		SmartDashboard.putNumber("right_enc", driveTrain.getRightDistance());
-//		System.out.println("right encoder:" + driveTrain.getRightDistance());
-//		System.out.println("left encoder:" + driveTrain.getLeftDistance());
+//		SmartDashboard.putNumber("right encoder", driveTrain.getRightDistance());
+//		SmartDashboard.putNumber("left encoder", driveTrain.getLeftDistance());
 	}
 
 	@Override
 	public void disabledPeriodic() {
-		SmartDashboard.putNumber("angle", driveTrain.getAngle());
-		SmartDashboard.putNumber("hatchPivot", hatchPivot.getAngle());
-		SmartDashboard.putBoolean("hallEffect", elevator.getHallEffectTriggered());
+//		SmartDashboard.putNumber("hatchPivot", hatchPivot.getAngle());
+//		SmartDashboard.putNumber("hatchPosition", hatchPivot.getEncoderValue());
+//		SmartDashboard.putBoolean("hallEffect", elevator.getHallEffectTriggered());
 	}
 }

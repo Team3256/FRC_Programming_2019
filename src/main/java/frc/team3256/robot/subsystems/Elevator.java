@@ -17,7 +17,6 @@ public class Elevator extends SubsystemBase {
 	private double elevatorTarget = 6;
 
 	private DigitalInput hallEffect;
-	private boolean homed = false;
 
 	private Elevator() {
 		hallEffect = new DigitalInput(kHallEffectPort);
@@ -65,6 +64,10 @@ public class Elevator extends SubsystemBase {
 		return masterEncoder.getPosition();
 	}
 
+	public double getPositionInches() {
+		return rotationToInches(getPosition());
+	}
+
 	public void moveToTarget() {
 		masterPID.setReference(elevatorTarget, ControlType.kSmartMotion);
 	}
@@ -96,6 +99,8 @@ public class Elevator extends SubsystemBase {
 
 	public void update(double timestamp) {
 		this.outputToDashboard();
+//		if (getPosition() < 0)
+//			setPosition(0);
 	}
 
 	public void end(double timestamp) {
@@ -131,11 +136,11 @@ public class Elevator extends SubsystemBase {
 	}
 
 	public void setPositionHookHatch() {
-		setPositionInches(elevatorTarget + kHookOffset);
+		setPositionInches(getPositionInches() + kHookOffset);
 	}
 
 	public void setPositionUnhookHatch() {
-		setPositionInches(elevatorTarget - kUnhookOffset);
+		setPositionInches(getPositionInches() - kUnhookOffset);
 	}
 
 	public void setPositionHome() {
@@ -143,11 +148,15 @@ public class Elevator extends SubsystemBase {
 	}
 
 	public double rotationToInches(double rotations) {
-		return (((rotations * kElevatorGearRatio) * kElevatorSpoolSize * Math.PI) + 6.0);
+		return (rotations * kElevatorGearRatio * kElevatorSpoolSize * Math.PI) + kElevatorOffset;
 	}
 
 	public double inchesToRotations(double inches) {
-		return (inches - 6.0) / Math.PI / kElevatorGearRatio / kElevatorSpoolSize;
+		return (inches - kElevatorOffset) / Math.PI / kElevatorGearRatio / kElevatorSpoolSize;
+	}
+
+	public void setPositionShip() {
+		setPositionInches(kPositionShip);
 	}
 
 	// Distances from ground

@@ -19,7 +19,7 @@ public class CargoIntake extends SubsystemBase {
 
 	private CargoIntake() {
 		cargoIntakeLeft = TalonSRXUtil.generateGenericTalon(kIntake);
-		cargoIntakeLeft.setInverted(false);
+		cargoIntakeLeft.setInverted(true);
 
 		cargoIntakeRight = TalonSRXUtil.generateGenericTalon(kIntakeSlave);
 		cargoIntakeRight.setInverted(true);
@@ -35,7 +35,7 @@ public class CargoIntake extends SubsystemBase {
 
 	public void intake() {
 		this.setIntakePower(kIntakeSpeed);
-		checkForBallAfter = Timer.getFPGATimestamp() + 0.2;
+		checkForBallAfter = Timer.getFPGATimestamp() + 0.5;
 	}
 
 	public void exhaust() {
@@ -49,32 +49,28 @@ public class CargoIntake extends SubsystemBase {
 	@Override
 	public void update(double timestamp) {
 		SmartDashboard.putNumber("CheckForBallAfter", checkForBallAfter);
-		SmartDashboard.putNumber("CargoOutputCurrent", cargoIntakeLeft.getOutputCurrent());
-		SmartDashboard.putNumber("CargoBusVoltage", cargoIntakeLeft.getBusVoltage());
-		SmartDashboard.putNumber("CargoVoltageChange", (cargoIntakeLeft.getOutputCurrent() - previousOutputCurrent ) / (15 - 0));
+		SmartDashboard.putNumber("Cargo Left", cargoIntakeLeft.getOutputCurrent());
+		SmartDashboard.putNumber("Cargo Right", cargoIntakeRight.getOutputCurrent());
 
-		if (
-				(checkForBallAfter != -1) &&
-				(Timer.getFPGATimestamp() > checkForBallAfter) &&
-				(cargoIntakeLeft.getOutputCurrent() > 1.0)
-		) {
-			SmartDashboard.putBoolean("BallTime", true);
-			Thread thread = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					CargoIntake.getInstance().stop();
-				}
-			});
-			thread.start();
-			checkForBallAfter = -1;
-		} else {
-			SmartDashboard.putBoolean("BallTime", false);
-		}
+//		if (
+//				(checkForBallAfter != -1) &&
+//				(Timer.getFPGATimestamp() > checkForBallAfter) &&
+//				((cargoIntakeLeft.getOutputCurrent() > kIntakeSpike) || cargoIntakeRight.getOutputCurrent() > kIntakeSpike)
+//		) {
+//			SmartDashboard.putNumber("BallTime", 1);
+//			Thread thread = new Thread(() -> {
+//				try {
+//					Thread.sleep(500);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//				CargoIntake.getInstance().stop();
+//			});
+//			thread.start();
+//			checkForBallAfter = -1;
+//		} else {
+//			SmartDashboard.putNumber("BallTime", 0);
+//		}
 
 		previousOutputCurrent = cargoIntakeLeft.getOutputCurrent();
 	}

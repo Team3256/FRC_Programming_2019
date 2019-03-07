@@ -85,26 +85,23 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
     }
 
     @Override
-    public void onSelectedPressed() {
-
-    }
-
-    @Override
     public void onStartPressed() {
-        Thread thread = new Thread(() -> {
-            try {
-                getController().setRumble(1.0);
-                Thread.sleep(120);
-                getController().setRumble(0);
-                Thread.sleep(60);
-                getController().setRumble(1.0);
-                Thread.sleep(120);
-                getController().setRumble(0);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-        thread.start();
+        if (getController() != null) {
+            Thread thread = new Thread(() -> {
+                try {
+                    getController().setRumble(1.0);
+                    Thread.sleep(120);
+                    getController().setRumble(0);
+                    Thread.sleep(60);
+                    getController().setRumble(1.0);
+                    Thread.sleep(120);
+                    getController().setRumble(0);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+            thread.start();
+        }
         hatchPivot.setPositionDeploy();
         TeleopUpdater.getInstance().changeToCargoControlScheme();
     }

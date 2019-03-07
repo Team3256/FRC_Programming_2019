@@ -3,6 +3,7 @@ package frc.team3256.robot.subsystems;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.*;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.operations.PIDController;
 import frc.team3256.warriorlib.control.DrivePower;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
@@ -60,8 +61,8 @@ public class DriveTrain extends DriveTrainBase implements Loop {
 
         //rightSlave2 = TalonSRXUtil.generateSlaveTalon(kRightDriveSlave2, kRightDriveMaster);
         //gyro.calibrate();
-        rightMaster.setInverted(false);
-        leftMaster.setInverted(true);
+        rightMaster.setInverted(false); //false
+        leftMaster.setInverted(true); //true
 
 //        leftMaster.setClosedLoopRampRate(0.0);
 //        rightMaster.setClosedLoopRampRate(0.0);
@@ -109,8 +110,11 @@ public class DriveTrain extends DriveTrainBase implements Loop {
             }
         }
         prevTurn = turn;
-        double left = throttle + angularPower;
-        double right = throttle - angularPower;
+        double left, right;
+
+        left = throttle + angularPower;
+        right = throttle - angularPower;
+
         if (left > 1.0) {
             right -= overPower * (left - 1.0);
             left = 1.0;
@@ -125,6 +129,8 @@ public class DriveTrain extends DriveTrainBase implements Loop {
             right = -1.0;
         }
         //System.out.println("FEEDING LEFT " + left + " RIGHT " + right);
+//        SmartDashboard.putNumber("feed left", left);
+//        SmartDashboard.putNumber("feed riht", right);
         return new DrivePower(left, right, highGear);
     }
 
@@ -146,7 +152,8 @@ public class DriveTrain extends DriveTrainBase implements Loop {
 
     @Override
     public void outputToDashboard() {
-
+        SmartDashboard.putNumber("right encoder", getRightDistance());
+        SmartDashboard.putNumber("left encoder", getLeftDistance());
     }
 
     @Override
@@ -247,7 +254,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public void setHighGear(boolean highGear) {
-        //shifter.set(highGear ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
+        shifter.set(highGear ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
     }
 
     public void setVelocityClosedLoop(double leftVelInchesPerSec, double rightVelInchesPerSec) {

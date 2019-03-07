@@ -5,11 +5,14 @@ import frc.team3256.warriorlib.auto.purepursuit.PathGenerator;
 import frc.team3256.warriorlib.math.Vector;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+
 import static frc.team3256.robot.constants.DriveTrainConstants.*;
 
 public abstract class Paths {
     private static List<Path> centerRightDoubleCargoHatch;
+    private static List<Path> baselineAutoPath;
 
     public static List<Path> getCenterRightDoubleCargoHatch() {
         if (centerRightDoubleCargoHatch != null)
@@ -104,5 +107,23 @@ public abstract class Paths {
 
         centerRightDoubleCargoHatch = Arrays.asList(firstSegmentPath, backOnePath, secondSegmentPath, backTwoPath, thirdSegmentPath, backThreePath);
         return centerRightDoubleCargoHatch;
+    }
+
+    public static List<Path> getBaselineAutoPath() {
+        if (baselineAutoPath != null)
+            return baselineAutoPath;
+
+        PathGenerator firstSegment = new PathGenerator(spacing, true);
+
+        firstSegment.addPoint(new Vector(0, 0));
+        firstSegment.addPoint(new Vector(0, 30));
+        firstSegment.addPoint(new Vector(0, 60));
+
+        firstSegment.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
+        firstSegment.setVelocities(maxVel, maxAccel, maxVelk);
+
+        Path firstSegmentPath = firstSegment.generatePath();
+        baselineAutoPath = Collections.singletonList(firstSegmentPath);
+        return baselineAutoPath;
     }
 }
