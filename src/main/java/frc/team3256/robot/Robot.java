@@ -185,20 +185,40 @@ public class Robot extends TimedRobot {
 			absPosition += 360;
 		while (absPosition > 180)
 			absPosition -= 360;
+		absPosition = 180 - absPosition;
 		double angleDelta = (absPosition - angleFromTarget) * Math.PI/180;
 		double x = Math.cos(angleDelta) * distance;
 		double y = Math.sin(angleDelta) * distance;
 		SmartDashboard.putNumber("Y", y);
 		SmartDashboard.putNumber("X", x);
-		SmartDashboard.putNumber("Angle Boyo", (absPosition - angleFromTarget));
+		SmartDashboard.putNumber("Gyro Angle", driveTrain.getAngle());
+        SmartDashboard.putNumber("Robot angle", (absPosition));
+        SmartDashboard.putNumber("Total angle", (absPosition - angleFromTarget));
 	}
 
 	@Override
 	public void disabledPeriodic() {
 		System.out.println("Pose: " + poseEstimator.getPose());
+		System.out.println("Gyro: " + driveTrain.getAngle());
 		//SmartDashboard.putNumber("Gyro", DriveTrain.getInstance().getAngle());
 //		SmartDashboard.putNumber("hatchPivot", hatchPivot.getAngle());
 //		SmartDashboard.putNumber("hatchPosition", hatchPivot.getEncoderValue());
 //		SmartDashboard.putBoolean("hallEffect", elevator.getHallEffectTriggered());
+        double distance = SmartDashboard.getNumber("visionDistance0", 0);
+        double angleFromTarget = SmartDashboard.getNumber("visionAngle0",0);
+        double absPosition = -driveTrain.getAngle() - 90;
+        while (absPosition < -180)
+            absPosition += 360;
+        while (absPosition > 180)
+            absPosition -= 360;
+        absPosition = 180 - absPosition;
+        double angleDelta = (absPosition - angleFromTarget) * Math.PI/180;
+        double x = Math.cos(angleDelta) * distance;
+        double y = Math.sin(angleDelta) * distance;
+        SmartDashboard.putNumber("Y", y);
+        SmartDashboard.putNumber("X", x);
+        SmartDashboard.putNumber("Gyro Angle", driveTrain.getAngle());
+        SmartDashboard.putNumber("Robot angle", (absPosition));
+        SmartDashboard.putNumber("Total angle", (absPosition - angleFromTarget));
 	}
 }

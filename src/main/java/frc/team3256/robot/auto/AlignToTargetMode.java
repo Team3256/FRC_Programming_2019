@@ -39,6 +39,7 @@ public class AlignToTargetMode extends AutoModeBase {
             absPosition += 360;
         while (absPosition > 180)
             absPosition -= 360;
+        absPosition = 180 - absPosition;
         double angleDelta = (absPosition - angleFromTarget) * Math.PI/180;
         double x = Math.cos(angleDelta) * distance;
         double y = Math.sin(angleDelta) * distance;
@@ -46,22 +47,17 @@ public class AlignToTargetMode extends AutoModeBase {
         SmartDashboard.putNumber("Target X", x);
         SmartDashboard.putNumber("Angle Delta", angleDelta);
 
-        /*double angle = 0;
-        while (angle < -180)
-            angle += 360;
-        while (angle > 180)
-            angle -= 360;*/
-
         PathGenerator pathGenerator = new PathGenerator(spacing, true);
 
         pathGenerator.addPoint(new Vector(0, 0));
-        //pathGenerator.addPoint(new Vector(xTarget, 0.4*yTarget));
-        pathGenerator.addPoint(new Vector(x, 0.6*y));
-        pathGenerator.addPoint(new Vector(x, 0.7*y));
+//        pathGenerator.addPoint(new Vector(x, 0.4*y));
+//        pathGenerator.addPoint(new Vector(x, 0.5*y));
+        pathGenerator.addPoint(new Vector(0.7*x, 0.5*y));
+        pathGenerator.addPoint(new Vector(0.7*x, 0.8*y));
         //pathGenerator.addPoint(new Vector(xTarget, 0.9*yTarget));
 
         pathGenerator.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
-        pathGenerator.setVelocities(30, 15, 1);
+        pathGenerator.setVelocities(30, 15, 2);
 
         Path path = pathGenerator.generatePath();
 
