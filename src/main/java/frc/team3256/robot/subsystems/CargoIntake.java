@@ -48,9 +48,9 @@ public class CargoIntake extends SubsystemBase {
 
 	@Override
 	public void update(double timestamp) {
-		SmartDashboard.putNumber("CheckForBallAfter", checkForBallAfter);
-		SmartDashboard.putNumber("Cargo Left", cargoIntakeLeft.getOutputCurrent());
-		SmartDashboard.putNumber("Cargo Right", cargoIntakeRight.getOutputCurrent());
+		//SmartDashboard.putNumber("CheckForBallAfter", checkForBallAfter);
+		//SmartDashboard.putNumber("Cargo Left", cargoIntakeLeft.getOutputCurrent());
+		//SmartDashboard.putNumber("Cargo Right", cargoIntakeRight.getOutputCurrent());
 
 //		if (
 //				(checkForBallAfter != -1) &&

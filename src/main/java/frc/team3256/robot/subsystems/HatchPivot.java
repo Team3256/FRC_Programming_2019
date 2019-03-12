@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.constants.DriveTrainConstants;
 import frc.team3256.robot.constants.HatchConstants;
@@ -17,12 +18,16 @@ public class HatchPivot extends SubsystemBase {
     private static HatchPivot instance;
     private WPI_TalonSRX hatchPivot;
     private DoubleSolenoid deployHatch, ratchetPivot;
+    private Ultrasonic ultrasonicHatch;
+    public boolean hasHatch = false;
 
     private HatchPivot() {
         hatchPivot = TalonSRXUtil.generateGenericTalon(kHatchPivotPort);
 
         deployHatch = new DoubleSolenoid(15, kHatchForwardChannel, kHatchReverseChannel);
         ratchetPivot = new DoubleSolenoid(15, kRatchetForwardChannel, kRatchetReverseChannel);
+
+        //ultrasonicHatch = new Ultrasonic(kHatchPingChannel,kHatchEchoChannel);
 
         TalonSRXUtil.configMagEncoder(hatchPivot);
 
@@ -97,9 +102,13 @@ public class HatchPivot extends SubsystemBase {
         //System.out.println("Hatch Pivot Raw: " + hatchPivot.getSelectedSensorPosition(0));
         //System.out.println("Hatch Pivot Angle: " + getAngle());
         SmartDashboard.putNumber("Hatch Position", hatchPivot.getSelectedSensorPosition(0));
-        SmartDashboard.putNumber("Hatch Target", hatchPivot.getClosedLoopError());
+        //SmartDashboard.putNumber("Hatch Target", hatchPivot.getClosedLoopError());
         SmartDashboard.putNumber("Hatch Angle", getAngle());
-        SmartDashboard.putNumber("Hatch Wanted Encoder", angleToSensorUnits(kPositionStarting));
+        //SmartDashboard.putNumber("Hatch Wanted Encoder", angleToSensorUnits(kPositionStarting));
+        //SmartDashboard.putNumber("Hatch Sensing Distance", ultrasonicHatch.getRangeInches());
+        //SmartDashboard.putBoolean("Hatch Time", hasHatch);
+
+        //hasHatch = ultrasonicHatch.getRangeInches() < kHatchSensingRange;
     }
 
     @Override

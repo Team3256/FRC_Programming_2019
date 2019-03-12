@@ -7,6 +7,7 @@ import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.warriorlib.auto.AutoModeBase;
 import frc.team3256.warriorlib.auto.AutoModeEndedException;
 import frc.team3256.warriorlib.auto.action.WaitAction;
+import frc.team3256.warriorlib.auto.purepursuit.PurePursuitAction;
 import frc.team3256.warriorlib.auto.purepursuit.PurePursuitTracker;
 import frc.team3256.warriorlib.auto.purepursuit.ResetPursuitAction;
 
@@ -23,7 +24,7 @@ public class BaselineAutoMode extends AutoModeBase {
         runAction(new WaitAction(0.5));
         runAction(new ResetPursuitAction());
         DriveTrain.getInstance().setHighGear(true);
-        runAction(new BangBaselineAction());
+        runAction(new PurePursuitAction(0));
 
         //runAction(new ZeroElevatorAction());
     }

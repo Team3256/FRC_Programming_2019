@@ -50,11 +50,11 @@ public class TeleopUpdater {
         driveTrain.setBrakeMode();
         DrivePower drivePower = DriveTrain.curvatureDrive(
                 driverControlScheme.getLeftY(),
-                driverControlScheme.getRightX(),
+                driverControlScheme.getRightX()*0.7,
                 driverControlScheme.isQuickTurn(),
                 driverControlScheme.isHighGear());
         driveTrain.setHighGear(drivePower.getHighGear());
-        driveTrain.setOpenLoop(drivePower.getLeft(), drivePower.getRight());
+        driveTrain.setPowerClosedLoop(drivePower.getLeft(), drivePower.getRight());
     }
 
     public void changeToCargoControlScheme() {
@@ -75,7 +75,10 @@ public class TeleopUpdater {
         driverController.update();
         SmartDashboard.putNumber("Left RPM", driveTrain.getLeftRPM());
         SmartDashboard.putNumber("Right RPM", driveTrain.getRightRPM());
-        SmartDashboard.putNumber("RPM Difference", driveTrain.getLeftRPM() - driveTrain.getRightRPM());
+        //SmartDashboard.putNumber("RPM Difference", driveTrain.getLeftRPM() - driveTrain.getRightRPM());
+//        if(HatchPivot.getInstance().hasHatch) { //Implement when we know hasHatch & hasCargo works
+//            changeToHatchControlScheme();
+//        }
     }
 
     public XboxController getDriverController() {

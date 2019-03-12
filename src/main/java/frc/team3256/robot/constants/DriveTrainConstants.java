@@ -9,19 +9,20 @@ public class DriveTrainConstants {
     public static final int kRightDriveMaster = 5;
     public static final int kRightDriveSlave = 6;
 
-    public static final double kVelocityP = 8e-5;
+    public static final double kVelocityP = 8e-6;
     public static final double kVelocityI = 1e-6;
     public static final double kVelocityD = 0;
     public static final double kVelocityIZone = 0;
     public static final double kVelocityF = 1e-5;
-    public static final double kVelocityMaxRPM = 4000;
+    public static final double kVelocityMaxRPM = 4150;
     public static final double kMaxAccel = 1000;
     public static final double kAllowedErr = 0;
     public static final double kAngularPowerScalar = 1.7;
 
-    public static final double kTurnP = 0.01;
-    public static final double kTurnI = 0.00005;
-    public static final double kTurnD = 0.001;
+    public static final double kTurnP = 0.0045;
+    public static final double kTurnI = 0.0;
+    public static final double kTurnD = 0.00001;
+    public static final double kAlignP = 0.005;
 
     public static final int kShifterForward = 1; // 6
     public static final int kShifterReverse = 6; // 1

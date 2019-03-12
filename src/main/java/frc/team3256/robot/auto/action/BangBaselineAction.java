@@ -9,7 +9,7 @@ public class BangBaselineAction implements Action {
 
     @Override
     public boolean isFinished() {
-        return Timer.getFPGATimestamp() - timestamp > 3.0;
+        return Timer.getFPGATimestamp() - timestamp > 0.7;
     }
 
     @Override
@@ -19,12 +19,12 @@ public class BangBaselineAction implements Action {
 
     @Override
     public void done() {
-        DriveTrain.getInstance().setOpenLoop(0, 0);
+        DriveTrain.getInstance().setPowerClosedLoop(0, 0);
     }
 
     @Override
     public void start() {
         timestamp = Timer.getFPGATimestamp();
-        DriveTrain.getInstance().setOpenLoop(0.3, 0.3);
+        DriveTrain.getInstance().setPowerClosedLoop(0.1, 0.1);
     }
 }

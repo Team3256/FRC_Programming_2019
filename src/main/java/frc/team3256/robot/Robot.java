@@ -1,10 +1,8 @@
 package frc.team3256.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3256.robot.auto.BaselineAutoMode;
-import frc.team3256.robot.auto.Paths;
+import frc.team3256.robot.auto.*;
 import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.Elevator;
@@ -44,10 +42,9 @@ public class Robot extends TimedRobot {
 	public void robotInit() {
 //		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 //		camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 640, 360, 15);
-
-		Paths.getCenterRightDoubleCargoHatch();
-		Paths.getBaselineAutoPath();
 		DriveTrainBase.setDriveTrain(driveTrain);
+
+		Paths.initialize();
 
 		teleopLooper = new Looper(1 / 200D);
 		driveTrain.resetEncoders();
@@ -58,9 +55,10 @@ public class Robot extends TimedRobot {
 		poseEstimatorLooper = new Looper(1 / 50D);
 		poseEstimator = PoseEstimator.getInstance();
 		poseEstimatorLooper.addLoops(poseEstimator);
+		poseEstimatorLooper.start();
 
 		teleopUpdater = TeleopUpdater.getInstance();
-		SmartDashboard.putBoolean("visionEnabled", false);
+		SmartDashboard.putBoolean("visionEnabled", true);
 		SmartDashboard.putBoolean("autoEnabled", true);
 		SmartDashboard.putString("ControlScheme", "Cargo");
 
@@ -77,9 +75,9 @@ public class Robot extends TimedRobot {
 		driveTrain.setCoastMode();
 		driveTrain.setHighGear(true);
 
-		elevator.setPositionHome();
+		elevator.runZeroPower();
 		cargoIntake.setIntakePower(0);
-		driveTrain.setOpenLoop(0, 0);
+		driveTrain.runZeroPower();
 		hatchPivot.setPositionDeploy();
 	}
 
@@ -93,6 +91,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotPeriodic(){
+		SmartDashboard.putNumber("Pose X", poseEstimator.getPose().x);
+		SmartDashboard.putNumber("Pose Y", poseEstimator.getPose().y);
 	}
 
 	/**
@@ -108,16 +108,14 @@ public class Robot extends TimedRobot {
 		poseEstimator.reset();
 		purePursuitTracker.reset();
 
-		SmartDashboard.putString("alliance", DriverStation.getInstance().getAlliance().name());
+		//SmartDashboard.putString("alliance", DriverStation.getInstance().getAlliance().name());
 
 		if (SmartDashboard.getBoolean("autoEnabled", false)) {
 			maintainAutoExecution = true;
 			teleopLooper.stop();
 
-			poseEstimatorLooper.start();
-
 			autoModeExecuter = new AutoModeExecuter();
-			autoModeExecuter.setAutoMode(new BaselineAutoMode());
+			autoModeExecuter.setAutoMode(new AlignToTargetMode());
 			autoModeExecuter.start();
 		}
 		else {
@@ -140,12 +138,11 @@ public class Robot extends TimedRobot {
 			if (!autoModeExecuter.isFinished()) {
 				autoModeExecuter.stop();
 				//make sure all our subsystems stop
-				elevator.setPositionHome();
+				elevator.runZeroPower();
 				cargoIntake.setIntakePower(0);
-				driveTrain.setOpenLoop(0, 0);
+				driveTrain.setPowerClosedLoop(0, 0);
 				hatchPivot.setPositionDeploy();
 			}
-			poseEstimatorLooper.stop();
 			teleopLooper.start();
 		}
 	}
@@ -156,7 +153,6 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopInit() {
 		driveTrain.setBrakeMode();
-		poseEstimatorLooper.stop();
 		teleopLooper.start();
 	}
 
@@ -173,17 +169,34 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		poseEstimatorLooper.start();
+//		poseEstimatorLooper.start();
+//		System.out.println("Pose: " + poseEstimator.getPose());
 //		SmartDashboard.putString("Pose", poseEstimator.getPose().toString());
 		//cargoIntake.setIntakePower(0.5);
 //		SmartDashboard.putNumber("Pose X", poseEstimator.getPose().x);
 //		SmartDashboard.putNumber("Pose Y", poseEstimator.getPose().y);
 //		SmartDashboard.putNumber("right encoder", driveTrain.getRightDistance());
 //		SmartDashboard.putNumber("left encoder", driveTrain.getLeftDistance());
+
+		double distance = SmartDashboard.getNumber("visionDistance1", 0);
+		double angleFromTarget = SmartDashboard.getNumber("visionAngle1",0);
+		double absPosition = -driveTrain.getAngle() - 90;
+		while (absPosition < -180)
+			absPosition += 360;
+		while (absPosition > 180)
+			absPosition -= 360;
+		double angleDelta = (absPosition - angleFromTarget) * Math.PI/180;
+		double x = Math.cos(angleDelta) * distance;
+		double y = Math.sin(angleDelta) * distance;
+		SmartDashboard.putNumber("Y", y);
+		SmartDashboard.putNumber("X", x);
+		SmartDashboard.putNumber("Angle Boyo", (absPosition - angleFromTarget));
 	}
 
 	@Override
 	public void disabledPeriodic() {
+		System.out.println("Pose: " + poseEstimator.getPose());
+		//SmartDashboard.putNumber("Gyro", DriveTrain.getInstance().getAngle());
 //		SmartDashboard.putNumber("hatchPivot", hatchPivot.getAngle());
 //		SmartDashboard.putNumber("hatchPosition", hatchPivot.getEncoderValue());
 //		SmartDashboard.putBoolean("hallEffect", elevator.getHallEffectTriggered());

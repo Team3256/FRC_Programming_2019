@@ -1,6 +1,5 @@
 package frc.team3256.robot.auto.action;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.constants.DriveTrainConstants;
 import frc.team3256.robot.operations.PIDController;
 import frc.team3256.robot.subsystems.DriveTrain;
@@ -15,26 +14,32 @@ public class TurnInPlaceAction implements Action {
      * Turning right = negative angle lul
      */
     public TurnInPlaceAction(double angle) {
+        this(angle, DriveTrainConstants.kTurnP, DriveTrainConstants.kTurnI, DriveTrainConstants.kTurnD);
+    }
+
+    public TurnInPlaceAction(double angle, double kTurnP, double kTurnI, double kTurnD) {
         this.targetAngle = driveTrain.getAngle() + angle;
-        pidController = new PIDController(DriveTrainConstants.kTurnP, DriveTrainConstants.kTurnI, DriveTrainConstants.kTurnD);
+        pidController = new PIDController(kTurnP, kTurnI, kTurnD);
+
     }
 
     @Override
     public boolean isFinished() {
         //return false;
+        System.out.println("Turn In Place FINISHED");
         return Math.abs(targetAngle - driveTrain.getAngle()) <= 1.5;
     }
 
     @Override
     public void update() {
         double output = pidController.calculatePID(targetAngle, DriveTrain.getInstance().getAngle());
-        driveTrain.setOpenLoop(-output, output);
-        SmartDashboard.putNumber("output", output);
+        driveTrain.setPowerClosedLoop(-output, output);
+        //SmartDashboard.putNumber("Turn In Place Output", output);
     }
 
     @Override
     public void done() {
-        driveTrain.setOpenLoop(0, 0);
+        driveTrain.setPowerClosedLoop(0, 0);
     }
 
     @Override

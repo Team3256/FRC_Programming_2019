@@ -14,7 +14,7 @@ public class Elevator extends SubsystemBase {
 	private CANSparkMax master, slave;
 	private CANPIDController masterPID;
 	private CANEncoder masterEncoder;
-	private double elevatorTarget = 6;
+	private double elevatorTarget = kElevatorOffset;
 
 	private DigitalInput hallEffect;
 
@@ -72,14 +72,18 @@ public class Elevator extends SubsystemBase {
 		masterPID.setReference(elevatorTarget, ControlType.kSmartMotion);
 	}
 
+	public void runZeroPower() {
+		master.set(0);
+	}
+
 	@Override
 	public void outputToDashboard() {
 		SmartDashboard.putNumber("ElevatorPositionMaster", getPosition());
-        SmartDashboard.putNumber("ElevatorSpeed", master.getEncoder().getVelocity());
-		SmartDashboard.putNumber("ElevatorPositionSlave", slave.getEncoder().getPosition());
+//        SmartDashboard.putNumber("ElevatorSpeed", master.getEncoder().getVelocity());
+//		SmartDashboard.putNumber("ElevatorPositionSlave", slave.getEncoder().getPosition());
 
-		SmartDashboard.putNumber("ElevatorCurrent", master.getOutputCurrent());
-		SmartDashboard.putNumber("ElevatorCurrentSlave", slave.getOutputCurrent());
+//		SmartDashboard.putNumber("ElevatorCurrent", master.getOutputCurrent());
+//		SmartDashboard.putNumber("ElevatorCurrentSlave", slave.getOutputCurrent());
 		SmartDashboard.putBoolean("HallEffect", getHallEffectTriggered());
 		SmartDashboard.putNumber("SpoolInches", rotationToInches(getPosition()));
     }
@@ -140,7 +144,7 @@ public class Elevator extends SubsystemBase {
 	}
 
 	public void setPositionUnhookHatch() {
-		setPositionInches(getPositionInches() - kUnhookOffset);
+		setPositionInches(getPositionInches() + kUnhookOffset);
 	}
 
 	public void setPositionHome() {

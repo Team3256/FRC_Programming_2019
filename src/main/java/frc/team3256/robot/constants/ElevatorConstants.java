@@ -20,10 +20,10 @@ public class ElevatorConstants {
     public static final double kPositionMax = 195;
     public static final double kPositionMin = 0;
 
-    public static final double kUnhookOffset = 5.0;
-    public static final double kElevatorOffset = 10.75; // 7.0
+    public static final double kUnhookOffset = -5.0; //has to be negative
+    public static final double kElevatorOffset = 7.0; // 10.75 comp
     public static final double kHookOffset = 5.0;
-    public static final double kHatchHumanPlayerPosition = 1 + kElevatorOffset;
+    public static final double kHatchHumanPlayerPosition = 7 + kElevatorOffset; // 1
     private static final double kHatchPositionOffset = 0; //has to be negative
     public static final double kPositionHighHatch = 73 + kHatchPositionOffset;
     public static final double kPositionMidHatch = 46 + kHatchPositionOffset;

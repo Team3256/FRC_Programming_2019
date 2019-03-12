@@ -24,11 +24,12 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     private boolean init = false;
     private PigeonIMU gyro;
     private PIDController turnPIDController = new PIDController(kTurnP, kTurnI, kTurnD);
+    private double gyroOffset = 0;
 
     private DriveTrain() {
-        //gyro = new PigeonIMU(14);
-        //gyro.setAccumZAngle(0, 0);
-        //gyro.setYaw(0, 0);
+        gyro = new PigeonIMU(14);
+        gyro.setAccumZAngle(0, 0);
+        gyro.setYaw(0, 0);
         //        internalGyro = new ADXRS453_Gyro();
         //        internalGyro.startCalibrate();
         leftMaster = SparkMAXUtil.generateGenericSparkMAX(kLeftDriveMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -128,9 +129,10 @@ public class DriveTrain extends DriveTrainBase implements Loop {
             left += overPower * (-1.0 - right);
             right = -1.0;
         }
-        //System.out.println("FEEDING LEFT " + left + " RIGHT " + right);
-//        SmartDashboard.putNumber("feed left", left);
-//        SmartDashboard.putNumber("feed riht", right);
+        if (!quickTurn) { //we only want cubic drive if we aren't quickturning
+            left *= left * left;
+            right *= right * right;
+        }
         return new DrivePower(left, right, highGear);
     }
 
@@ -138,11 +140,17 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         return Math.max(Math.min(val, 1.0), -1.0);
     }
 
-    public void setOpenLoop(double leftPower, double rightPower) {
-        leftPower *= leftPower * leftPower;
-        rightPower *= rightPower * rightPower;
+    public void setPowerClosedLoop(double leftPower, double rightPower) {
         leftPIDController.setReference(leftPower*kVelocityMaxRPM, ControlType.kVelocity);
         rightPIDController.setReference(rightPower*kVelocityMaxRPM, ControlType.kVelocity);
+    }
+
+    /**
+     * Runs to zero power right away
+     */
+    public void runZeroPower() {
+        leftMaster.set(0);
+        rightMaster.set(0);
     }
 
     public void setHangDrive(double leftPower, double rightPower) {
@@ -152,8 +160,16 @@ public class DriveTrain extends DriveTrainBase implements Loop {
 
     @Override
     public void outputToDashboard() {
-        SmartDashboard.putNumber("right encoder", getRightDistance());
-        SmartDashboard.putNumber("left encoder", getLeftDistance());
+        //SmartDashboard.putNumber("right encoder", getRightDistance());
+        //SmartDashboard.putNumber("left encoder", getLeftDistance());
+        SmartDashboard.putNumber("Left A Temp", celsiusToFarenhiet(leftMaster.getMotorTemperature()));
+        SmartDashboard.putNumber("Left B Temp", celsiusToFarenhiet(leftSlave.getMotorTemperature()));
+        SmartDashboard.putNumber("Right A Temp", celsiusToFarenhiet(rightMaster.getMotorTemperature()));
+        SmartDashboard.putNumber("Right B Temp", celsiusToFarenhiet(rightSlave.getMotorTemperature()));
+    }
+
+    public double celsiusToFarenhiet(double c) {
+        return (c * 9.0/5.0) + 32.0;
     }
 
     @Override
@@ -172,7 +188,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
 
     @Override
     public void end(double timestamp) {
-        setOpenLoop(0, 0);
+        setPowerClosedLoop(0, 0);
     }
 
     public double getLeftCurrent() {
@@ -236,11 +252,9 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public double getAngle() {
-        return 0;
-//        double[] ypr = new double[3];
-//        gyro.getYawPitchRoll(ypr);
-//        return ypr[0];
-        //        return -internalGyro.getAngle();
+        double[] ypr = new double[3];
+        gyro.getYawPitchRoll(ypr);
+        return ypr[0] + gyroOffset;
     }
 
     public Rotation getRotationAngle() {
@@ -248,9 +262,13 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public void resetGyro() {
-        //gyro.setYaw(0, 0);
-        //gyro.setAccumZAngle(0, 0);
+        gyro.setYaw(0, 0);
+        gyro.setAccumZAngle(0, 0);
         //        internalGyro.reset();
+    }
+
+    public void setGyroOffset(double offset) {
+        this.gyroOffset = offset;
     }
 
     public void setHighGear(boolean highGear) {
