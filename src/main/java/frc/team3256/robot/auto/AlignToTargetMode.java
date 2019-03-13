@@ -32,20 +32,33 @@ public class AlignToTargetMode extends AutoModeBase {
         DriveTrain.getInstance().setHighGear(true);
 
         //double xTarget = SmartDashboard.getNumber("horizontalDisp0", 0);
-        double distance = SmartDashboard.getNumber("visionDistance0", 0);
-        double angleFromTarget = SmartDashboard.getNumber("visionAngle0",0);
-        double absPosition = -driveTrain.getAngle() + 90;
+        double robotCenterToCamera = 14.0 - 5.5;
+        double cameraDistance = SmartDashboard.getNumber("visionDistance0", 0);
+        double cameraAngleFromTarget = SmartDashboard.getNumber("visionAngle0",0) * Math.PI/180.0;
+        double m = Math.cos(cameraAngleFromTarget) * cameraDistance;
+        double n = Math.sin(cameraAngleFromTarget) * cameraDistance;
+        double angleFromTarget = Math.atan(n / (m + robotCenterToCamera));
+        double distance = n / Math.sin(angleFromTarget);
+        angleFromTarget = angleFromTarget * 180.0 / Math.PI;
+
+        double absPosition = -driveTrain.getAngle() - 90;
         while (absPosition < -180)
             absPosition += 360;
         while (absPosition > 180)
             absPosition -= 360;
         absPosition = 180 - absPosition;
-        double angleDelta = (absPosition - angleFromTarget) * Math.PI/180;
+
+
+        double angleDelta = (absPosition - angleFromTarget) * Math.PI / 180.0;
         double x = Math.cos(angleDelta) * distance;
         double y = Math.sin(angleDelta) * distance;
-        SmartDashboard.putNumber("Target Y", y);
-        SmartDashboard.putNumber("Target X", x);
-        SmartDashboard.putNumber("Angle Delta", angleDelta);
+        SmartDashboard.putNumber("Target Y (test mode)", y);
+        SmartDashboard.putNumber("Target X (test mode)", x);
+        SmartDashboard.putNumber("Gyro Angle", driveTrain.getAngle());
+        SmartDashboard.putNumber("Robot angle", (absPosition));
+        SmartDashboard.putNumber("Corrected distance", distance);
+        SmartDashboard.putNumber("Corrected angle", angleFromTarget);
+        SmartDashboard.putNumber("Total angle", (absPosition - angleFromTarget));
 
         PathGenerator pathGenerator = new PathGenerator(spacing, true);
 
