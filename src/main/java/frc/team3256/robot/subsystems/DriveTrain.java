@@ -166,6 +166,8 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         SmartDashboard.putNumber("Left B Temp", celsiusToFarenhiet(leftSlave.getMotorTemperature()));
         SmartDashboard.putNumber("Right A Temp", celsiusToFarenhiet(rightMaster.getMotorTemperature()));
         SmartDashboard.putNumber("Right B Temp", celsiusToFarenhiet(rightSlave.getMotorTemperature()));
+        SmartDashboard.putNumber("Left RPM", this.getLeftRPM());
+        SmartDashboard.putNumber("Right RPM", this.getRightRPM());
     }
 
     public double celsiusToFarenhiet(double c) {
@@ -264,7 +266,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     public void resetGyro() {
         gyro.setYaw(0, 0);
         gyro.setAccumZAngle(0, 0);
-        //        internalGyro.reset();
+        //internalGyro.reset();
     }
 
     public void setGyroOffset(double offset) {
@@ -286,7 +288,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public void setBrakeMode() {
-        //SparkMAXUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
+        SparkMAXUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
     }
 
     public void setCoastMode() {

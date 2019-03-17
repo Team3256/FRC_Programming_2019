@@ -1,6 +1,7 @@
 package frc.team3256.robot.teleop;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.teleop.control.CargoIntakeControlScheme;
@@ -46,7 +47,7 @@ public class TeleopUpdater {
         //hatchIntakeControlScheme.setController(manipulatorController);
     }
 
-    private void handleDrive() {
+    public void handleDrive() {
         driveTrain.setBrakeMode();
         DrivePower drivePower = DriveTrain.curvatureDrive(
                 driverControlScheme.getLeftY(),
@@ -73,8 +74,6 @@ public class TeleopUpdater {
         handleDrive();
         manipulatorController.update();
         driverController.update();
-        SmartDashboard.putNumber("Left RPM", driveTrain.getLeftRPM());
-        SmartDashboard.putNumber("Right RPM", driveTrain.getRightRPM());
         //SmartDashboard.putNumber("RPM Difference", driveTrain.getLeftRPM() - driveTrain.getRightRPM());
 //        if(HatchPivot.getInstance().hasHatch) { //Implement when we know hasHatch & hasCargo works
 //            changeToHatchControlScheme();

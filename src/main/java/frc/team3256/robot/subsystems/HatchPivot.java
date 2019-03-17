@@ -109,15 +109,6 @@ public class HatchPivot extends SubsystemBase {
 
     @Override
     public void update(double timestamp) {
-        //System.out.println("Hatch Pivot Raw: " + hatchPivot.getSelectedSensorPosition(0));
-        //System.out.println("Hatch Pivot Angle: " + getAngle());
-        SmartDashboard.putNumber("Hatch Position", hatchPivot.getSelectedSensorPosition(0));
-        //SmartDashboard.putNumber("Hatch Target", hatchPivot.getClosedLoopError());
-        SmartDashboard.putNumber("Hatch Angle", getAngle());
-        //SmartDashboard.putNumber("Hatch Wanted Encoder", angleToSensorUnits(kPositionStarting));
-        //SmartDashboard.putNumber("Hatch Sensing Distance", ultrasonicHatch.getRangeInches());
-        //SmartDashboard.putBoolean("Hatch Time", hasHatch);
-
         //hasHatch = ultrasonicHatch.getRangeInches() < kHatchSensingRange;
     }
 
@@ -125,6 +116,12 @@ public class HatchPivot extends SubsystemBase {
     public void outputToDashboard() {
         SmartDashboard.putNumber("Hatch Angle", getAngle());
         SmartDashboard.putNumber("Hatch Position", hatchPivot.getSelectedSensorPosition(0));
+        //System.out.println("Hatch Pivot Raw: " + hatchPivot.getSelectedSensorPosition(0));
+        //System.out.println("Hatch Pivot Angle: " + getAngle());
+        //SmartDashboard.putNumber("Hatch Target", hatchPivot.getClosedLoopError());
+        //SmartDashboard.putNumber("Hatch Wanted Encoder", angleToSensorUnits(kPositionStarting));
+        //SmartDashboard.putNumber("Hatch Sensing Distance", ultrasonicHatch.getRangeInches());
+        //SmartDashboard.putBoolean("Hatch Time", hasHatch);
     }
 
     @Override

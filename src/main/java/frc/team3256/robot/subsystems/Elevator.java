@@ -32,8 +32,6 @@ public class Elevator extends SubsystemBase {
 
 		SparkMAXUtil.setBrakeMode(master, slave);
 
-		//SparkMAXUtil.setCoastMode(master, slave);
-
 		SparkMAXUtil.setPIDGains(masterPID, 0, kElevatorP, kElevatorI, kElevatorD, kElevatorF, kElevatorIz);
 		SparkMAXUtil.setSmartMotionParams(masterPID, kMinOutputVelocity, kSmartMotionMaxVel, kSmartMotionMaxAccel, kSmartMotionAllowedClosedLoopError, 0);
         master.setEncPosition(0);
@@ -48,8 +46,9 @@ public class Elevator extends SubsystemBase {
 	}
 
 	public void setOpenLoop(double power) {
-		master.set(power);
-		slave.set(-power);
+		//master.set(power);
+		//slave.set(-power);
+		master.getPIDController().setReference(power*1000, ControlType.kVelocity);
 	}
 
 	public void setPosition(double position) {
@@ -59,7 +58,11 @@ public class Elevator extends SubsystemBase {
 	}
 
 	public void setPositionInches(double inches) {
-		setPosition(inchesToRotations(inches));
+		if (inches < 0) {
+			setPositionHome();
+		} else {
+			setPosition(inchesToRotations(inches));
+		}
 	}
 
 	public double getPosition() {

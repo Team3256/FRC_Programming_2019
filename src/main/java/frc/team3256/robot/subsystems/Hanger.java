@@ -18,10 +18,6 @@ public class Hanger extends SubsystemBase {
         hang.set(DoubleSolenoid.Value.kForward);
     }
 
-    public void close() {
-        hang.close();
-    }
-
     public void retract() {hang.set(DoubleSolenoid.Value.kReverse);}
 
     @Override

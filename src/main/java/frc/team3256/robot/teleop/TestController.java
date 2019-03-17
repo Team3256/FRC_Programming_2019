@@ -10,7 +10,6 @@ public class TestController {
         TimerTask robotTask = new TimerTask() {
             @Override
             public void run() {
-                // whatever you need to do every 2 seconds
                 teleopUpdater.update();
             }
         };
