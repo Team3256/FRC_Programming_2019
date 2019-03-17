@@ -1,5 +1,6 @@
 package frc.team3256.robot.teleop.control;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.robot.subsystems.Elevator;
@@ -35,11 +36,47 @@ public abstract class CommonControlScheme extends XboxListenerBase {
     @Override
     public void onRightJoystick(double x, double y) {
         if (y > 0.25) {
-            hatchPivot.setHatchPivotPower(kHatchPivotSpeed);
+            if (hatchPivot.getBrakeStatus() != DoubleSolenoid.Value.kReverse) {
+                //
+                // hatchPivot.releaseBrake();
+                Thread thread = new Thread(() -> {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    hatchPivot.setHatchPivotPower(kHatchPivotSpeed);
+                });
+                thread.start();
+            }
+            else
+                hatchPivot.setHatchPivotPower(kHatchPivotSpeed);
         } else if (y < -0.25) {
-            hatchPivot.setHatchPivotPower(-kHatchPivotSpeed);
+            if (hatchPivot.getBrakeStatus() != DoubleSolenoid.Value.kReverse) {
+                //hatchPivot.releaseBrake();
+                Thread thread = new Thread(() -> {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    hatchPivot.setHatchPivotPower(-kHatchPivotSpeed);
+                });
+                thread.start();
+            }
+            else
+                hatchPivot.setHatchPivotPower(-kHatchPivotSpeed);
         } else {
-            hatchPivot.setHatchPivotPower(0);
+            //hatchPivot.engageBrake();
+            Thread thread = new Thread(() -> {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                hatchPivot.setHatchPivotPower(0);
+            });
+            thread.start();
         }
     }
 
@@ -55,12 +92,12 @@ public abstract class CommonControlScheme extends XboxListenerBase {
     @Override
     public void onRightTrigger(double value) {
         System.out.println("Right trigger");
-        hatchPivot.setPositionCargoIntake();
+        //hatchPivot.setPositionCargoIntake();
         if (value > 0.25 && value - lastRightTrigger > 0) {
             cargoIntake.intake();
         } else {
             cargoIntake.setIntakePower(0);
-            hatchPivot.setPositionDeploy();
+            //hatchPivot.setPositionDeploy();
         }
         lastRightTrigger = value;
     }

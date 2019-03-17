@@ -17,7 +17,7 @@ public class DriveTrainConstants {
     public static final double kVelocityMaxRPM = 4150;
     public static final double kMaxAccel = 1000;
     public static final double kAllowedErr = 0;
-    public static final double kAngularPowerScalar = 1.7;
+    public static final double kAngularPowerScalar = 1.7; // 1.7
 
     public static final double kTurnP = 0.0045;
     public static final double kTurnI = 0.0;
@@ -26,7 +26,7 @@ public class DriveTrainConstants {
 
     public static final int kShifterForward = 1; // 6
     public static final int kShifterReverse = 6; // 1
-    public static final int kHangerForward = 0; //TBD
+    public static final int kHangerForward = 7; //TBD
     public static final int kHangerReverse = 0; //TBD
 
     public static final double kWheelDiameter = 4;

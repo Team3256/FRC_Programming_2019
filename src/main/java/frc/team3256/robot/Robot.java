@@ -3,16 +3,15 @@ package frc.team3256.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.auto.*;
-import frc.team3256.robot.subsystems.CargoIntake;
-import frc.team3256.robot.subsystems.DriveTrain;
-import frc.team3256.robot.subsystems.Elevator;
-import frc.team3256.robot.subsystems.HatchPivot;
+import frc.team3256.robot.subsystems.*;
 import frc.team3256.robot.teleop.TeleopUpdater;
 import frc.team3256.warriorlib.auto.AutoModeExecuter;
 import frc.team3256.warriorlib.auto.purepursuit.PoseEstimator;
 import frc.team3256.warriorlib.auto.purepursuit.PurePursuitTracker;
 import frc.team3256.warriorlib.loop.Looper;
 import frc.team3256.warriorlib.subsystem.DriveTrainBase;
+
+import java.io.PrintStream;
 
 public class Robot extends TimedRobot {
 
@@ -21,6 +20,7 @@ public class Robot extends TimedRobot {
 	private Elevator elevator = Elevator.getInstance();
 	private CargoIntake cargoIntake = CargoIntake.getInstance();
 	private HatchPivot hatchPivot = HatchPivot.getInstance();
+	private Hanger hanger = Hanger.getInstance();
 
 	// Pure Pursuit
 	private PurePursuitTracker purePursuitTracker = PurePursuitTracker.getInstance();
@@ -49,6 +49,8 @@ public class Robot extends TimedRobot {
 		teleopLooper = new Looper(1 / 200D);
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
+		hatchPivot.zeroSensors();
+		hanger.retract();
 
 		teleopLooper.addLoops(driveTrain, cargoIntake, hatchPivot, elevator);
 
@@ -78,7 +80,8 @@ public class Robot extends TimedRobot {
 		elevator.runZeroPower();
 		cargoIntake.setIntakePower(0);
 		driveTrain.runZeroPower();
-		hatchPivot.setPositionDeploy();
+		//hatchPivot.setPositionDeploy();
+		poseEstimator.reset();
 	}
 
 	/**
@@ -101,7 +104,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		driveTrain.resetEncoders();
-		driveTrain.resetGyro();
+		//driveTrain.resetGyro();
 		driveTrain.setBrakeMode();
 		//hatchPivot.zeroSensors();
 
@@ -141,7 +144,7 @@ public class Robot extends TimedRobot {
 				elevator.runZeroPower();
 				cargoIntake.setIntakePower(0);
 				driveTrain.setPowerClosedLoop(0, 0);
-				hatchPivot.setPositionDeploy();
+				//hatchPivot.setPositionDeploy();
 			}
 			teleopLooper.start();
 		}
@@ -152,8 +155,13 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		driveTrain.setBrakeMode();
+//		driveTrain.setBrakeMode();
 		teleopLooper.start();
+		driveTrain.resetEncoders();
+		driveTrain.setGyroOffset(180.0);
+		poseEstimator.resetPosition();
+		poseEstimator.offsetPoseAngle(180.0);
+		hatchPivot.releaseBrake();
 	}
 
 	/**
@@ -162,6 +170,34 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopPeriodic() {
 		teleopUpdater.update();
+
+//		poseEstimator.reset();
+		//SmartDashboard.putNumber("Gyro", DriveTrain.getInstance().getAngle());
+//		SmartDashboard.putNumber("hatchPivot", hatchPivot.getAngle());
+//		SmartDashboard.putNumber("hatchPosition", hatchPivot.getEncoderValue());
+//		SmartDashboard.putBoolean("hallEffect", elevator.getHallEffectTriggered());
+		double robotCenterToCamera = 14.0 - 5.5;
+		double cameraDistance = SmartDashboard.getNumber("visionDistance0", 0);
+		double cameraAngleFromTarget = SmartDashboard.getNumber("visionAngle0",0) * Math.PI/180.0;
+		double m = Math.cos(cameraAngleFromTarget) * cameraDistance;
+		double n = Math.sin(cameraAngleFromTarget) * cameraDistance;
+		double angleFromTarget = Math.atan(n / (m + robotCenterToCamera));
+		double distance = n / Math.sin(angleFromTarget);
+		angleFromTarget = angleFromTarget * 180.0 / Math.PI;
+
+		double absPosition = 90-driveTrain.getAngle();
+
+
+		double angleDelta = (absPosition - angleFromTarget) * Math.PI / 180.0;
+		double x = Math.cos(angleDelta) * distance;
+		double y = Math.sin(angleDelta) * distance;
+		SmartDashboard.putNumber("Target Y", y);
+		SmartDashboard.putNumber("Target X", x);
+		SmartDashboard.putNumber("Gyro Angle", driveTrain.getAngle());
+		SmartDashboard.putNumber("Robot angle", (absPosition));
+		SmartDashboard.putNumber("Corrected distance", distance);
+		SmartDashboard.putNumber("Corrected angle", angleFromTarget);
+		SmartDashboard.putNumber("Total angle", (absPosition - angleFromTarget));
 	}
 
 	/**
@@ -189,47 +225,46 @@ public class Robot extends TimedRobot {
 		double angleDelta = (absPosition - angleFromTarget) * Math.PI/180;
 		double x = Math.cos(angleDelta) * distance;
 		double y = Math.sin(angleDelta) * distance;
-		SmartDashboard.putNumber("Y", y);
-		SmartDashboard.putNumber("X", x);
-		SmartDashboard.putNumber("Gyro Angle", driveTrain.getAngle());
-        SmartDashboard.putNumber("Robot angle", (absPosition));
-        SmartDashboard.putNumber("Total angle", (absPosition - angleFromTarget));
+
+		hatchPivot.outputToDashboard();
+
+//		SmartDashboard.putNumber("Y", y);
+//		SmartDashboard.putNumber("X", x);
+//		SmartDashboard.putNumber("Gyro Angle", driveTrain.getAngle());
+//        SmartDashboard.putNumber("Robot angle", (absPosition));
+//        SmartDashboard.putNumber("Total angle", (absPosition - angleFromTarget));
 	}
 
 	@Override
 	public void disabledPeriodic() {
-		System.out.println("Pose: " + poseEstimator.getPose());
-		System.out.println("Gyro: " + driveTrain.getAngle());
+//		System.out.println("Pose: " + poseEstimator.getPose());
+//		System.out.println("Gyro: " + driveTrain.getAngle());
+//		poseEstimator.reset();
 		//SmartDashboard.putNumber("Gyro", DriveTrain.getInstance().getAngle());
 //		SmartDashboard.putNumber("hatchPivot", hatchPivot.getAngle());
 //		SmartDashboard.putNumber("hatchPosition", hatchPivot.getEncoderValue());
 //		SmartDashboard.putBoolean("hallEffect", elevator.getHallEffectTriggered());
-        double robotCenterToCamera = 14.0 - 5.5;
-        double cameraDistance = SmartDashboard.getNumber("visionDistance0", 0);
-        double cameraAngleFromTarget = SmartDashboard.getNumber("visionAngle0",0) * Math.PI/180.0;
-        double m = Math.cos(cameraAngleFromTarget) * cameraDistance;
-        double n = Math.sin(cameraAngleFromTarget) * cameraDistance;
-        double angleFromTarget = Math.atan(n / (m + robotCenterToCamera));
-        double distance = n / Math.sin(angleFromTarget);
-        angleFromTarget = angleFromTarget * 180.0 / Math.PI;
-
-        double absPosition = -driveTrain.getAngle() - 90;
-        while (absPosition < -180)
-            absPosition += 360;
-        while (absPosition > 180)
-            absPosition -= 360;
-        absPosition = 180 - absPosition;
-
-
-        double angleDelta = (absPosition - angleFromTarget) * Math.PI / 180.0;
-        double x = Math.cos(angleDelta) * distance;
-        double y = Math.sin(angleDelta) * distance;
-        SmartDashboard.putNumber("Target Y (test mode)", y);
-        SmartDashboard.putNumber("Target X (test mode)", x);
-        SmartDashboard.putNumber("Gyro Angle", driveTrain.getAngle());
-        SmartDashboard.putNumber("Robot angle", (absPosition));
-        SmartDashboard.putNumber("Corrected distance", distance);
-        SmartDashboard.putNumber("Corrected angle", angleFromTarget);
-        SmartDashboard.putNumber("Total angle", (absPosition - angleFromTarget));
+//		double robotCenterToCamera = 14.0 - 5.5;
+//		double cameraDistance = SmartDashboard.getNumber("visionDistance0", 0);
+//		double cameraAngleFromTarget = SmartDashboard.getNumber("visionAngle0",0) * Math.PI/180.0;
+//		double m = Math.cos(cameraAngleFromTarget) * cameraDistance;
+//		double n = Math.sin(cameraAngleFromTarget) * cameraDistance;
+//		double angleFromTarget = Math.atan(n / (m + robotCenterToCamera));
+//		double distance = n / Math.sin(angleFromTarget);
+//		angleFromTarget = angleFromTarget * 180.0 / Math.PI;
+//
+//		double absPosition = 270-driveTrain.getAngle();
+//
+//
+//		double angleDelta = (absPosition - angleFromTarget) * Math.PI / 180.0;
+//		double x = Math.cos(angleDelta) * distance;
+//		double y = Math.sin(angleDelta) * distance;
+//		SmartDashboard.putNumber("Target Y", y);
+//		SmartDashboard.putNumber("Target X", x);
+//		SmartDashboard.putNumber("Gyro Angle", driveTrain.getAngle());
+//		SmartDashboard.putNumber("Robot angle", (absPosition));
+//		SmartDashboard.putNumber("Corrected distance", distance);
+//		SmartDashboard.putNumber("Corrected angle", angleFromTarget);
+//		SmartDashboard.putNumber("Total angle", (absPosition - angleFromTarget));
 	}
 }

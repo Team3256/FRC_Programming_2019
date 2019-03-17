@@ -17,15 +17,17 @@ public class HatchPivot extends SubsystemBase {
 
     private static HatchPivot instance;
     private WPI_TalonSRX hatchPivot;
-    private DoubleSolenoid deployHatch, ratchetPivot;
+    private DoubleSolenoid deployHatch, brake;
     private Ultrasonic ultrasonicHatch;
     public boolean hasHatch = false;
 
     private HatchPivot() {
         hatchPivot = TalonSRXUtil.generateGenericTalon(kHatchPivotPort);
 
+        hatchPivot.setInverted(true);
+
         deployHatch = new DoubleSolenoid(15, kHatchForwardChannel, kHatchReverseChannel);
-        ratchetPivot = new DoubleSolenoid(15, kRatchetForwardChannel, kRatchetReverseChannel);
+        brake = new DoubleSolenoid(15, kRatchetForwardChannel, kRatchetReverseChannel);
 
         //ultrasonicHatch = new Ultrasonic(kHatchPingChannel,kHatchEchoChannel);
 
@@ -65,12 +67,16 @@ public class HatchPivot extends SubsystemBase {
         deployHatch.set(DoubleSolenoid.Value.kReverse);
     }
 
-    public void unratchet() {
-        ratchetPivot.set(DoubleSolenoid.Value.kReverse);
+    public void releaseBrake() {
+        brake.set(DoubleSolenoid.Value.kReverse);
     }
 
-    public void ratchet() {
-        ratchetPivot.set(DoubleSolenoid.Value.kForward);
+    public void engageBrake() {
+        brake.set(DoubleSolenoid.Value.kForward);
+    }
+
+    public DoubleSolenoid.Value getBrakeStatus() {
+        return brake.get();
     }
 
     public void setHatchPivotPower(double speed) {
@@ -89,9 +95,13 @@ public class HatchPivot extends SubsystemBase {
         hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionDeployHatch), DemandType.ArbitraryFeedForward, 0);
     }
 
-    private double angleToSensorUnits(double degrees) { return (degrees) * DriveTrainConstants.kMagEncoderTicksTalon / HatchConstants.kHatchPivotGearRatio / (2 * Math.PI); }
+    private double angleToSensorUnits(double degrees) {
+        return (degrees/360.0) * kHatchPivotGearRatio * 4096.0;
+    }
 
-    private double sensorUnitsToAngle(double ticks) { return Math.PI * 2 * ((ticks / DriveTrainConstants.kMagEncoderTicksTalon) * HatchConstants.kHatchPivotGearRatio); }
+    private double sensorUnitsToAngle(double ticks) {
+        return ((ticks / 4096.0) / kHatchPivotGearRatio) * 360.0;
+    }
 
     public double getAngle() {
         return sensorUnitsToAngle(hatchPivot.getSelectedSensorPosition(0));
@@ -113,7 +123,8 @@ public class HatchPivot extends SubsystemBase {
 
     @Override
     public void outputToDashboard() {
-
+        SmartDashboard.putNumber("Hatch Angle", getAngle());
+        SmartDashboard.putNumber("Hatch Position", hatchPivot.getSelectedSensorPosition(0));
     }
 
     @Override

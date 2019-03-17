@@ -20,14 +20,14 @@ public class HatchConstants {
     public static final int kHatchPingChannel = 0;
     public static final int kHatchEchoChannel = 0;
 
-    public static final int kHatchAngleOffset = 12;
+    public static final int kHatchAngleOffset = 5;
 
     public static final int kPositionStarting = -92;
 
-    public static final double kPositionDeployHatch = -87;
+    public static final double kPositionDeployHatch = -90;
     public static final double kPositionFoldIn = 0;
     public static final double kPositionCargoIntake = -35;
-    public static final double kHatchPivotGearRatio = 27.0*60.0/42.0; //motor rotations to actual rotations
+    public static final double kHatchPivotGearRatio = 202.5/90.0; //motor rotations to actual rotations
 
     public static final double kHatchSensingRange = 3;
 }

@@ -19,10 +19,10 @@ public class CargoIntake extends SubsystemBase {
 
 	private CargoIntake() {
 		cargoIntakeLeft = TalonSRXUtil.generateGenericTalon(kIntake);
-		cargoIntakeLeft.setInverted(true);
+		cargoIntakeLeft.setInverted(false);
 
 		cargoIntakeRight = TalonSRXUtil.generateGenericTalon(kIntakeSlave);
-		cargoIntakeRight.setInverted(true);
+		cargoIntakeRight.setInverted(false);
 	}
 
 	@Override

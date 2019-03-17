@@ -49,7 +49,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         SparkMAXUtil.setSmartMotionParams(leftPIDController, -kVelocityMaxRPM, kVelocityMaxRPM, kMaxAccel, kAllowedErr, 0);
         SparkMAXUtil.setSmartMotionParams(rightPIDController, -kVelocityMaxRPM, kVelocityMaxRPM, kMaxAccel, kAllowedErr, 0);
 
-        SparkMAXUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
+        SparkMAXUtil.setCoastMode(leftMaster, leftSlave, rightMaster, rightSlave);
 
         /*leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*loopTime), 0);
         rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*loopTime), 0);
@@ -286,7 +286,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public void setBrakeMode() {
-        SparkMAXUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
+        //SparkMAXUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
     }
 
     public void setCoastMode() {

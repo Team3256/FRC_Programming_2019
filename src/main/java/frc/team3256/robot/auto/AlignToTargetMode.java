@@ -27,7 +27,9 @@ public class AlignToTargetMode extends AutoModeBase {
         //driveTrain.resetGyro();
         //driveTrain.setGyroOffset(-SmartDashboard.getNumber("visionAngle0", 0));
         driveTrain.resetEncoders();
-        poseEstimator.reset();
+        driveTrain.setGyroOffset(180.0);
+        poseEstimator.resetPosition();
+        poseEstimator.offsetPoseAngle(180.0);
 
         DriveTrain.getInstance().setHighGear(true);
 
@@ -41,19 +43,14 @@ public class AlignToTargetMode extends AutoModeBase {
         double distance = n / Math.sin(angleFromTarget);
         angleFromTarget = angleFromTarget * 180.0 / Math.PI;
 
-        double absPosition = -driveTrain.getAngle() - 90;
-        while (absPosition < -180)
-            absPosition += 360;
-        while (absPosition > 180)
-            absPosition -= 360;
-        absPosition = 180 - absPosition;
+        double absPosition = 90-driveTrain.getAngle();
 
 
         double angleDelta = (absPosition - angleFromTarget) * Math.PI / 180.0;
         double x = Math.cos(angleDelta) * distance;
         double y = Math.sin(angleDelta) * distance;
-        SmartDashboard.putNumber("Target Y (test mode)", y);
-        SmartDashboard.putNumber("Target X (test mode)", x);
+        SmartDashboard.putNumber("Target Y", y);
+        SmartDashboard.putNumber("Target X", x);
         SmartDashboard.putNumber("Gyro Angle", driveTrain.getAngle());
         SmartDashboard.putNumber("Robot angle", (absPosition));
         SmartDashboard.putNumber("Corrected distance", distance);
@@ -63,14 +60,12 @@ public class AlignToTargetMode extends AutoModeBase {
         PathGenerator pathGenerator = new PathGenerator(spacing, true);
 
         pathGenerator.addPoint(new Vector(0, 0));
-//        pathGenerator.addPoint(new Vector(x, 0.4*y));
-//        pathGenerator.addPoint(new Vector(x, 0.5*y));
-        pathGenerator.addPoint(new Vector(0.7*x, 0.5*y));
-        pathGenerator.addPoint(new Vector(0.7*x, 0.8*y));
+        pathGenerator.addPoint(new Vector(x, 0.7*y));
+        pathGenerator.addPoint(new Vector(x, 0.9*y));
         //pathGenerator.addPoint(new Vector(xTarget, 0.9*yTarget));
 
         pathGenerator.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
-        pathGenerator.setVelocities(30, 15, 2);
+        pathGenerator.setVelocities(15, 5, 1);
 
         Path path = pathGenerator.generatePath();
 

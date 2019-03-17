@@ -32,6 +32,8 @@ public class Elevator extends SubsystemBase {
 
 		SparkMAXUtil.setBrakeMode(master, slave);
 
+		//SparkMAXUtil.setCoastMode(master, slave);
+
 		SparkMAXUtil.setPIDGains(masterPID, 0, kElevatorP, kElevatorI, kElevatorD, kElevatorF, kElevatorIz);
 		SparkMAXUtil.setSmartMotionParams(masterPID, kMinOutputVelocity, kSmartMotionMaxVel, kSmartMotionMaxAccel, kSmartMotionAllowedClosedLoopError, 0);
         master.setEncPosition(0);

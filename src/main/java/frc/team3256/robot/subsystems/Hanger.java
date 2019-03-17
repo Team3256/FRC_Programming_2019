@@ -9,7 +9,7 @@ public class Hanger extends SubsystemBase {
     private DoubleSolenoid hang;
 
     private Hanger() {
-        hang = new DoubleSolenoid(kHangerForward, kHangerReverse);
+        hang = new DoubleSolenoid(15, kHangerForward, kHangerReverse);
     }
 
     public static Hanger getInstance() { return instance == null ? instance = new Hanger() : instance; }
@@ -18,9 +18,11 @@ public class Hanger extends SubsystemBase {
         hang.set(DoubleSolenoid.Value.kForward);
     }
 
-    public void retract() {
+    public void close() {
         hang.close();
     }
+
+    public void retract() {hang.set(DoubleSolenoid.Value.kReverse);}
 
     @Override
     public void update(double timestamp) {

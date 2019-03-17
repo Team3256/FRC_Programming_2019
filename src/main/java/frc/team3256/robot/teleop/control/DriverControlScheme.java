@@ -2,12 +2,14 @@ package frc.team3256.robot.teleop.control;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.CargoIntake;
+import frc.team3256.robot.subsystems.Hanger;
 import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.warriorlib.control.XboxListenerBase;
 
 public class DriverControlScheme extends XboxListenerBase {
     protected CargoIntake cargoIntake = CargoIntake.getInstance();
     protected HatchPivot hatchPivot = HatchPivot.getInstance();
+    protected Hanger hanger = Hanger.getInstance();
 
     private boolean highGear = false;
     private boolean quickTurn = false;
@@ -49,17 +51,16 @@ public class DriverControlScheme extends XboxListenerBase {
 
     @Override
     public void onBPressed() {
-
+        hatchPivot.releaseBrake();
     }
 
     @Override
     public void onXPressed() {
-
+        hatchPivot.engageBrake();
     }
 
     @Override
     public void onYPressed() {
-
     }
 
     @Override
@@ -144,29 +145,31 @@ public class DriverControlScheme extends XboxListenerBase {
 
     @Override
     public void onLeftShoulderPressed() {
-        cargoIntake.exhaust();
+        //cargoIntake.exhaust();
+        hanger.retract();
     }
 
     @Override
     public void onLeftShoulderReleased() {
-        cargoIntake.setIntakePower(0);
+        //cargoIntake.setIntakePower(0);
     }
 
     @Override
     public void onRightShoulderPressed() {
-        hatchPivot.setPositionCargoIntake();
-        cargoIntake.intake();
+        //hatchPivot.setPositionCargoIntake();
+        //cargoIntake.intake();
+        hanger.hang();
     }
 
     @Override
     public void onRightShoulderReleased() {
-        cargoIntake.setIntakePower(0);
-        hatchPivot.setPositionDeploy();
+        //cargoIntake.setIntakePower(0);
+        //hatchPivot.setPositionDeploy();
     }
 
     @Override
     public void onLeftTrigger(double value) {
-        highGear = value > 0.25;
+        highGear = value < 0.25;
         SmartDashboard.putBoolean("HighGear", highGear);
     }
 

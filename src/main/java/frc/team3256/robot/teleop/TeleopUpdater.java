@@ -50,7 +50,7 @@ public class TeleopUpdater {
         driveTrain.setBrakeMode();
         DrivePower drivePower = DriveTrain.curvatureDrive(
                 driverControlScheme.getLeftY(),
-                driverControlScheme.getRightX()*0.7,
+                driverControlScheme.getRightX()*(driverControlScheme.isHighGear() ? 0.6 : 1.0),
                 driverControlScheme.isQuickTurn(),
                 driverControlScheme.isHighGear());
         driveTrain.setHighGear(drivePower.getHighGear());
