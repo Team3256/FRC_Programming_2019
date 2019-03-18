@@ -20,9 +20,9 @@ public class HatchConstants {
     public static final int kHatchPingChannel = 0;
     public static final int kHatchEchoChannel = 0;
 
-    public static final int kHatchAngleOffset = 5;
+    public static final double kHatchAngleOffset = -94.5;
 
-    public static final int kPositionStarting = -92;
+    public static final double kPositionStarting = -94.5;
 
     public static final double kPositionDeployHatch = -90;
     public static final double kPositionFoldIn = 0;

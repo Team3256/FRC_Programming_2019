@@ -53,29 +53,27 @@ public class CargoIntake extends SubsystemBase {
 
 	@Override
 	public void update(double timestamp) {
-		//SmartDashboard.putNumber("CheckForBallAfter", checkForBallAfter);
-		//SmartDashboard.putNumber("Cargo Left", cargoIntakeLeft.getOutputCurrent());
-		//SmartDashboard.putNumber("Cargo Right", cargoIntakeRight.getOutputCurrent());
+		if (
+				(checkForBallAfter != -1) &&
+						(Timer.getFPGATimestamp() > checkForBallAfter) &&
+						((cargoIntakeLeft.getOutputCurrent() > kIntakeSpike) || cargoIntakeRight.getOutputCurrent() > kIntakeSpike)
+		) {
+			SmartDashboard.putNumber("BallTime", 1);
+			Thread thread = new Thread(() -> {
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				CargoIntake.getInstance().stop();
+			});
+			thread.start();
+			checkForBallAfter = -1;
+		} else {
+			SmartDashboard.putNumber("BallTime", 0);
+		}
 
-//		if (
-//				(checkForBallAfter != -1) &&
-//				(Timer.getFPGATimestamp() > checkForBallAfter) &&
-//				((cargoIntakeLeft.getOutputCurrent() > kIntakeSpike) || cargoIntakeRight.getOutputCurrent() > kIntakeSpike)
-//		) {
-//			SmartDashboard.putNumber("BallTime", 1);
-//			Thread thread = new Thread(() -> {
-//				try {
-//					Thread.sleep(500);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//				CargoIntake.getInstance().stop();
-//			});
-//			thread.start();
-//			checkForBallAfter = -1;
-//		} else {
-//			SmartDashboard.putNumber("BallTime", 0);
-//		}
+		this.outputToDashboard();
 
 		previousOutputCurrent = cargoIntakeLeft.getOutputCurrent();
 	}
@@ -87,7 +85,9 @@ public class CargoIntake extends SubsystemBase {
 
 	@Override
 	public void outputToDashboard() {
-
+		SmartDashboard.putNumber("CheckForBallAfter", checkForBallAfter);
+		SmartDashboard.putNumber("Cargo Left", cargoIntakeLeft.getOutputCurrent());
+		SmartDashboard.putNumber("Cargo Right", cargoIntakeRight.getOutputCurrent());
 	}
 
 	@Override

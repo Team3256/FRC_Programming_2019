@@ -26,48 +26,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     private PIDController turnPIDController = new PIDController(kTurnP, kTurnI, kTurnD);
     private double gyroOffset = 0;
 
-    private DriveTrain() {
-        gyro = new PigeonIMU(14);
-        gyro.setAccumZAngle(0, 0);
-        gyro.setYaw(0, 0);
-        //        internalGyro = new ADXRS453_Gyro();
-        //        internalGyro.startCalibrate();
-        leftMaster = SparkMAXUtil.generateGenericSparkMAX(kLeftDriveMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
-        leftSlave = SparkMAXUtil.generateSlaveSparkMAX(kLeftDriveSlave, CANSparkMaxLowLevel.MotorType.kBrushless, leftMaster);
-        //leftSlave2 = TalonSRXUtil.generateSlaveTalon(kLeftDriveSlave2, kLeftDriveMaster);
-        rightMaster = SparkMAXUtil.generateGenericSparkMAX(kRightDriveMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
-        rightSlave = SparkMAXUtil.generateSlaveSparkMAX(kRightDriveSlave, CANSparkMaxLowLevel.MotorType.kBrushless, rightMaster);
-
-        leftEncoder = leftMaster.getEncoder();
-        rightEncoder = rightMaster.getEncoder();
-        leftPIDController = leftMaster.getPIDController();
-        rightPIDController = rightMaster.getPIDController();
-
-        SparkMAXUtil.setPIDGains(leftPIDController, 0, kVelocityP, kVelocityI, kVelocityD, kVelocityF, kVelocityIZone);
-        SparkMAXUtil.setPIDGains(rightPIDController, 0, kVelocityP, kVelocityI, kVelocityD, kVelocityF, kVelocityIZone);
-
-        SparkMAXUtil.setSmartMotionParams(leftPIDController, -kVelocityMaxRPM, kVelocityMaxRPM, kMaxAccel, kAllowedErr, 0);
-        SparkMAXUtil.setSmartMotionParams(rightPIDController, -kVelocityMaxRPM, kVelocityMaxRPM, kMaxAccel, kAllowedErr, 0);
-
-        SparkMAXUtil.setCoastMode(leftMaster, leftSlave, rightMaster, rightSlave);
-
-        /*leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*loopTime), 0);
-        rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*loopTime), 0);
-
-        leftMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*loopTime), 0);
-        rightMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*loopTime), 0);
-        */
-        shifter = new DoubleSolenoid(15, kShifterForward, kShifterReverse);
-        //shifter = new DoubleSolenoid(15, 3, 4);
-
-        //rightSlave2 = TalonSRXUtil.generateSlaveTalon(kRightDriveSlave2, kRightDriveMaster);
-        //gyro.calibrate();
-        rightMaster.setInverted(false); //false
-        leftMaster.setInverted(true); //true
-
-//        leftMaster.setClosedLoopRampRate(0.0);
-//        rightMaster.setClosedLoopRampRate(0.0);
-    }
+    private static final double kThrottleDeadband = 0.02;
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
@@ -136,6 +95,103 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         return new DrivePower(left, right, highGear);
     }
 
+    private static final double kWheelDeadband = 0.02;
+    private static final double kTurnSensitivity = 1.0;
+    double mQuickStopAccumulator;
+
+    private DriveTrain() {
+        gyro = new PigeonIMU(14);
+        gyro.setAccumZAngle(0, 0);
+        gyro.setYaw(0, 0);
+        //        internalGyro = new ADXRS453_Gyro();
+        //        internalGyro.startCalibrate();
+        leftMaster = SparkMAXUtil.generateGenericSparkMAX(kLeftDriveMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
+        leftSlave = SparkMAXUtil.generateSlaveSparkMAX(kLeftDriveSlave, CANSparkMaxLowLevel.MotorType.kBrushless, leftMaster);
+        //leftSlave2 = TalonSRXUtil.generateSlaveTalon(kLeftDriveSlave2, kLeftDriveMaster);
+        rightMaster = SparkMAXUtil.generateGenericSparkMAX(kRightDriveMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
+        rightSlave = SparkMAXUtil.generateSlaveSparkMAX(kRightDriveSlave, CANSparkMaxLowLevel.MotorType.kBrushless, rightMaster);
+
+        leftEncoder = leftMaster.getEncoder();
+        rightEncoder = rightMaster.getEncoder();
+        leftPIDController = leftMaster.getPIDController();
+        rightPIDController = rightMaster.getPIDController();
+
+        SparkMAXUtil.setPIDGains(leftPIDController, 0, kVelocityP, kVelocityI, kVelocityD, kVelocityF, kVelocityIZone);
+        SparkMAXUtil.setPIDGains(rightPIDController, 0, kVelocityP, kVelocityI, kVelocityD, kVelocityF, kVelocityIZone);
+
+        SparkMAXUtil.setSmartMotionParams(leftPIDController, -kVelocityMaxRPM, kVelocityMaxRPM, kMaxAccel, kAllowedErr, 0);
+        SparkMAXUtil.setSmartMotionParams(rightPIDController, -kVelocityMaxRPM, kVelocityMaxRPM, kMaxAccel, kAllowedErr, 0);
+
+        SparkMAXUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
+
+        /*leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*loopTime), 0);
+        rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*loopTime), 0);
+
+        leftMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*loopTime), 0);
+        rightMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*loopTime), 0);
+        */
+        shifter = new DoubleSolenoid(15, kShifterForward, kShifterReverse);
+        //shifter = new DoubleSolenoid(15, 3, 4);
+
+        //rightSlave2 = TalonSRXUtil.generateSlaveTalon(kRightDriveSlave2, kRightDriveMaster);
+        //gyro.calibrate();
+        rightMaster.setInverted(false); //false
+        leftMaster.setInverted(true); //true
+
+//        leftMaster.setClosedLoopRampRate(0.0);
+//        rightMaster.setClosedLoopRampRate(0.0);
+    }
+
+    public DrivePower betterCurvatureDrive(double throttle, double wheel, boolean isQuickTurn, boolean highGear) {
+        wheel = handleDeadband(wheel, kWheelDeadband);
+        throttle = handleDeadband(throttle, kThrottleDeadband);
+
+        double overPower;
+        double angularPower;
+
+        if (isQuickTurn) {
+            highGear = false;
+            if (Math.abs(throttle) < 0.2) {
+                double alpha = 0.1;
+                mQuickStopAccumulator = (1 - alpha) * mQuickStopAccumulator + alpha * Math.min(1.0, Math.max(-1.0, wheel)) * 2;
+            }
+            overPower = 1.0;
+            angularPower = wheel;
+        } else {
+            overPower = 0.0;
+            angularPower = Math.abs(throttle) * wheel * kTurnSensitivity - mQuickStopAccumulator;
+            if (mQuickStopAccumulator > 1) {
+                mQuickStopAccumulator -= 1;
+            } else if (mQuickStopAccumulator < -1) {
+                mQuickStopAccumulator += 1;
+            } else {
+                mQuickStopAccumulator = 0.0;
+            }
+        }
+
+        double rightPwm = throttle - angularPower;
+        double leftPwm = throttle + angularPower;
+        if (leftPwm > 1.0) {
+            rightPwm -= overPower * (leftPwm - 1.0);
+            leftPwm = 1.0;
+        } else if (rightPwm > 1.0) {
+            leftPwm -= overPower * (rightPwm - 1.0);
+            rightPwm = 1.0;
+        } else if (leftPwm < -1.0) {
+            rightPwm += overPower * (-1.0 - leftPwm);
+            leftPwm = -1.0;
+        } else if (rightPwm < -1.0) {
+            leftPwm += overPower * (-1.0 - rightPwm);
+            rightPwm = -1.0;
+        }
+
+        return new DrivePower(leftPwm, rightPwm, highGear);
+    }
+
+    public double handleDeadband(double val, double deadband) {
+        return (Math.abs(val) > Math.abs(deadband)) ? val : 0.0;
+    }
+
     public static double clamp(double val) {
         return Math.max(Math.min(val, 1.0), -1.0);
     }
@@ -151,11 +207,6 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     public void runZeroPower() {
         leftMaster.set(0);
         rightMaster.set(0);
-    }
-
-    public void setHangDrive(double leftPower, double rightPower) {
-        //leftHangDrive.set(ControlMode.PercentOutput, leftPower);
-        //rightHangDrive.set(ControlMode.PercentOutput, rightPower);
     }
 
     @Override
@@ -288,6 +339,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public void setBrakeMode() {
+        //this.setCoastMode();
         SparkMAXUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
     }
 

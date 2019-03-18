@@ -1,13 +1,9 @@
 package frc.team3256.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3256.robot.constants.DriveTrainConstants;
-import frc.team3256.robot.constants.HatchConstants;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
@@ -89,15 +85,15 @@ public class HatchPivot extends SubsystemBase {
     }
 
     public void setPositionCargoIntake() {
-        hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionCargoIntake), DemandType.ArbitraryFeedForward, 0);
+        //hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionCargoIntake), DemandType.ArbitraryFeedForward, 0);
     }
 
     public void setPositionFoldIn() {
-        hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionFoldIn), DemandType.ArbitraryFeedForward, 0);
+        //hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionFoldIn), DemandType.ArbitraryFeedForward, 0);
     }
 
     public void setPositionDeploy() {
-        hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionDeployHatch), DemandType.ArbitraryFeedForward, 0);
+        //hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionDeployHatch), DemandType.ArbitraryFeedForward, 0);
     }
 
     private double angleToSensorUnits(double degrees) {

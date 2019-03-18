@@ -15,10 +15,10 @@ public class CargoConstants {
     public static final double kPositionClearance = 0;
     public static final double kPositionFloor = 0;
 
-    public static final double kIntakeSpeed = 1.0;
+    public static final double kIntakeSpeed = 0.60;
     public static final double kPivotSpeed = 0.4;
     public static final double kPivotMaxOutput = 1;
     public static final double kPivotMinOutput = -1;
 
-    public static final double kIntakeSpike = 9.0;
+    public static final double kIntakeSpike = 6.0;
 }
