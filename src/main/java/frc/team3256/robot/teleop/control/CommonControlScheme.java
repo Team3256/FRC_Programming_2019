@@ -37,8 +37,7 @@ public abstract class CommonControlScheme extends XboxListenerBase {
     public void onRightJoystick(double x, double y) {
         if (y > 0.25) {
             if (hatchPivot.getBrakeStatus() != DoubleSolenoid.Value.kReverse) {
-                //
-                // hatchPivot.releaseBrake();
+                hatchPivot.releaseBrake();
                 Thread thread = new Thread(() -> {
                     try {
                         Thread.sleep(50);
@@ -53,7 +52,7 @@ public abstract class CommonControlScheme extends XboxListenerBase {
                 hatchPivot.setHatchPivotPower(kHatchPivotSpeed);
         } else if (y < -0.25) {
             if (hatchPivot.getBrakeStatus() != DoubleSolenoid.Value.kReverse) {
-                //hatchPivot.releaseBrake();
+                hatchPivot.releaseBrake();
                 Thread thread = new Thread(() -> {
                     try {
                         Thread.sleep(50);
@@ -67,7 +66,7 @@ public abstract class CommonControlScheme extends XboxListenerBase {
             else
                 hatchPivot.setHatchPivotPower(-kHatchPivotSpeed);
         } else {
-            //hatchPivot.engageBrake();
+            hatchPivot.engageBrake();
             Thread thread = new Thread(() -> {
                 try {
                     Thread.sleep(50);

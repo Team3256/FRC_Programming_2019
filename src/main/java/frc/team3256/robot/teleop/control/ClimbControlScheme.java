@@ -1,27 +1,31 @@
 package frc.team3256.robot.teleop.control;
 
+import frc.team3256.robot.subsystems.CargoIntake;
+import frc.team3256.robot.subsystems.Hanger;
 import frc.team3256.robot.teleop.TeleopUpdater;
 
-public class HatchIntakeControlScheme extends CommonControlScheme {
+public class ClimbControlScheme extends CommonControlScheme {
+    Hanger hanger = Hanger.getInstance();
+    CargoIntake cargoIntake = CargoIntake.getInstance();
 
     @Override
     public void onAPressed() {
-        elevator.setPositionLowHatch();
+        
     }
 
     @Override
     public void onBPressed() {
-        elevator.setPositionHome();
+
     }
 
     @Override
     public void onXPressed() {
-        elevator.setPositionMidHatch();
+
     }
 
     @Override
     public void onYPressed() {
-        elevator.setPositionHighHatch();
+
     }
 
     @Override

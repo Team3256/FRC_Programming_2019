@@ -22,6 +22,8 @@ public class Robot extends TimedRobot {
 	private HatchPivot hatchPivot = HatchPivot.getInstance();
 	private Hanger hanger = Hanger.getInstance();
 
+	private RobotCompressor robotCompressor = RobotCompressor.getInstance();
+
 	// Pure Pursuit
 	private PurePursuitTracker purePursuitTracker = PurePursuitTracker.getInstance();
 	private PoseEstimator poseEstimator;
@@ -47,10 +49,10 @@ public class Robot extends TimedRobot {
 		Paths.initialize();
 
 		teleopLooper = new Looper(1 / 200D);
+		// Reset sensors
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
 		hatchPivot.zeroSensors();
-		hanger.retract();
 
 		teleopLooper.addLoops(driveTrain, cargoIntake, hatchPivot, elevator);
 
@@ -59,12 +61,18 @@ public class Robot extends TimedRobot {
 		poseEstimatorLooper.addLoops(poseEstimator);
 		poseEstimatorLooper.start();
 
-		teleopUpdater = TeleopUpdater.getInstance();
+		// Default SmartDashboard
 		SmartDashboard.putBoolean("visionEnabled", true);
 		SmartDashboard.putBoolean("autoEnabled", true);
 		SmartDashboard.putString("ControlScheme", "Cargo");
 
-		hatchPivot.zeroSensors();
+		// Pneumatics
+		robotCompressor.turnOn();
+		hanger.retract();
+		hatchPivot.retractHatch();
+		hatchPivot.releaseBrake();
+
+		teleopUpdater = TeleopUpdater.getInstance();
 	}
 
 	/**
@@ -80,7 +88,8 @@ public class Robot extends TimedRobot {
 		elevator.runZeroPower();
 		cargoIntake.setIntakePower(0);
 		driveTrain.runZeroPower();
-		//hatchPivot.setPositionDeploy();
+		hatchPivot.setPositionDeploy();
+		robotCompressor.turnOff();
 		poseEstimator.reset();
 	}
 
@@ -155,7 +164,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-//		driveTrain.setBrakeMode();
+		robotCompressor.turnOn();
+		driveTrain.setBrakeMode();
 		teleopLooper.start();
 		driveTrain.resetEncoders();
 		driveTrain.setGyroOffset(180.0);

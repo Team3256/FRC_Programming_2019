@@ -83,6 +83,11 @@ public class HatchPivot extends SubsystemBase {
         hatchPivot.set(speed);
     }
 
+    public void setHatchPivotVelocity(double percentage) {
+        //hatchPivot.set(ControlMode.Velocity, percentage * kMaxVel);
+        // pls implement
+    }
+
     public void setPositionCargoIntake() {
         hatchPivot.set(ControlMode.MotionMagic, angleToSensorUnits(kPositionCargoIntake), DemandType.ArbitraryFeedForward, 0);
     }
