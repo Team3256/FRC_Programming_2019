@@ -2,20 +2,22 @@ package frc.team3256.robot.teleop.control;
 
 import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.robot.subsystems.Hanger;
+import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.teleop.TeleopUpdater;
 
 public class ClimbControlScheme extends CommonControlScheme {
     Hanger hanger = Hanger.getInstance();
     CargoIntake cargoIntake = CargoIntake.getInstance();
+    HatchPivot hatchPivot = HatchPivot.getInstance();
 
     @Override
     public void onAPressed() {
-
+        hatchPivot.engageBrake();
     }
 
     @Override
     public void onBPressed() {
-
+        hatchPivot.releaseBrake();
     }
 
     @Override
@@ -94,12 +96,20 @@ public class ClimbControlScheme extends CommonControlScheme {
 
     @Override
     public void onLeftTrigger(double val) {
-
+        if (val > 0.25) {
+            cargoIntake.climbDrive(-1.0);
+        } else {
+            cargoIntake.climbDrive(0.0);
+        }
     }
 
     @Override
     public void onRightTrigger(double val) {
-
+        if (val > 0.25) {
+            cargoIntake.climbDrive(1.0);
+        } else {
+            cargoIntake.climbDrive(0.0);
+        }
     }
 
     @Override

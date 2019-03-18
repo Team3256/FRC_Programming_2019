@@ -36,46 +36,46 @@ public abstract class CommonControlScheme extends XboxListenerBase {
     @Override
     public void onRightJoystick(double x, double y) {
         if (y > 0.25) {
-            if (hatchPivot.getBrakeStatus() != DoubleSolenoid.Value.kReverse) {
-                hatchPivot.releaseBrake();
-                Thread thread = new Thread(() -> {
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    hatchPivot.setHatchPivotPower(kHatchPivotSpeed);
-                });
-                thread.start();
-            }
-            else
+//            if (hatchPivot.getBrakeStatus() != DoubleSolenoid.Value.kReverse) {
+//                hatchPivot.releaseBrake();
+//                Thread thread = new Thread(() -> {
+//                    try {
+//                        Thread.sleep(50);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    hatchPivot.setHatchPivotPower(kHatchPivotSpeed);
+//                });
+//                thread.start();
+//            }
+//            else
                 hatchPivot.setHatchPivotPower(kHatchPivotSpeed);
         } else if (y < -0.25) {
-            if (hatchPivot.getBrakeStatus() != DoubleSolenoid.Value.kReverse) {
-                hatchPivot.releaseBrake();
-                Thread thread = new Thread(() -> {
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    hatchPivot.setHatchPivotPower(-kHatchPivotSpeed);
-                });
-                thread.start();
-            }
-            else
+//            if (hatchPivot.getBrakeStatus() != DoubleSolenoid.Value.kReverse) {
+//                hatchPivot.releaseBrake();
+//                Thread thread = new Thread(() -> {
+//                    try {
+//                        Thread.sleep(50);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    hatchPivot.setHatchPivotPower(-kHatchPivotSpeed);
+//                });
+//                thread.start();
+//            }
+//            else
                 hatchPivot.setHatchPivotPower(-kHatchPivotSpeed);
         } else {
-            hatchPivot.engageBrake();
-            Thread thread = new Thread(() -> {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+//            hatchPivot.engageBrake();
+//            Thread thread = new Thread(() -> {
+//                try {
+//                    Thread.sleep(50);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
                 hatchPivot.setHatchPivotPower(0);
-            });
-            thread.start();
+//            });
+//            thread.start();
         }
     }
 

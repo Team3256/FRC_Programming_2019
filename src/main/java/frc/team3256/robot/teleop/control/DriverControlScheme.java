@@ -51,12 +51,10 @@ public class DriverControlScheme extends XboxListenerBase {
 
     @Override
     public void onBPressed() {
-        hatchPivot.releaseBrake();
     }
 
     @Override
     public void onXPressed() {
-        hatchPivot.engageBrake();
     }
 
     @Override
@@ -146,7 +144,6 @@ public class DriverControlScheme extends XboxListenerBase {
     @Override
     public void onLeftShoulderPressed() {
         //cargoIntake.exhaust();
-        hanger.retract();
     }
 
     @Override
@@ -158,7 +155,6 @@ public class DriverControlScheme extends XboxListenerBase {
     public void onRightShoulderPressed() {
         //hatchPivot.setPositionCargoIntake();
         //cargoIntake.intake();
-        hanger.hang();
     }
 
     @Override

@@ -14,7 +14,6 @@ public class CargoIntake extends SubsystemBase {
 	private WPI_TalonSRX cargoIntakeLeft, cargoIntakeRight;
 
 	private double previousOutputCurrent = 0.0;
-
 	private double checkForBallAfter = 0.0;
 
 	private CargoIntake() {
@@ -34,12 +33,18 @@ public class CargoIntake extends SubsystemBase {
 	}
 
 	public void intake() {
+		HatchPivot.getInstance().deployHatch();
 		this.setIntakePower(kIntakeSpeed);
 		checkForBallAfter = Timer.getFPGATimestamp() + 0.5;
 	}
 
 	public void exhaust() {
+		HatchPivot.getInstance().retractHatch();
 		this.setIntakePower(-kIntakeSpeed);
+	}
+
+	public void climbDrive(double speed) {
+		this.setIntakePower(speed);
 	}
 
 	public void stop() {
