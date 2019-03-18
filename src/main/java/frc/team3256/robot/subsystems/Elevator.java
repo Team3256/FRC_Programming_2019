@@ -46,13 +46,14 @@ public class Elevator extends SubsystemBase {
 	}
 
 	public void setOpenLoop(double power) {
-		//master.set(power);
-		//slave.set(-power);
-		master.getPIDController().setReference(power*1000, ControlType.kVelocity);
+		if (getPositionInches() > rotationToInches(kElevatorMaxPosition) && power < 0) {
+			master.getPIDController().setReference(power * 1000, ControlType.kVelocity);
+		} else if (getPositionInches() < 0 && power > 0) {
+			master.getPIDController().setReference(power * 1000, ControlType.kVelocity);
+		}
 	}
 
 	public void setPosition(double position) {
-		//masterPID.setReference(position, ControlType.kPosition);
 		elevatorTarget = rotationToInches(position);
         masterPID.setReference(position, ControlType.kSmartMotion, 0);
 	}
@@ -60,6 +61,8 @@ public class Elevator extends SubsystemBase {
 	public void setPositionInches(double inches) {
 		if (inches < 0) {
 			setPositionHome();
+		} else if (inches > rotationToInches(kElevatorMaxPosition)) {
+			setPosition(kElevatorMaxPosition);
 		} else {
 			setPosition(inchesToRotations(inches));
 		}
@@ -108,8 +111,6 @@ public class Elevator extends SubsystemBase {
 
 	public void update(double timestamp) {
 		this.outputToDashboard();
-//		if (getPosition() < 0)
-//			setPosition(0);
 	}
 
 	public void end(double timestamp) {

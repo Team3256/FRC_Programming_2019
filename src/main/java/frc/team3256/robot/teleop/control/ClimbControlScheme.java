@@ -10,7 +10,7 @@ public class ClimbControlScheme extends CommonControlScheme {
 
     @Override
     public void onAPressed() {
-        
+
     }
 
     @Override
@@ -90,23 +90,36 @@ public class ClimbControlScheme extends CommonControlScheme {
 
     @Override
     public void onStartPressed() {
-        if (getController() != null) {
-            Thread thread = new Thread(() -> {
-                try {
-                    getController().setRumble(1.0);
-                    Thread.sleep(120);
-                    getController().setRumble(0);
-                    Thread.sleep(60);
-                    getController().setRumble(1.0);
-                    Thread.sleep(120);
-                    getController().setRumble(0);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-            thread.start();
-        }
-        TeleopUpdater.getInstance().changeToCargoControlScheme();
+    }
+
+    @Override
+    public void onLeftTrigger(double val) {
+
+    }
+
+    @Override
+    public void onRightTrigger(double val) {
+
+    }
+
+    @Override
+    public void onLeftShoulderPressed() {
+        hanger.retract();
+    }
+
+    @Override
+    public void onLeftShoulderReleased() {
+
+    }
+
+    @Override
+    public void onRightShoulderPressed() {
+        hanger.hang();
+    }
+
+    @Override
+    public void onRightShoulderReleased() {
+
     }
 
     @Override

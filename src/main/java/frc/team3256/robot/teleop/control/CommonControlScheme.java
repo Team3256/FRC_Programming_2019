@@ -91,12 +91,12 @@ public abstract class CommonControlScheme extends XboxListenerBase {
     @Override
     public void onRightTrigger(double value) {
         System.out.println("Right trigger");
-        //hatchPivot.setPositionCargoIntake();
+        hatchPivot.setPositionCargoIntake();
         if (value > 0.25 && value - lastRightTrigger > 0) {
             cargoIntake.intake();
         } else {
             cargoIntake.setIntakePower(0);
-            //hatchPivot.setPositionDeploy();
+            hatchPivot.setPositionDeploy();
         }
         lastRightTrigger = value;
     }
