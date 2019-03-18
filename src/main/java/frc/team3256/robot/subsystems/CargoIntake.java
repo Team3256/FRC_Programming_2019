@@ -53,25 +53,25 @@ public class CargoIntake extends SubsystemBase {
 
 	@Override
 	public void update(double timestamp) {
-		if (
-				(checkForBallAfter != -1) &&
-						(Timer.getFPGATimestamp() > checkForBallAfter) &&
-						((cargoIntakeLeft.getOutputCurrent() > kIntakeSpike) || cargoIntakeRight.getOutputCurrent() > kIntakeSpike)
-		) {
-			SmartDashboard.putNumber("BallTime", 1);
-			Thread thread = new Thread(() -> {
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				CargoIntake.getInstance().stop();
-			});
-			thread.start();
-			checkForBallAfter = -1;
-		} else {
-			SmartDashboard.putNumber("BallTime", 0);
-		}
+//		if (
+//				(checkForBallAfter != -1) &&
+//						(Timer.getFPGATimestamp() > checkForBallAfter) &&
+//						((cargoIntakeLeft.getOutputCurrent() > kIntakeSpike) || cargoIntakeRight.getOutputCurrent() > kIntakeSpike)
+//		) {
+//			SmartDashboard.putNumber("BallTime", 1);
+//			Thread thread = new Thread(() -> {
+//				try {
+//					Thread.sleep(500);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//				CargoIntake.getInstance().stop();
+//			});
+//			thread.start();
+//			checkForBallAfter = -1;
+//		} else {
+//			SmartDashboard.putNumber("BallTime", 0);
+//		}
 
 		this.outputToDashboard();
 
