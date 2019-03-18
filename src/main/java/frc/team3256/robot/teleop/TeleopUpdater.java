@@ -4,10 +4,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.DriveTrain;
-import frc.team3256.robot.teleop.control.CargoIntakeControlScheme;
-import frc.team3256.robot.teleop.control.DriverControlScheme;
-import frc.team3256.robot.teleop.control.GameCubeControllerObserver;
-import frc.team3256.robot.teleop.control.HatchIntakeControlScheme;
+import frc.team3256.robot.teleop.control.*;
 import frc.team3256.warriorlib.control.DrivePower;
 import frc.team3256.warriorlib.control.XboxControllerObserver;
 import frc.team3256.warriorlib.control.XboxListenerBase;
@@ -20,6 +17,7 @@ public class TeleopUpdater {
 
     private CargoIntakeControlScheme cargoIntakeControlScheme;
     private HatchIntakeControlScheme hatchIntakeControlScheme;
+    private ClimbControlScheme climbControlScheme;
     private DriverControlScheme driverControlScheme;
 
     private XboxListenerBase currentControlScheme;
@@ -35,8 +33,9 @@ public class TeleopUpdater {
 
         cargoIntakeControlScheme = new CargoIntakeControlScheme();
         hatchIntakeControlScheme = new HatchIntakeControlScheme();
+        climbControlScheme = new ClimbControlScheme();
 
-        currentControlScheme = cargoIntakeControlScheme;
+        currentControlScheme = climbControlScheme;
         manipulatorController.setListener(currentControlScheme);
 
         driverControlScheme = new DriverControlScheme();
