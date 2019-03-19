@@ -48,7 +48,6 @@ dependencies {
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
     compile 'com.github.Team3256:warriorlib:74f46f3c6e'
-    compile 'com.github.strikerx3:jxinput:1.0.0'
 }
 
 // Setting up Jar File. In this case, adding all libraries into the main jar ('fat jar')

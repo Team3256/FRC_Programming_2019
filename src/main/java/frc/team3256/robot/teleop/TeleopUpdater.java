@@ -3,17 +3,14 @@ package frc.team3256.robot.teleop;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.NewElevator;
 import frc.team3256.robot.subsystems.NewPivot;
-import frc.team3256.robot.teleop.control.DesktopXboxManipulatorController;
-import frc.team3256.robot.teleop.control.IDriverController;
-import frc.team3256.robot.teleop.control.IManipulatorController;
-import frc.team3256.robot.teleop.control.XboxDriverController;
+import frc.team3256.robot.teleop.control.*;
 import frc.team3256.warriorlib.control.DrivePower;
 
 public class TeleopUpdater {
     private DriveTrain driveTrain = DriveTrain.getInstance();
 
     private IDriverController driverController = XboxDriverController.getInstance();
-    private IManipulatorController manipulatorController = DesktopXboxManipulatorController.getInstance();
+    private IManipulatorController manipulatorController = XboxManipulatorController.getInstance();
     private NewElevator mElevator = NewElevator.getInstance();
     private NewPivot mPivot = NewPivot.getInstance();
 

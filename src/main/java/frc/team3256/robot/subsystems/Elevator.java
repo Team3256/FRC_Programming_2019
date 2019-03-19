@@ -19,7 +19,7 @@ public class Elevator extends SubsystemBase {
 	private DigitalInput hallEffect;
 
 	private Elevator() {
-		hallEffect = new DigitalInput(kHallEffectPort);
+//		hallEffect = new DigitalInput(kHallEffectPort);
 
 		master = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
         slave = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless);

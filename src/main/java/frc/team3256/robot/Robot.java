@@ -19,7 +19,7 @@ public class Robot extends TimedRobot {
 //	// Subsystems
 	private SubsystemManager subsystemManager;
 	private DriveTrain driveTrain = DriveTrain.getInstance();
-	private Elevator elevator = Elevator.getInstance();
+	private NewElevator elevator = NewElevator.getInstance();
 	private CargoIntake cargoIntake = CargoIntake.getInstance();
 	private NewPivot pivot = NewPivot.getInstance();
 	private Hanger hanger = Hanger.getInstance();
@@ -87,7 +87,7 @@ public class Robot extends TimedRobot {
 		driveTrain.setCoastMode();
 		driveTrain.setHighGear(true);
 
-		elevator.runZeroPower();
+		//elevator.runZeroPower();
 		cargoIntake.setIntakePower(0);
 		driveTrain.runZeroPower();
 		robotCompressor.turnOff();
@@ -150,7 +150,7 @@ public class Robot extends TimedRobot {
 			if (!autoModeExecuter.isFinished()) {
 				autoModeExecuter.stop();
 				//make sure all our subsystems stop
-				elevator.runZeroPower();
+				//elevator.runZeroPower();
 				cargoIntake.setIntakePower(0);
 				driveTrain.setPowerClosedLoop(0, 0);
 				//hatchPivot.setPositionDeploy();
