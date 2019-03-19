@@ -106,7 +106,7 @@ public class NewPivot extends SubsystemBase {
 
     @Override
     public void zeroSensors() {
-
+        mMaster.setSelectedSensorPosition((int) angleToSensorUnits(kHatchAngleOffset));
     }
 
     @Override

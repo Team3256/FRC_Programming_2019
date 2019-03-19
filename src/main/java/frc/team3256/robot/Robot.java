@@ -87,6 +87,8 @@ public class Robot extends TimedRobot {
 		driveTrain.setCoastMode();
 		driveTrain.setHighGear(true);
 
+		pivot.releaseBrake();
+
 		//elevator.runZeroPower();
 		cargoIntake.setIntakePower(0);
 		driveTrain.runZeroPower();
@@ -152,7 +154,7 @@ public class Robot extends TimedRobot {
 				//make sure all our subsystems stop
 				//elevator.runZeroPower();
 				cargoIntake.setIntakePower(0);
-				driveTrain.setPowerClosedLoop(0, 0);
+				//driveTrain.setPowerClosedLoop(0, 0);
 				//hatchPivot.setPositionDeploy();
 			}
 			teleopLooper.start();

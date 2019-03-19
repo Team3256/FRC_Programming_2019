@@ -8,7 +8,7 @@ public class HatchConstants {
     public static final double kHatchIz = 0.0;
 
     public static final int kHatchHoldPort = 0;
-    public static final double kHatchHoldP = 0.5;
+    public static final double kHatchHoldP = 2.0;
     public static final double kHatchHoldI = 0.002;
     public static final double kHatchHoldD = 0.0;
     public static final double kHatchHoldIZone = 0;

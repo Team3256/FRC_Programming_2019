@@ -116,6 +116,8 @@ public class NewElevator extends SubsystemBase {
         SmartDashboard.putBoolean("Elevator Hall Effect", mHallEffect.get());
 
         SmartDashboard.putNumber("Elevator RPM", mMaster.getEncoder().getVelocity() * kElevatorGearRatio);
+
+        SmartDashboard.putString("Elevator State", mCurrentState.name());
     }
 
     @Override
@@ -314,7 +316,7 @@ public class NewElevator extends SubsystemBase {
     }
 
     public void setOpenLoop(double power) {
-        System.out.println("setOpenLoop: " + power);
+        System.out.println("sestOpenLoop: " + power);
     }
 
     public boolean isHomed() {

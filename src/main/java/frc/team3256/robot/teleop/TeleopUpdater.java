@@ -24,7 +24,7 @@ public class TeleopUpdater {
     public void handleDrive() {
         driveTrain.setBrakeMode();
         DrivePower drivePower = DriveTrain.getInstance().betterCurvatureDrive(
-                driverController.getThrottle(),
+                driverController.getThrottle() > 0.15 ? driverController.getThrottle() : 0.0,
                 driverController.getTurn()*(driverController.getHighGear() ? 0.6 : 1.0),
                 driverController.getQuickTurn(),
                 driverController.getHighGear()
@@ -36,8 +36,8 @@ public class TeleopUpdater {
     public void update() {
         handleDrive();
 
-        double elevatorThrottle = manipulatorController.getElevatorThrottle();
-        double pivotThrottle = manipulatorController.getPivotThrottle();
+        double elevatorThrottle = Math.abs(manipulatorController.getElevatorThrottle()) > 0.15 ? manipulatorController.getElevatorThrottle() : 0.0;
+        double pivotThrottle = Math.abs(manipulatorController.getPivotThrottle()) > 0.15 ? manipulatorController.getPivotThrottle() : 0.0;
 
         boolean goToHighRocket = manipulatorController.goToHigh();
         boolean goToMidRocket = manipulatorController.goToMid();
