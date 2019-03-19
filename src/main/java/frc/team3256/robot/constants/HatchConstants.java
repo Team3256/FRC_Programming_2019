@@ -7,6 +7,27 @@ public class HatchConstants {
     public static final double kHatchF = 0.00001;
     public static final double kHatchIz = 0.0;
 
+    public static final int kHatchHoldPort = 0;
+    public static final double kHatchHoldP = 0.5;
+    public static final double kHatchHoldI = 0.002;
+    public static final double kHatchHoldD = 0.0;
+    public static final double kHatchHoldIZone = 0;
+    public static final double kHatchHoldF = 0;
+
+    public static final int kHatchClosedLoopUpPort = 1;
+    public static final double kHatchClosedLoopUpP = 0.5;
+    public static final double kHatchClosedLoopUpI = 0.002;
+    public static final double kHatchClosedLoopUpD = 0.0;
+    public static final double kHatchClosedLoopUpIZone = 0;
+    public static final double kHatchClosedLoopUpF = 0;
+
+    public static final int kHatchClosedLoopDownPort = 2;
+    public static final double kHatchClosedLoopDownP = 0.5;
+    public static final double kHatchClosedLoopDownI = 0.002;
+    public static final double kHatchClosedLoopDownD = 0.0;
+    public static final double kHatchClosedLoopDownIZone = 0;
+    public static final double kHatchClosedLoopDownF = 0;
+
     public static final double kHatchPivotSpeed = 0.75;
 
     public static final int kHatchPivotPort = 13;

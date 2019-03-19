@@ -6,7 +6,6 @@ import com.revrobotics.ControlType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3256.robot.constants.ElevatorConstants;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
