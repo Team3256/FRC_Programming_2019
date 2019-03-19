@@ -35,7 +35,9 @@ public class NewElevator extends SubsystemBase {
         WANTS_TO_LOW_CARGO,
         WANTS_TO_HIGH_HATCH,
         WANTS_TO_MID_HATCH,
-        WANTS_TO_LOW_HATCH
+        WANTS_TO_LOW_HATCH,
+        WANTS_TO_SECURE_HATCH,
+        WANTS_TO_UNSECURE_HATCH
     }
 
     private ElevatorControlState mCurrentState = ElevatorControlState.HOLD;
@@ -227,6 +229,18 @@ public class NewElevator extends SubsystemBase {
             case WANTS_TO_LOW_HATCH:
                 if (mStateChanged) {
                     mClosedLoopTarget = kPositionLowHatch;
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_SECURE_HATCH:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kHatchHumanPlayerPosition + kHookOffset;
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_UNSECURE_HATCH:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kHatchHumanPlayerPosition - kUnhookOffset;
                 }
                 mUsingClosedLoop = true;
                 break;

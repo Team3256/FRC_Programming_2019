@@ -3,6 +3,7 @@ package frc.team3256.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
@@ -13,6 +14,9 @@ public class NewPivot extends SubsystemBase {
 
     private WPI_TalonSRX mMaster;
     private DoubleSolenoid mBrake;
+    private DoubleSolenoid mHatchArm;
+    private NewElevator mElevator;
+    private double mDeployStartTime;
 
     private enum SystemState {
         MANUAL_UP,
@@ -20,6 +24,10 @@ public class NewPivot extends SubsystemBase {
         HOLD,
         CLOSED_LOOP_UP,
         CLOSED_LOOP_DOWN,
+        DEPLOY,
+        RETRACT,
+        SECURE_HATCH,
+        UNSECURE_HATCH,
         IN_ILLEGAL_AREA
     }
 
@@ -28,7 +36,12 @@ public class NewPivot extends SubsystemBase {
         WANTS_TO_MANUAL_DOWN,
         WANTS_TO_HOLD,
         WANTS_TO_INTAKE_POS,
-        WANTS_TO_DEPLOY_POS
+        WANTS_TO_DEPLOY_POS,
+        WANTS_TO_DEPLOY_HATCH,
+        WANTS_TO_RETRACT_HATCH,
+        WANTS_TO_SECURE_HATCH,
+        WANTS_TO_UNSECURE_HATCH,
+        WANTS_TO_IN_ILLEGAL_AREA
     }
 
     private SystemState mCurrentState = SystemState.HOLD;
@@ -89,7 +102,12 @@ public class NewPivot extends SubsystemBase {
         mMaster.selectProfileSlot(0, 0);
         mMaster.setSensorPhase(true);
 
+        mElevator = NewElevator.getInstance();
+
+        mDeployStartTime = 0;
+
         mBrake = new DoubleSolenoid(15, kRatchetForwardChannel, kRatchetReverseChannel);
+        mHatchArm = new DoubleSolenoid(15, kHatchForwardChannel, kHatchReverseChannel);
     }
 
     public void setWantedState(WantedState wantedState) {
@@ -137,6 +155,18 @@ public class NewPivot extends SubsystemBase {
                 break;
             case MANUAL_DOWN:
                 newState = handleManualControlDown();
+                break;
+            case DEPLOY:
+                newState = handleHatchDeploy();
+                break;
+            case RETRACT:
+                newState = handleHatchRetract();
+                break;
+            case SECURE_HATCH:
+                newState = handleSecureHatch(timestamp);
+                break;
+            case UNSECURE_HATCH:
+                newState = handleUnsecureHatch(timestamp);
                 break;
         }
 
@@ -210,6 +240,35 @@ public class NewPivot extends SubsystemBase {
         return defaultStateTransfer();
     }
 
+    private SystemState handleHatchDeploy() {
+        mDeployStartTime = Timer.getFPGATimestamp();
+        releaseBrake();
+        mHatchArm.set(DoubleSolenoid.Value.kForward);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleHatchRetract() {
+        releaseBrake();
+        mHatchArm.set(DoubleSolenoid.Value.kReverse);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleSecureHatch(double timestamp) {
+        mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_SECURE_HATCH);
+        if (timestamp - mDeployStartTime > kSecureHatchTimeDelta) {
+            mHatchArm.set(DoubleSolenoid.Value.kReverse);
+        }
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleUnsecureHatch(double timestamp) {
+        mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_UNSECURE_HATCH);
+        if (timestamp - mDeployStartTime > kUnsecureHatchTimeDelta) {
+            mHatchArm.set(DoubleSolenoid.Value.kReverse);
+        }
+        return defaultStateTransfer();
+    }
+
     private SystemState defaultStateTransfer() {
         SystemState nextState;
 
@@ -228,6 +287,14 @@ public class NewPivot extends SubsystemBase {
                 mClosedLoopTarget = kPositionCargoIntake;
                 break;
             case WANTS_TO_DEPLOY_POS:
+                mUsingClosedLoop = true;
+                mClosedLoopTarget = kPositionDeployHatch;
+                break;
+            case WANTS_TO_DEPLOY_HATCH:
+                mUsingClosedLoop = true;
+                mClosedLoopTarget = kPositionDeployHatch;
+                break;
+            case WANTS_TO_RETRACT_HATCH:
                 mUsingClosedLoop = true;
                 mClosedLoopTarget = kPositionDeployHatch;
                 break;

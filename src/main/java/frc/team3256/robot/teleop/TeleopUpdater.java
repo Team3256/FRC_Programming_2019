@@ -1,6 +1,7 @@
 package frc.team3256.robot.teleop;
 
 import frc.team3256.robot.subsystems.DriveTrain;
+import frc.team3256.robot.subsystems.HatchPivot;
 import frc.team3256.robot.subsystems.NewElevator;
 import frc.team3256.robot.subsystems.NewPivot;
 import frc.team3256.robot.teleop.control.*;
@@ -13,6 +14,8 @@ public class TeleopUpdater {
     private IManipulatorController manipulatorController = XboxManipulatorController.getInstance();
     private NewElevator mElevator = NewElevator.getInstance();
     private NewPivot mPivot = NewPivot.getInstance();
+    private boolean prevIntakeHatch = false;
+    private boolean prevOuttakeHatch = false;
 
     private static TeleopUpdater instance;
     public static TeleopUpdater getInstance() {
@@ -43,6 +46,8 @@ public class TeleopUpdater {
         boolean goToMidRocket = manipulatorController.goToMid();
         boolean goToLowRocket = manipulatorController.goToLow();
         boolean goToHome = manipulatorController.goToHome();
+        boolean intakeHatch = manipulatorController.shouldHatchIntake();
+        boolean outtakeHatch = manipulatorController.shouldHatchOuttake();
 
         if (elevatorThrottle > 0) {
             isManualControl = true;
@@ -84,8 +89,29 @@ public class TeleopUpdater {
         } else {
             if (isManualControl) {
                 mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_HOLD);
-            } else if (mElevator.atClosedLoopTarget()) {
+            } else {
                 mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_DEPLOY_POS);
+            }
+        }
+
+        if (intakeHatch) {
+            if (prevIntakeHatch) {
+                mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_SECURE_HATCH);
+                prevOuttakeHatch = false;
+            }
+            else {
+                mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_DEPLOY_HATCH);
+                prevOuttakeHatch = true;
+            }
+        }
+        else if (outtakeHatch) {
+            if (prevOuttakeHatch) {
+                mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_UNSECURE_HATCH);
+                prevOuttakeHatch = false;
+            }
+            else {
+                mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_DEPLOY_HATCH);
+                prevOuttakeHatch = true;
             }
         }
     }

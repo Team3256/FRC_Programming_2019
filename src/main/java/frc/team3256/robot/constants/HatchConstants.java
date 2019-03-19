@@ -38,6 +38,9 @@ public class HatchConstants {
     public static final int kRatchetForwardChannel = 5;
     public static final int kRatchetReverseChannel = 2;
 
+    public static final double kSecureHatchTimeDelta = 2.0;
+    public static final double kUnsecureHatchTimeDelta = 2.0;
+
     public static final int kHatchPingChannel = 0;
     public static final int kHatchEchoChannel = 0;
 
