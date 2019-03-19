@@ -42,6 +42,7 @@ public class NewPivot extends SubsystemBase {
     private double mClosedLoopTarget = 0.0;
 
     private static NewPivot instance;
+
     public static NewPivot getInstance() {
         return instance == null ? instance = new NewPivot() : instance;
     }
@@ -91,7 +92,7 @@ public class NewPivot extends SubsystemBase {
         mBrake = new DoubleSolenoid(15, kRatchetForwardChannel, kRatchetReverseChannel);
     }
 
-    public void setWantedState(WantedState wantedState){
+    public void setWantedState(WantedState wantedState) {
         this.mWantedState = wantedState;
     }
 
@@ -115,11 +116,10 @@ public class NewPivot extends SubsystemBase {
 
     @Override
     public void update(double timestamp) {
-        if (mPrevWantedState != mWantedState){
+        if (mPrevWantedState != mWantedState) {
             mWantedStateChanged = true;
             mPrevWantedState = mWantedState;
-        }
-        else mWantedStateChanged = false;
+        } else mWantedStateChanged = false;
 
         SystemState newState = SystemState.HOLD;
         switch (mCurrentState) {
@@ -155,9 +155,9 @@ public class NewPivot extends SubsystemBase {
         }
     }
 
-    public SystemState handleHold() {
-        if (mStateChanged){
-            mMaster.selectProfileSlot(kHatchHoldPort,0);
+    private SystemState handleHold() {
+        if (mStateChanged) {
+            mMaster.selectProfileSlot(kHatchHoldPort, 0);
             engageBrake();
         }
 
@@ -166,12 +166,12 @@ public class NewPivot extends SubsystemBase {
         return defaultStateTransfer();
     }
 
-    public SystemState handleClosedLoopUp() {
+    private SystemState handleClosedLoopUp() {
         if (atClosedLoopTarget()) {
             return SystemState.HOLD;
         }
 
-        if (mStateChanged){
+        if (mStateChanged) {
             mMaster.selectProfileSlot(0, 0);
             mMaster.selectProfileSlot(kHatchClosedLoopUpPort, 0);
             releaseBrake();
@@ -182,12 +182,12 @@ public class NewPivot extends SubsystemBase {
         return defaultStateTransfer();
     }
 
-    public SystemState handleClosedLoopDown() {
+    private SystemState handleClosedLoopDown() {
         if (atClosedLoopTarget()) {
             return SystemState.HOLD;
         }
 
-        if (mStateChanged){
+        if (mStateChanged) {
             mMaster.selectProfileSlot(0, 0);
             mMaster.selectProfileSlot(kHatchClosedLoopDownPort, 0);
             releaseBrake();
@@ -198,13 +198,13 @@ public class NewPivot extends SubsystemBase {
         return defaultStateTransfer();
     }
 
-    public SystemState handleManualControlUp() {
+    private SystemState handleManualControlUp() {
         releaseBrake();
         setOpenLoop(kHatchPivotSpeed);
         return defaultStateTransfer();
     }
 
-    public SystemState handleManualControlDown() {
+    private SystemState handleManualControlDown() {
         releaseBrake();
         setOpenLoop(-kHatchPivotSpeed);
         return defaultStateTransfer();
@@ -233,18 +233,16 @@ public class NewPivot extends SubsystemBase {
                 break;
         }
 
-        if(mClosedLoopTarget < getAngle() && mUsingClosedLoop) {
+        if (mClosedLoopTarget < getAngle() && mUsingClosedLoop) {
             nextState = SystemState.CLOSED_LOOP_UP;
-        }
-        else if (mClosedLoopTarget < getAngle() && mUsingClosedLoop){
+        } else if (mClosedLoopTarget < getAngle() && mUsingClosedLoop) {
             nextState = SystemState.CLOSED_LOOP_DOWN;
-        }
-        else nextState = SystemState.HOLD;
+        } else nextState = SystemState.HOLD;
 
         return nextState;
     }
 
-    public boolean atClosedLoopTarget(){
+    private boolean atClosedLoopTarget() {
         if (!mUsingClosedLoop || mWantedStateChanged || mStateChanged) return false;
         return (Math.abs(getAngle() - mClosedLoopTarget) < 1.0);
     }
@@ -259,18 +257,18 @@ public class NewPivot extends SubsystemBase {
     }
 
     private double angleToSensorUnits(double degrees) {
-        return (degrees/360.0) * kHatchPivotGearRatio * 4096.0;
+        return (degrees / 360.0) * kHatchPivotGearRatio * 4096.0;
     }
 
     private double sensorUnitsToAngle(double ticks) {
         return ((ticks / 4096.0) / kHatchPivotGearRatio) * 360.0;
     }
 
-    public double getEncoderValue() {
+    private double getEncoderValue() {
         return mMaster.getSelectedSensorPosition(0);
     }
 
-    public double getAngle() {
+    private double getAngle() {
         return sensorUnitsToAngle(mMaster.getSelectedSensorPosition(0));
     }
 
@@ -278,7 +276,7 @@ public class NewPivot extends SubsystemBase {
         mBrake.set(DoubleSolenoid.Value.kReverse);
     }
 
-    public void engageBrake() {
+    private void engageBrake() {
         mBrake.set(DoubleSolenoid.Value.kForward);
     }
 }
