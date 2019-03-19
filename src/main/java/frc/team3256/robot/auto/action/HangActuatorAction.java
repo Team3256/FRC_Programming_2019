@@ -24,6 +24,6 @@ public class HangActuatorAction implements Action {
 
     @Override
     public void start() {
-        hanger.hang();
+        hanger.setWantedState(Hanger.WantedState.WANTS_TO_HANG);
     }
 }
