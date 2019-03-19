@@ -207,8 +207,8 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public void setPowerOpenLoop(double leftPower, double rightPower) {
-        leftMaster.set(leftPower * 0.8);
-        rightMaster.set(rightPower * 0.8);
+        leftMaster.set(leftPower);
+        rightMaster.set(rightPower);
     }
 
     /**

@@ -10,16 +10,18 @@ import frc.team3256.warriorlib.auto.purepursuit.PoseEstimator;
 import frc.team3256.warriorlib.auto.purepursuit.PurePursuitTracker;
 import frc.team3256.warriorlib.loop.Looper;
 import frc.team3256.warriorlib.subsystem.DriveTrainBase;
+import frc.team3256.warriorlib.subsystem.SubsystemManager;
 
 import java.io.PrintStream;
 
 public class Robot extends TimedRobot {
 
 //	// Subsystems
+	private SubsystemManager subsystemManager;
 	private DriveTrain driveTrain = DriveTrain.getInstance();
 	private Elevator elevator = Elevator.getInstance();
 	private CargoIntake cargoIntake = CargoIntake.getInstance();
-	private HatchPivot hatchPivot = HatchPivot.getInstance();
+	private NewPivot pivot = NewPivot.getInstance();
 	private Hanger hanger = Hanger.getInstance();
 
 	private RobotCompressor robotCompressor = RobotCompressor.getInstance();
@@ -42,8 +44,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
-//		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-//		camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 640, 360, 15);
+		subsystemManager = new SubsystemManager();
 		DriveTrainBase.setDriveTrain(driveTrain);
 
 		Paths.initialize();
@@ -52,9 +53,9 @@ public class Robot extends TimedRobot {
 		// Reset sensors
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
-		hatchPivot.zeroSensors();
+		pivot.zeroSensors();
 
-		teleopLooper.addLoops(driveTrain, cargoIntake, hatchPivot, elevator);
+		teleopLooper.addLoops(driveTrain, cargoIntake, pivot, elevator);
 
 		poseEstimatorLooper = new Looper(1 / 50D);
 		poseEstimator = PoseEstimator.getInstance();
@@ -69,10 +70,11 @@ public class Robot extends TimedRobot {
 		// Pneumatics
 		robotCompressor.turnOn();
 		hanger.retract();
-		hatchPivot.retractHatch();
-		hatchPivot.engageBrake();
+		pivot.releaseBrake();
 
 		teleopUpdater = TeleopUpdater.getInstance();
+
+		subsystemManager.addSubsystems(driveTrain, elevator, cargoIntake, pivot);
 	}
 
 	/**
@@ -88,7 +90,6 @@ public class Robot extends TimedRobot {
 		elevator.runZeroPower();
 		cargoIntake.setIntakePower(0);
 		driveTrain.runZeroPower();
-		hatchPivot.setPositionDeploy();
 		robotCompressor.turnOff();
 		poseEstimator.reset();
 	}
@@ -151,7 +152,7 @@ public class Robot extends TimedRobot {
 				//make sure all our subsystems stop
 				elevator.runZeroPower();
 				cargoIntake.setIntakePower(0);
-				driveTrain.setPowerClosedLoop(0, 0, true);
+				driveTrain.setPowerClosedLoop(0, 0);
 				//hatchPivot.setPositionDeploy();
 			}
 			teleopLooper.start();
@@ -170,7 +171,7 @@ public class Robot extends TimedRobot {
 		driveTrain.setGyroOffset(180.0);
 		poseEstimator.resetPosition();
 		poseEstimator.offsetPoseAngle(180.0);
-		hatchPivot.engageBrake();
+		pivot.releaseBrake();
 	}
 
 	/**
@@ -179,36 +180,35 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopPeriodic() {
 		teleopUpdater.update();
+		subsystemManager.outputToDashboard();
 
 //		poseEstimator.reset();
 		//SmartDashboard.putNumber("Gyro", DriveTrain.getInstance().getAngle());
 //		SmartDashboard.putNumber("hatchPivot", hatchPivot.getAngle());
 //		SmartDashboard.putNumber("hatchPosition", hatchPivot.getEncoderValue());
 //		SmartDashboard.putBoolean("hallEffect", elevator.getHallEffectTriggered());
-		double robotCenterToCamera = 14.0 - 5.5;
-		double cameraDistance = SmartDashboard.getNumber("visionDistance0", 0);
-		double cameraAngleFromTarget = SmartDashboard.getNumber("visionAngle0",0) * Math.PI/180.0;
-		double m = Math.cos(cameraAngleFromTarget) * cameraDistance;
-		double n = Math.sin(cameraAngleFromTarget) * cameraDistance;
-		double angleFromTarget = Math.atan(n / (m + robotCenterToCamera));
-		double distance = n / Math.sin(angleFromTarget);
-		angleFromTarget = angleFromTarget * 180.0 / Math.PI;
-
-		double absPosition = 90-driveTrain.getAngle();
-
-
-		double angleDelta = (absPosition - angleFromTarget) * Math.PI / 180.0;
-		double x = Math.cos(angleDelta) * distance;
-		double y = Math.sin(angleDelta) * distance;
-		SmartDashboard.putNumber("Target Y", y);
-		SmartDashboard.putNumber("Target X", x);
-		SmartDashboard.putNumber("Gyro Angle", driveTrain.getAngle());
-		SmartDashboard.putNumber("Robot angle", (absPosition));
-		SmartDashboard.putNumber("Corrected distance", distance);
-		SmartDashboard.putNumber("Corrected angle", angleFromTarget);
-		SmartDashboard.putNumber("Total angle", (absPosition - angleFromTarget));
-		SmartDashboard.putNumber("Air Pressure Psi", robotCompressor.getAirPressurePsi());
-
+//		double robotCenterToCamera = 14.0 - 5.5;
+//		double cameraDistance = SmartDashboard.getNumber("visionDistance0", 0);
+//		double cameraAngleFromTarget = SmartDashboard.getNumber("visionAngle0",0) * Math.PI/180.0;
+//		double m = Math.cos(cameraAngleFromTarget) * cameraDistance;
+//		double n = Math.sin(cameraAngleFromTarget) * cameraDistance;
+//		double angleFromTarget = Math.atan(n / (m + robotCenterToCamera));
+//		double distance = n / Math.sin(angleFromTarget);
+//		angleFromTarget = angleFromTarget * 180.0 / Math.PI;
+//
+//		double absPosition = 90-driveTrain.getAngle();
+//
+//
+//		double angleDelta = (absPosition - angleFromTarget) * Math.PI / 180.0;
+//		double x = Math.cos(angleDelta) * distance;
+//		double y = Math.sin(angleDelta) * distance;
+//		SmartDashboard.putNumber("Target Y", y);
+//		SmartDashboard.putNumber("Target X", x);
+//		SmartDashboard.putNumber("Gyro Angle", driveTrain.getAngle());
+//		SmartDashboard.putNumber("Robot angle", (absPosition));
+//		SmartDashboard.putNumber("Corrected distance", distance);
+//		SmartDashboard.putNumber("Corrected angle", angleFromTarget);
+//		SmartDashboard.putNumber("Total angle", (absPosition - angleFromTarget));
 	}
 
 	/**
@@ -237,8 +237,6 @@ public class Robot extends TimedRobot {
 		double x = Math.cos(angleDelta) * distance;
 		double y = Math.sin(angleDelta) * distance;
 
-		hatchPivot.outputToDashboard();
-
 //		SmartDashboard.putNumber("Y", y);
 //		SmartDashboard.putNumber("X", x);
 //		SmartDashboard.putNumber("Gyro Angle", driveTrain.getAngle());
@@ -248,6 +246,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void disabledPeriodic() {
+		subsystemManager.outputToDashboard();
 //		System.out.println("Pose: " + poseEstimator.getPose());
 //		System.out.println("Gyro: " + driveTrain.getAngle());
 //		poseEstimator.reset();
