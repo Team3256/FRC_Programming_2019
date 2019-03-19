@@ -141,11 +141,10 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		boolean stopAuto = TeleopUpdater.getInstance().getDriverController().getAButtonPressed();
 		//basic logic below: keep executing auto until we disable it or it finishes, and don't allow it to be re-enabled
 		if (!maintainAutoExecution) {
 			teleopUpdater.update();
-		} else if (stopAuto || autoModeExecuter.isFinished()) {
+		} else if (autoModeExecuter.isFinished()) {
 			maintainAutoExecution = false;
 			if (!autoModeExecuter.isFinished()) {
 				autoModeExecuter.stop();

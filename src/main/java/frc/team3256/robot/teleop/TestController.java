@@ -1,5 +1,7 @@
 package frc.team3256.robot.teleop;
 
+import frc.team3256.robot.subsystems.NewElevator;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -11,9 +13,10 @@ public class TestController {
             @Override
             public void run() {
                 teleopUpdater.update();
+                NewElevator.getInstance().update(1);
             }
         };
 
-        timer.schedule(robotTask, 0, 30);
+        timer.schedule(robotTask, 0, 300);
     }
 }

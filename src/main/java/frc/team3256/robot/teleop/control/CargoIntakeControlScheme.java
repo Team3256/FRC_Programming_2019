@@ -90,7 +90,6 @@ public class CargoIntakeControlScheme extends CommonControlScheme {
         if (getController() != null) {
             getController().setRumbleForDuration(1.0, 300);
         }
-        TeleopUpdater.getInstance().changeToHatchControlScheme();
     }
 
     @Override

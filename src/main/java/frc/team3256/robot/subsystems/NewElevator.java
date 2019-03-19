@@ -13,28 +13,52 @@ public class NewElevator extends SubsystemBase {
 
     private CANSparkMax mMaster, mSlave;
     private DigitalInput mHallEffect;
-    private ElevatorControlState mElevatorControlState;
+    private ElevatorControlState mElevatorControlState = ElevatorControlState.HOLD;
 
-    private ElevatorValues mElevatorValues;
+    public void setWantedPosition(double desiredHeight) {
+    }
 
     private enum ElevatorControlState {
-        OPEN_LOOP,
-        VELOCITY_PID,
-        POSITION_PID
+        MANUAL_UP,
+        MANUAL_DOWN,
+        HOLD,
+        HOMING,
+        MOVING_TO_POSITION
     }
+
+    public enum WantedState {
+        WANTS_TO_MANUAL_UP,
+        WANTS_TO_MANUAL_DOWN,
+        WANTS_TO_HOME,
+        WANTS_TO_HOLD,
+        WANTS_TO_MOVE_TO_POSITION
+    }
+
+    private ElevatorControlState currentState = ElevatorControlState.HOLD;
+    private WantedState wantedState = WantedState.WANTS_TO_HOLD;
+    private WantedState prevWantedState = WantedState.WANTS_TO_HOLD;
 
     private boolean mWasHomed;
 
-    public NewElevator() {
-        mMaster = new CANSparkMax(kSparkMaxMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
-        mSlave = new CANSparkMax(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private static NewElevator instance;
+    public static NewElevator getInstance() {
+        return instance == null ? instance = new NewElevator() : instance;
+    }
 
-        mMaster.setInverted(true);
-        mSlave.follow(mMaster, true);
+    private NewElevator() {
+        //mMaster = new CANSparkMax(kSparkMaxMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
+        //mSlave = new CANSparkMax(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-        SparkMAXUtil.setBrakeMode(mMaster, mSlave);
+        //mMaster.setInverted(true);
+        //mSlave.follow(mMaster, true);
+
+        this.setBrake();
 
         mWasHomed = false;
+    }
+
+    public void setWantedState(WantedState wantedState){
+        this.wantedState = wantedState;
     }
 
     @Override
@@ -45,9 +69,9 @@ public class NewElevator extends SubsystemBase {
         SmartDashboard.putNumber("Elevator Current", mMaster.getOutputCurrent());
 
         SmartDashboard.putNumber("Elevator Height", getCurrentPositionInches());
-        SmartDashboard.putNumber("Elevator Ticks", mElevatorValues.positionTicks);
+        SmartDashboard.putNumber("Elevator Ticks", mMaster.getEncoder().getPosition());
 
-        SmartDashboard.putBoolean("Elevator Hall Effect", mElevatorValues.hallEffect);
+        SmartDashboard.putBoolean("Elevator Hall Effect", mHallEffect.get());
 
         SmartDashboard.putNumber("Elevator RPM", mMaster.getEncoder().getVelocity() * kElevatorGearRatio);
     }
@@ -63,9 +87,9 @@ public class NewElevator extends SubsystemBase {
 
     @Override
     public void update(double timestamp) {
-        mElevatorValues.hallEffect = getHallEffect();
-        mElevatorValues.positionTicks = mMaster.getEncoder().getPosition();
-        handleOutputs();
+        //mElevatorValues.hallEffect = getHallEffect();
+        //mElevatorValues.positionTicks = mMaster.getEncoder().getPosition();
+        System.out.println(currentState.name());
     }
 
     @Override
@@ -74,22 +98,21 @@ public class NewElevator extends SubsystemBase {
     }
 
     public void setBrake() {
-        mMaster.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        mSlave.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        //mMaster.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        //mSlave.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
     public void setCoast() {
-        mMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
-        mSlave.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        System.out.println("Set Coast");
+        //mMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        //mSlave.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
 
     public void setOpenLoop(double power) {
-        mElevatorControlState = ElevatorControlState.OPEN_LOOP;
-        mElevatorValues.power = power;
+        System.out.println("setOpenLoop: " + power);
     }
 
-    public void setPositionInches() {
-
+    public void setPositionInches(double inches) {
     }
 
     public void setPositionTicks() {
@@ -97,7 +120,7 @@ public class NewElevator extends SubsystemBase {
     }
 
     public double getCurrentPositionInches() {
-        return rotationToInches(mElevatorValues.positionTicks);
+        return rotationToInches(mMaster.getEncoder().getPosition());
     }
 
     // Helper Functions
@@ -111,28 +134,5 @@ public class NewElevator extends SubsystemBase {
 
     public boolean getHallEffect() {
         return !mHallEffect.get();
-    }
-
-    public void handleOutputs() {
-        switch (mElevatorControlState) {
-            case OPEN_LOOP:
-
-                break;
-            case POSITION_PID:
-
-                break;
-            case VELOCITY_PID:
-                mMaster.getEncoder().setPosition()
-                break;
-        }
-    }
-
-    public static class ElevatorValues {
-        public double positionTicks;
-        public int setPoint;
-        public boolean hallEffect;
-        public boolean atSetPoint;
-
-        public double power;
     }
 }

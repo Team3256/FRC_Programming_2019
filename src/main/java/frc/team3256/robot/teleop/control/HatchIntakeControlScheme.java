@@ -102,7 +102,6 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
             });
             thread.start();
         }
-        TeleopUpdater.getInstance().changeToCargoControlScheme();
     }
 
     @Override

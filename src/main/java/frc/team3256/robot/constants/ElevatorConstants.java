@@ -29,7 +29,7 @@ public class ElevatorConstants {
     public static final double kPositionMidHatch = 46 + kHatchPositionOffset;
     public static final double kPositionLowHatch = 19 + kHatchPositionOffset;
     private static final double kCargoPositionOffset = -19;
-    public static final double kPositionHighCargo = 83.5 + kCargoPositionOffset;
+    public static final double kPositionHighCargo = 83.5 + kCargoPositionOffset; // 83.5
     public static final double kPositionMidCargo = 55.5 + kCargoPositionOffset;
     public static final double kPositionLowCargo = 27.5 + kCargoPositionOffset;
     public static final double kPositionShip = 48 + kCargoPositionOffset;
