@@ -40,6 +40,11 @@ public class NewPivot extends SubsystemBase {
 
     private double mClosedLoopTarget = 0.0;
 
+    private static NewPivot instance;
+    public static NewPivot getInstance() {
+        return instance == null ? instance = new NewPivot() : instance;
+    }
+
     private NewPivot() {
         mMaster = TalonSRXUtil.generateGenericTalon(kHatchPivotPort);
 
@@ -83,6 +88,10 @@ public class NewPivot extends SubsystemBase {
         mMaster.setSensorPhase(true);
 
         mBrake = new DoubleSolenoid(15, kRatchetForwardChannel, kRatchetReverseChannel);
+    }
+
+    public void setWantedState(WantedState wantedState){
+        this.mWantedState = wantedState;
     }
 
     @Override
