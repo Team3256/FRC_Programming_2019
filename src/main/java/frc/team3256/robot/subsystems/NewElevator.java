@@ -33,7 +33,10 @@ public class NewElevator extends SubsystemBase {
         WANTS_TO_HOLD,
         WANTS_TO_HIGH_CARGO,
         WANTS_TO_MID_CARGO,
-        WANTS_TO_LOW_CARGO
+        WANTS_TO_LOW_CARGO,
+        WANTS_TO_HIGH_HATCH,
+        WANTS_TO_MID_HATCH,
+        WANTS_TO_LOW_HATCH
     }
 
     private ElevatorControlState mCurrentState = ElevatorControlState.HOLD;
@@ -176,7 +179,7 @@ public class NewElevator extends SubsystemBase {
     }
 
     private ElevatorControlState defaultStateTransfer() {
-        ElevatorControlState rv;
+        ElevatorControlState nextState;
 
         switch (mWantedState) {
             case WANTS_TO_HOLD:
@@ -208,17 +211,35 @@ public class NewElevator extends SubsystemBase {
                 }
                 mUsingClosedLoop = true;
                 break;
+            case WANTS_TO_HIGH_HATCH:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionHighHatch;
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_MID_HATCH:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionMidHatch;
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_LOW_HATCH:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionLowHatch;
+                }
+                mUsingClosedLoop = true;
+                break;
         }
 
         if(mClosedLoopTarget > getCurrentPositionInches() && mUsingClosedLoop) {
-            rv = ElevatorControlState.CLOSED_LOOP_UP;
+            nextState = ElevatorControlState.CLOSED_LOOP_UP;
         }
         else if (mClosedLoopTarget < getCurrentPositionInches() && mUsingClosedLoop){
-            rv = ElevatorControlState.CLOSED_LOOP_DOWN;
+            nextState = ElevatorControlState.CLOSED_LOOP_DOWN;
         }
-        else rv = ElevatorControlState.HOLD;
+        else nextState = ElevatorControlState.HOLD;
 
-        return rv;
+        return nextState;
     }
 
     public ElevatorControlState handleHold() {
