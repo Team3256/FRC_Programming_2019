@@ -26,7 +26,7 @@ public class FinishAlignAction implements Action {
 
     @Override
     public void done() {
-        driveTrain.setPowerClosedLoop(0, 0);
+        driveTrain.setPowerClosedLoop(0, 0, true);
     }
 
     @Override
@@ -34,8 +34,8 @@ public class FinishAlignAction implements Action {
         timestamp = Timer.getFPGATimestamp();
         double angle = SmartDashboard.getNumber("visionAngle" + cameraId, 0);
         if (angle > 0)
-            driveTrain.setPowerClosedLoop(0.12, 0.08);
+            driveTrain.setPowerClosedLoop(0.12, 0.08, true);
         else
-            driveTrain.setPowerClosedLoop(0.08, 0.12);
+            driveTrain.setPowerClosedLoop(0.08, 0.12, true);
     }
 }

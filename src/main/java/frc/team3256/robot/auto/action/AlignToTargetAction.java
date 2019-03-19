@@ -34,7 +34,7 @@ public class AlignToTargetAction implements Action {
             rightPower = 0.2 - angle / 400;
         }
 
-        driveTrain.setPowerClosedLoop(leftPower, rightPower);
+        driveTrain.setPowerClosedLoop(leftPower, rightPower, true);
     }
 
     @Override

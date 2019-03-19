@@ -70,7 +70,7 @@ public class Robot extends TimedRobot {
 		robotCompressor.turnOn();
 		hanger.retract();
 		hatchPivot.retractHatch();
-		hatchPivot.releaseBrake();
+		hatchPivot.engageBrake();
 
 		teleopUpdater = TeleopUpdater.getInstance();
 	}
@@ -152,7 +152,7 @@ public class Robot extends TimedRobot {
 				//make sure all our subsystems stop
 				elevator.runZeroPower();
 				cargoIntake.setIntakePower(0);
-				driveTrain.setPowerClosedLoop(0, 0);
+				driveTrain.setPowerClosedLoop(0, 0, true);
 				//hatchPivot.setPositionDeploy();
 			}
 			teleopLooper.start();
@@ -171,7 +171,7 @@ public class Robot extends TimedRobot {
 		driveTrain.setGyroOffset(180.0);
 		poseEstimator.resetPosition();
 		poseEstimator.offsetPoseAngle(180.0);
-		hatchPivot.releaseBrake();
+		hatchPivot.engageBrake();
 	}
 
 	/**
@@ -208,6 +208,8 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("Corrected distance", distance);
 		SmartDashboard.putNumber("Corrected angle", angleFromTarget);
 		SmartDashboard.putNumber("Total angle", (absPosition - angleFromTarget));
+		SmartDashboard.putNumber("Air Pressure Psi", robotCompressor.getAirPressurePsi());
+
 	}
 
 	/**

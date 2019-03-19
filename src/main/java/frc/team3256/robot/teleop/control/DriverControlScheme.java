@@ -11,7 +11,7 @@ public class DriverControlScheme extends XboxListenerBase {
     protected HatchPivot hatchPivot = HatchPivot.getInstance();
     protected Hanger hanger = Hanger.getInstance();
 
-    private boolean highGear = false;
+    private boolean highGear = true;
     private boolean quickTurn = false;
 
     private double leftX = 0.0;
@@ -165,13 +165,13 @@ public class DriverControlScheme extends XboxListenerBase {
 
     @Override
     public void onLeftTrigger(double value) {
-        highGear = value < 0.25;
+        highGear = value > 0.25;
         SmartDashboard.putBoolean("HighGear", highGear);
     }
 
     @Override
     public void onRightTrigger(double value) {
-        quickTurn = value > 0.25;
+        quickTurn = value < 0.25;
     }
 
     @Override

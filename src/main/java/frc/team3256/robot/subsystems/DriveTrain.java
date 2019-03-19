@@ -4,6 +4,7 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.*;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team3256.robot.constants.DriveTrainConstants;
 import frc.team3256.robot.operations.PIDController;
 import frc.team3256.warriorlib.control.DrivePower;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
@@ -116,11 +117,15 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         leftPIDController = leftMaster.getPIDController();
         rightPIDController = rightMaster.getPIDController();
 
-        SparkMAXUtil.setPIDGains(leftPIDController, 0, kVelocityP, kVelocityI, kVelocityD, kVelocityF, kVelocityIZone);
-        SparkMAXUtil.setPIDGains(rightPIDController, 0, kVelocityP, kVelocityI, kVelocityD, kVelocityF, kVelocityIZone);
+        SparkMAXUtil.setPIDGains(leftPIDController, kVelocityLowGearSlot, kVelocityLowGearP, kVelocityLowGearI, kVelocityLowGearD, kVelocityLowGearF, kVelocityLowGearIZone);
+        SparkMAXUtil.setPIDGains(rightPIDController, kVelocityLowGearSlot, kVelocityLowGearP, kVelocityLowGearI, kVelocityLowGearD, kVelocityLowGearF, kVelocityLowGearIZone);
+        SparkMAXUtil.setPIDGains(leftPIDController, kVelocityHighGearSlot, kVelocityHighGearP, kVelocityHighGearI, kVelocityHighGearD, kVelocityHighGearF, kVelocityHighGearIZone);
+        SparkMAXUtil.setPIDGains(rightPIDController, kVelocityHighGearSlot, kVelocityHighGearP, kVelocityHighGearI, kVelocityHighGearD, kVelocityHighGearF, kVelocityHighGearIZone);
 
-        SparkMAXUtil.setSmartMotionParams(leftPIDController, -kVelocityMaxRPM, kVelocityMaxRPM, kMaxAccel, kAllowedErr, 0);
-        SparkMAXUtil.setSmartMotionParams(rightPIDController, -kVelocityMaxRPM, kVelocityMaxRPM, kMaxAccel, kAllowedErr, 0);
+        SparkMAXUtil.setSmartMotionParams(leftPIDController, -kVelocityMaxRPM, kVelocityMaxRPM, kMaxAccel, kAllowedErr, kVelocityLowGearSlot);
+        SparkMAXUtil.setSmartMotionParams(rightPIDController, -kVelocityMaxRPM, kVelocityMaxRPM, kMaxAccel, kAllowedErr, kVelocityLowGearSlot);
+        SparkMAXUtil.setSmartMotionParams(leftPIDController, -kVelocityMaxRPM, kVelocityMaxRPM, kMaxAccel, kAllowedErr, kVelocityHighGearSlot);
+        SparkMAXUtil.setSmartMotionParams(rightPIDController, -kVelocityMaxRPM, kVelocityMaxRPM, kMaxAccel, kAllowedErr, kVelocityHighGearSlot);
 
         SparkMAXUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
 
@@ -130,7 +135,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         leftMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*loopTime), 0);
         rightMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*loopTime), 0);
         */
-        shifter = new DoubleSolenoid(15, kShifterForward, kShifterReverse);
+        shifter = new DoubleSolenoid(DriveTrainConstants.pcmId, kShifterForward, kShifterReverse);
         //shifter = new DoubleSolenoid(15, 3, 4);
 
         //rightSlave2 = TalonSRXUtil.generateSlaveTalon(kRightDriveSlave2, kRightDriveMaster);
@@ -196,9 +201,9 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         return Math.max(Math.min(val, 1.0), -1.0);
     }
 
-    public void setPowerClosedLoop(double leftPower, double rightPower) {
-        leftPIDController.setReference(leftPower*kVelocityMaxRPM, ControlType.kVelocity);
-        rightPIDController.setReference(rightPower*kVelocityMaxRPM, ControlType.kVelocity);
+    public void setPowerClosedLoop(double leftPower, double rightPower, boolean highGear) {
+        leftPIDController.setReference(leftPower*kVelocityMaxRPM, ControlType.kVelocity, highGear ? kVelocityHighGearSlot : kVelocityLowGearSlot);
+        rightPIDController.setReference(rightPower*kVelocityMaxRPM, ControlType.kVelocity, highGear ? kVelocityHighGearSlot : kVelocityLowGearSlot);
     }
 
     /**
@@ -213,15 +218,15 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     public void outputToDashboard() {
         //SmartDashboard.putNumber("right encoder", getRightDistance());
         //SmartDashboard.putNumber("left encoder", getLeftDistance());
-        SmartDashboard.putNumber("Left A Temp", celsiusToFarenhiet(leftMaster.getMotorTemperature()));
-        SmartDashboard.putNumber("Left B Temp", celsiusToFarenhiet(leftSlave.getMotorTemperature()));
-        SmartDashboard.putNumber("Right A Temp", celsiusToFarenhiet(rightMaster.getMotorTemperature()));
-        SmartDashboard.putNumber("Right B Temp", celsiusToFarenhiet(rightSlave.getMotorTemperature()));
+        SmartDashboard.putNumber("Left A Temp", celsiusToFahrenheit(leftMaster.getMotorTemperature()));
+        SmartDashboard.putNumber("Left B Temp", celsiusToFahrenheit(leftSlave.getMotorTemperature()));
+        SmartDashboard.putNumber("Right A Temp", celsiusToFahrenheit(rightMaster.getMotorTemperature()));
+        SmartDashboard.putNumber("Right B Temp", celsiusToFahrenheit(rightSlave.getMotorTemperature()));
         SmartDashboard.putNumber("Left RPM", this.getLeftRPM());
         SmartDashboard.putNumber("Right RPM", this.getRightRPM());
     }
 
-    public double celsiusToFarenhiet(double c) {
+    public double celsiusToFahrenheit(double c) {
         return (c * 9.0/5.0) + 32.0;
     }
 
@@ -241,7 +246,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
 
     @Override
     public void end(double timestamp) {
-        setPowerClosedLoop(0, 0);
+        setPowerClosedLoop(0, 0, false);
     }
 
     public double getLeftCurrent() {
@@ -334,8 +339,8 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         leftMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(leftOutput));
         rightMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(rightOutput));*/
 
-        leftPIDController.setReference(inchesPerSecToRPM(leftVelInchesPerSec) * kGearRatio, ControlType.kVelocity);
-        rightPIDController.setReference(inchesPerSecToRPM(rightVelInchesPerSec) * kGearRatio, ControlType.kVelocity);;
+        leftPIDController.setReference(inchesPerSecToRPM(leftVelInchesPerSec) * kGearRatio, ControlType.kVelocity, kVelocityHighGearSlot);
+        rightPIDController.setReference(inchesPerSecToRPM(rightVelInchesPerSec) * kGearRatio, ControlType.kVelocity, kVelocityHighGearSlot);
     }
 
     public void setBrakeMode() {

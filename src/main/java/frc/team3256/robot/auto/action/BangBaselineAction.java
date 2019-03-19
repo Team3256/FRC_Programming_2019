@@ -19,12 +19,12 @@ public class BangBaselineAction implements Action {
 
     @Override
     public void done() {
-        DriveTrain.getInstance().setPowerClosedLoop(0, 0);
+        DriveTrain.getInstance().setPowerClosedLoop(0, 0, true);
     }
 
     @Override
     public void start() {
         timestamp = Timer.getFPGATimestamp();
-        DriveTrain.getInstance().setPowerClosedLoop(0.1, 0.1);
+        DriveTrain.getInstance().setPowerClosedLoop(0.1, 0.1, true);
     }
 }

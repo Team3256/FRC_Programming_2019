@@ -33,13 +33,13 @@ public class TurnInPlaceAction implements Action {
     @Override
     public void update() {
         double output = pidController.calculatePID(targetAngle, DriveTrain.getInstance().getAngle());
-        driveTrain.setPowerClosedLoop(-output, output);
+        driveTrain.setPowerClosedLoop(-output, output, true);
         //SmartDashboard.putNumber("Turn In Place Output", output);
     }
 
     @Override
     public void done() {
-        driveTrain.setPowerClosedLoop(0, 0);
+        driveTrain.setPowerClosedLoop(0, 0, true);
     }
 
     @Override

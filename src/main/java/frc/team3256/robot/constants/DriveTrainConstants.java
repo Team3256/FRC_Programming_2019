@@ -8,16 +8,29 @@ public class DriveTrainConstants {
     public static final int kLeftDriveSlave = 4;
     public static final int kRightDriveMaster = 5;
     public static final int kRightDriveSlave = 6;
-
-    public static final double kVelocityP = 8e-6;
-    public static final double kVelocityI = 1e-6;
-    public static final double kVelocityD = 0;
-    public static final double kVelocityIZone = 0;
-    public static final double kVelocityF = 1e-5;
+    //Low Gear
+    public static final int kVelocityLowGearSlot = 0;
+    public static final double kVelocityLowGearP = 5e-6;
+    public static final double kVelocityLowGearI = 1e-7;
+    public static final double kVelocityLowGearD = 0;
+    public static final double kVelocityLowGearIZone = 0;
+    public static final double kVelocityLowGearF = 1e-5;
+    //High Gear
+    public static final int kVelocityHighGearSlot = 1;
+    public static final double kVelocityHighGearP = 5e-4;
+    public static final double kVelocityHighGearI = 1E-9;
+    public static final double kVelocityHighGearD = 0;
+    public static final double kVelocityHighGearIZone = 0;
+    public static final double kVelocityHighGearF = 1e-5;
+    //Common
     public static final double kVelocityMaxRPM = 4150;
     public static final double kMaxAccel = 1000;
     public static final double kAllowedErr = 0;
     public static final double kAngularPowerScalar = 1.7; // 1.7
+    //Analog for Pressure Sensor
+    public static final int kPressureSensorPort = 4; //Should be 0 for comp
+
+    public static final int pcmId = 15;
 
     public static final double kTurnP = 0.0045;
     public static final double kTurnI = 0.0;

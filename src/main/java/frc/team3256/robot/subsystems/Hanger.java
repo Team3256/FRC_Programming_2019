@@ -1,6 +1,7 @@
 package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import frc.team3256.robot.constants.DriveTrainConstants;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 import static frc.team3256.robot.constants.DriveTrainConstants.*;
 
@@ -9,7 +10,7 @@ public class Hanger extends SubsystemBase {
     private DoubleSolenoid hang;
 
     private Hanger() {
-        hang = new DoubleSolenoid(15, kHangerForward, kHangerReverse);
+        hang = new DoubleSolenoid(DriveTrainConstants.pcmId, kHangerForward, kHangerReverse);
     }
 
     public static Hanger getInstance() { return instance == null ? instance = new Hanger() : instance; }

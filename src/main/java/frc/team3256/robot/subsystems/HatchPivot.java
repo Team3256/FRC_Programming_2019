@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team3256.robot.constants.DriveTrainConstants;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
@@ -22,8 +23,8 @@ public class HatchPivot extends SubsystemBase {
 
         hatchPivot.setInverted(true);
 
-        deployHatch = new DoubleSolenoid(15, kHatchForwardChannel, kHatchReverseChannel);
-        brake = new DoubleSolenoid(15, kRatchetForwardChannel, kRatchetReverseChannel);
+        deployHatch = new DoubleSolenoid(DriveTrainConstants.pcmId, kHatchForwardChannel, kHatchReverseChannel);
+        brake = new DoubleSolenoid(DriveTrainConstants.pcmId, kRatchetForwardChannel, kRatchetReverseChannel);
 
         //ultrasonicHatch = new Ultrasonic(kHatchPingChannel,kHatchEchoChannel);
 

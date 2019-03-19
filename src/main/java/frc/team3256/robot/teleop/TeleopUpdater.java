@@ -34,7 +34,7 @@ public class TeleopUpdater {
         hatchIntakeControlScheme = new HatchIntakeControlScheme();
         climbControlScheme = new ClimbControlScheme();
 
-        currentControlScheme = climbControlScheme;
+        currentControlScheme = cargoIntakeControlScheme;
         manipulatorController.setListener(currentControlScheme);
 
         driverControlScheme = new DriverControlScheme();
@@ -52,14 +52,14 @@ public class TeleopUpdater {
 //                driverControlScheme.getRightX()*(driverControlScheme.isHighGear() ? 0.6 : 1.0),
 //                driverControlScheme.isQuickTurn(),
 //                driverControlScheme.isHighGear());
-        DrivePower drivePower = DriveTrain.getInstance().betterCurvatureDrive(
+        DrivePower drivePower = DriveTrain.getInstance().curvatureDrive(
                 driverControlScheme.getLeftY(),
                 driverControlScheme.getRightX()*(driverControlScheme.isHighGear() ? 0.6 : 1.0),
                 driverControlScheme.isQuickTurn(),
                 driverControlScheme.isHighGear()
         );
         driveTrain.setHighGear(drivePower.getHighGear());
-        driveTrain.setPowerClosedLoop(drivePower.getLeft(), drivePower.getRight());
+        driveTrain.setPowerClosedLoop(drivePower.getLeft(), drivePower.getRight(), drivePower.getHighGear());
     }
 
     public void changeToCargoControlScheme() {
