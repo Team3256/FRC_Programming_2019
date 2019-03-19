@@ -206,6 +206,11 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         rightPIDController.setReference(rightPower*kVelocityMaxRPM, ControlType.kVelocity, highGear ? kVelocityHighGearSlot : kVelocityLowGearSlot);
     }
 
+    public void setPowerOpenLoop(double leftPower, double rightPower) {
+        leftMaster.set(leftPower * 0.8);
+        rightMaster.set(rightPower * 0.8);
+    }
+
     /**
      * Runs to zero power right away
      */

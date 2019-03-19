@@ -15,6 +15,20 @@ public class ElevatorConstants {
     public static final double kMinOutputVelocity = -kSmartMotionMaxVel;
     public static final double kElevatorIz = 0; //0
 
+    public static final int kElevatorHoldPort = 0;
+    public static final double kElevatorHoldP = 0.5;
+    public static final double kElevatorHoldI = 0.002;
+    public static final double kElevatorHoldD = 0.0;
+    public static final double kElevatorHoldIZone = 0;
+    public static final double kElevatorHoldF = 0;
+
+    public static final int kElevatorClosedLoopPort = 1;
+    public static final double kElevatorClosedLoopP = 0.35;
+    public static final double kElevatorClosedLoopI = 0.25;
+    public static final double kElevatorClosedLoopD = 0.0;
+    public static final double kElevatorClosedLoopIZone = 0;
+    public static final double kElevatorClosedLoopF = 0.25;
+
     public static final double kDropPreset = 10.0;
 
     public static final double kPositionMax = 195;

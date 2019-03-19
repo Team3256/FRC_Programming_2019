@@ -2,8 +2,11 @@ package frc.team3256.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.ControlType;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team3256.robot.constants.ElevatorConstants;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
@@ -13,17 +16,14 @@ public class NewElevator extends SubsystemBase {
 
     private CANSparkMax mMaster, mSlave;
     private DigitalInput mHallEffect;
-    private ElevatorControlState mElevatorControlState = ElevatorControlState.HOLD;
-
-    public void setWantedPosition(double desiredHeight) {
-    }
 
     private enum ElevatorControlState {
         MANUAL_UP,
         MANUAL_DOWN,
         HOLD,
         HOMING,
-        MOVING_TO_POSITION
+        CLOSED_LOOP_UP,
+        CLOSED_LOOP_DOWN
     }
 
     public enum WantedState {
@@ -31,34 +31,74 @@ public class NewElevator extends SubsystemBase {
         WANTS_TO_MANUAL_DOWN,
         WANTS_TO_HOME,
         WANTS_TO_HOLD,
-        WANTS_TO_MOVE_TO_POSITION
+        WANTS_TO_HIGH_CARGO,
+        WANTS_TO_MID_CARGO,
+        WANTS_TO_LOW_CARGO
     }
 
-    private ElevatorControlState currentState = ElevatorControlState.HOLD;
-    private WantedState wantedState = WantedState.WANTS_TO_HOLD;
-    private WantedState prevWantedState = WantedState.WANTS_TO_HOLD;
+    private ElevatorControlState mCurrentState = ElevatorControlState.HOLD;
+    private WantedState mWantedState = WantedState.WANTS_TO_HOLD;
+    private WantedState mPrevWantedState = WantedState.WANTS_TO_HOLD;
 
-    private boolean mWasHomed;
+    private boolean mStateChanged = false;
+    private boolean mWantedStateChanged = false;
+    private boolean mUsingClosedLoop = false;
+
+    private double mClosedLoopTarget = 0.0;
+
+    private boolean mIsHomed;
 
     private static NewElevator instance;
     public static NewElevator getInstance() {
         return instance == null ? instance = new NewElevator() : instance;
     }
 
+    private InterruptHandlerFunction<NewElevator> ihr = new InterruptHandlerFunction<NewElevator>() {
+        @Override
+        public void interruptFired(int interruptAssertedMask, NewElevator param) {
+            mIsHomed = true;
+        }
+    };
+
     private NewElevator() {
-        //mMaster = new CANSparkMax(kSparkMaxMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
-        //mSlave = new CANSparkMax(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mMaster = new CANSparkMax(kSparkMaxMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mSlave = new CANSparkMax(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-        //mMaster.setInverted(true);
-        //mSlave.follow(mMaster, true);
+        mMaster.setInverted(true);
+        mSlave.follow(mMaster, true);
 
-        this.setBrake();
+        mHallEffect = new DigitalInput(kHallEffectPort);
+        mHallEffect.requestInterrupts(ihr);
+        mHallEffect.setUpSourceEdge(false, true);
+        mHallEffect.enableInterrupts();
 
-        mWasHomed = false;
+        SparkMAXUtil.setPIDGains(
+                mMaster.getPIDController(),
+                kElevatorHoldPort,
+                kElevatorHoldP,
+                kElevatorHoldI,
+                kElevatorHoldD,
+                kElevatorHoldIZone,
+                kElevatorF
+        );
+
+        SparkMAXUtil.setPIDGains(
+                mMaster.getPIDController(),
+                kElevatorClosedLoopPort,
+                kElevatorClosedLoopP,
+                kElevatorClosedLoopI,
+                kElevatorClosedLoopD,
+                kElevatorClosedLoopIZone,
+                kElevatorClosedLoopF
+        );
+
+        setBrake();
+
+        mIsHomed = false;
     }
 
     public void setWantedState(WantedState wantedState){
-        this.wantedState = wantedState;
+        this.mWantedState = wantedState;
     }
 
     @Override
@@ -87,9 +127,47 @@ public class NewElevator extends SubsystemBase {
 
     @Override
     public void update(double timestamp) {
-        //mElevatorValues.hallEffect = getHallEffect();
-        //mElevatorValues.positionTicks = mMaster.getEncoder().getPosition();
-        System.out.println(currentState.name());
+        if (mPrevWantedState != mWantedState){
+            mWantedStateChanged = true;
+            mPrevWantedState = mWantedState;
+        }
+        else mWantedStateChanged = false;
+
+        ElevatorControlState newState = ElevatorControlState.HOLD;
+        switch (mCurrentState) {
+            case HOLD:
+                newState = handleHold();
+                break;
+            case HOMING:
+                newState = handleHome();
+                break;
+            case CLOSED_LOOP_UP:
+                newState = handleClosedLoopUp();
+                break;
+            case CLOSED_LOOP_DOWN:
+                newState = handleClosedLoopDown();
+                break;
+            case MANUAL_UP:
+                newState = handleManualControlUp();
+                break;
+            case MANUAL_DOWN:
+                newState = handleManualControlDown();
+                break;
+        }
+
+        if (newState != mCurrentState) {
+            System.out.println(
+                    String.format(
+                        "CHANGED (%s) -> (%s)",
+                        mCurrentState.name(),
+                        newState.name()
+                    )
+            );
+            mCurrentState = newState;
+            mStateChanged = true;
+        } else {
+            mStateChanged = false;
+        }
     }
 
     @Override
@@ -97,30 +175,138 @@ public class NewElevator extends SubsystemBase {
         this.setOpenLoop(0.0);
     }
 
+    private ElevatorControlState defaultStateTransfer() {
+        ElevatorControlState rv;
+
+        switch (mWantedState) {
+            case WANTS_TO_HOLD:
+                mUsingClosedLoop = false;
+                return ElevatorControlState.HOLD;
+            case WANTS_TO_HOME:
+                return ElevatorControlState.HOMING;
+            case WANTS_TO_MANUAL_UP:
+                mUsingClosedLoop = false;
+                return ElevatorControlState.MANUAL_UP;
+            case WANTS_TO_MANUAL_DOWN:
+                mUsingClosedLoop = false;
+                return ElevatorControlState.MANUAL_DOWN;
+            case WANTS_TO_HIGH_CARGO:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionHighCargo;
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_MID_CARGO:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionMidCargo;
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_LOW_CARGO:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionLowCargo;
+                }
+                mUsingClosedLoop = true;
+                break;
+        }
+
+        if(mClosedLoopTarget > getCurrentPositionInches() && mUsingClosedLoop) {
+            rv = ElevatorControlState.CLOSED_LOOP_UP;
+        }
+        else if (mClosedLoopTarget < getCurrentPositionInches() && mUsingClosedLoop){
+            rv = ElevatorControlState.CLOSED_LOOP_DOWN;
+        }
+        else rv = ElevatorControlState.HOLD;
+
+        return rv;
+    }
+
+    public ElevatorControlState handleHold() {
+        mMaster.getPIDController().setReference(getCurrentPosition(), ControlType.kPosition, kElevatorHoldPort);
+
+        return defaultStateTransfer();
+    }
+
+    public ElevatorControlState handleHome() {
+        if (mIsHomed) {
+            return ElevatorControlState.HOLD;
+        } else {
+            if (mStateChanged) {
+                mMaster.set(-kElevatorSpeed);
+            }
+            return ElevatorControlState.HOMING;
+        }
+
+        //return ElevatorControlState.HOLD;
+    }
+
+    public ElevatorControlState handleClosedLoopUp() {
+        if (mIsHomed) {
+            if (atClosedLoopTarget()) {
+                return ElevatorControlState.HOLD;
+            }
+
+            mMaster.getPIDController().setReference(inchesToRotations(mClosedLoopTarget), ControlType.kPosition, kElevatorClosedLoopPort);
+
+            return defaultStateTransfer();
+        }
+
+        return defaultStateTransfer();
+    }
+
+    public ElevatorControlState handleClosedLoopDown() {
+        if (mIsHomed) {
+            if (atClosedLoopTarget()) {
+                return ElevatorControlState.HOLD;
+            }
+
+            mMaster.getPIDController().setReference(inchesToRotations(mClosedLoopTarget), ControlType.kPosition, kElevatorClosedLoopPort);
+
+            return defaultStateTransfer();
+        }
+
+        return defaultStateTransfer();
+    }
+
+    public ElevatorControlState handleManualControlUp() {
+        setOpenLoop(kElevatorSpeed);
+        return defaultStateTransfer();
+    }
+
+    public ElevatorControlState handleManualControlDown() {
+        setOpenLoop(-kElevatorSpeed);
+        return defaultStateTransfer();
+    }
+
+    public boolean atClosedLoopTarget(){
+        if (!mUsingClosedLoop || mWantedStateChanged || mStateChanged) return false;
+        return (Math.abs(getCurrentPositionInches() - mClosedLoopTarget) < 1.0);
+    }
+
     public void setBrake() {
-        //mMaster.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        //mSlave.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        mMaster.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        mSlave.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
     public void setCoast() {
-        System.out.println("Set Coast");
-        //mMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
-        //mSlave.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        mMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        mSlave.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
 
     public void setOpenLoop(double power) {
         System.out.println("setOpenLoop: " + power);
     }
 
-    public void setPositionInches(double inches) {
-    }
-
-    public void setPositionTicks() {
-
+    public boolean isHomed() {
+        return mIsHomed;
     }
 
     public double getCurrentPositionInches() {
         return rotationToInches(mMaster.getEncoder().getPosition());
+    }
+
+    public double getCurrentPosition() {
+        return mMaster.getEncoder().getPosition();
     }
 
     // Helper Functions
@@ -130,9 +316,5 @@ public class NewElevator extends SubsystemBase {
 
     private double inchesToRotations(double inches) {
         return (inches - kElevatorOffset) / Math.PI / kElevatorGearRatio / kElevatorSpoolSize;
-    }
-
-    public boolean getHallEffect() {
-        return !mHallEffect.get();
     }
 }
