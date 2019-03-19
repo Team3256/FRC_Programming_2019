@@ -3,6 +3,7 @@ package frc.team3256.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.warriorlib.hardware.TalonSRXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
@@ -96,7 +97,10 @@ public class NewPivot extends SubsystemBase {
 
     @Override
     public void outputToDashboard() {
-
+        SmartDashboard.putString("Pivot State", mCurrentState.name());
+        SmartDashboard.putBoolean("Pivot Brake", mBrake.get() == DoubleSolenoid.Value.kForward);
+        SmartDashboard.putNumber("Pivot Angle", getAngle());
+        SmartDashboard.putNumber("Pivot Encoder", getEncoderValue());
     }
 
     @Override
@@ -157,7 +161,7 @@ public class NewPivot extends SubsystemBase {
             engageBrake();
         }
 
-        mMaster.set(ControlMode.Position, angleToSensorUnits(getAngle()));
+        mMaster.set(ControlMode.Position, getEncoderValue());
 
         return defaultStateTransfer();
     }
@@ -260,6 +264,10 @@ public class NewPivot extends SubsystemBase {
 
     private double sensorUnitsToAngle(double ticks) {
         return ((ticks / 4096.0) / kHatchPivotGearRatio) * 360.0;
+    }
+
+    public double getEncoderValue() {
+        return mMaster.getSelectedSensorPosition(0);
     }
 
     public double getAngle() {
