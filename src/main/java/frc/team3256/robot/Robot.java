@@ -71,6 +71,7 @@ public class Robot extends TimedRobot {
 		robotCompressor.turnOn();
 		hanger.retract();
 		pivot.releaseBrake();
+		pivot.setHatchArm(false);
 
 		teleopUpdater = TeleopUpdater.getInstance();
 
@@ -88,6 +89,7 @@ public class Robot extends TimedRobot {
 		driveTrain.setHighGear(true);
 
 		pivot.releaseBrake();
+		pivot.setHatchArm(false);
 
 		//elevator.runZeroPower();
 		cargoIntake.setIntakePower(0);

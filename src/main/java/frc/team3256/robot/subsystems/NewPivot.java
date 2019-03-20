@@ -26,8 +26,7 @@ public class NewPivot extends SubsystemBase {
         CLOSED_LOOP_DOWN,
         DEPLOY,
         RETRACT,
-        SECURE_HATCH,
-        UNSECURE_HATCH,
+        ELEVATOR_WAIT,
         IN_ILLEGAL_AREA
     }
 
@@ -39,9 +38,8 @@ public class NewPivot extends SubsystemBase {
         WANTS_TO_DEPLOY_POS,
         WANTS_TO_DEPLOY_HATCH,
         WANTS_TO_RETRACT_HATCH,
-        WANTS_TO_SECURE_HATCH,
-        WANTS_TO_UNSECURE_HATCH,
-        WANTS_TO_IN_ILLEGAL_AREA
+        WANTS_TO_ELEVATOR_WAIT,
+        WANTS_TO_IN_ILLEGAL_AREA,
     }
 
     private SystemState mCurrentState = SystemState.HOLD;
@@ -162,11 +160,8 @@ public class NewPivot extends SubsystemBase {
             case RETRACT:
                 newState = handleHatchRetract();
                 break;
-            case SECURE_HATCH:
-                newState = handleSecureHatch(timestamp);
-                break;
-            case UNSECURE_HATCH:
-                newState = handleUnsecureHatch(timestamp);
+            case ELEVATOR_WAIT:
+                newState = handleElevatorWait();
                 break;
         }
 
@@ -188,10 +183,9 @@ public class NewPivot extends SubsystemBase {
     private SystemState handleHold() {
         if (mStateChanged) {
             mMaster.selectProfileSlot(kHatchHoldPort, 0);
-            engageBrake();
+            mMaster.set(ControlMode.Position, getEncoderValue());
+            //engageBrake();
         }
-
-        mMaster.set(ControlMode.Position, getEncoderValue());
 
         return defaultStateTransfer();
     }
@@ -244,6 +238,7 @@ public class NewPivot extends SubsystemBase {
         mDeployStartTime = Timer.getFPGATimestamp();
         releaseBrake();
         mHatchArm.set(DoubleSolenoid.Value.kForward);
+        setWantedState(WantedState.WANTS_TO_DEPLOY_POS);
         return defaultStateTransfer();
     }
 
@@ -253,20 +248,16 @@ public class NewPivot extends SubsystemBase {
         return defaultStateTransfer();
     }
 
-    private SystemState handleSecureHatch(double timestamp) {
-        mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_SECURE_HATCH);
-        if (timestamp - mDeployStartTime > kSecureHatchTimeDelta) {
-            mHatchArm.set(DoubleSolenoid.Value.kReverse);
+    private SystemState handleElevatorWait() {
+        if (mElevator.atClosedLoopTarget()) {
+            System.out.println("bruh");
+            setWantedState(WantedState.WANTS_TO_RETRACT_HATCH);
+            return defaultStateTransfer();
         }
-        return defaultStateTransfer();
-    }
 
-    private SystemState handleUnsecureHatch(double timestamp) {
-        mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_UNSECURE_HATCH);
-        if (timestamp - mDeployStartTime > kUnsecureHatchTimeDelta) {
-            mHatchArm.set(DoubleSolenoid.Value.kReverse);
-        }
-        return defaultStateTransfer();
+        System.out.println("were doinga  wait");
+
+        return SystemState.ELEVATOR_WAIT;
     }
 
     private SystemState defaultStateTransfer() {
@@ -291,13 +282,11 @@ public class NewPivot extends SubsystemBase {
                 mClosedLoopTarget = kPositionDeployHatch;
                 break;
             case WANTS_TO_DEPLOY_HATCH:
-                mUsingClosedLoop = true;
-                mClosedLoopTarget = kPositionDeployHatch;
-                break;
+                return SystemState.DEPLOY;
             case WANTS_TO_RETRACT_HATCH:
-                mUsingClosedLoop = true;
-                mClosedLoopTarget = kPositionDeployHatch;
-                break;
+                return SystemState.RETRACT;
+            case WANTS_TO_ELEVATOR_WAIT:
+                return SystemState.ELEVATOR_WAIT;
         }
 
         if (mClosedLoopTarget < getAngle() && mUsingClosedLoop) {
@@ -309,7 +298,7 @@ public class NewPivot extends SubsystemBase {
         return nextState;
     }
 
-    private boolean atClosedLoopTarget() {
+    public boolean atClosedLoopTarget() {
         if (!mUsingClosedLoop || mWantedStateChanged || mStateChanged) return false;
         return (Math.abs(getAngle() - mClosedLoopTarget) < 1.0);
     }
@@ -341,6 +330,10 @@ public class NewPivot extends SubsystemBase {
 
     public void releaseBrake() {
         mBrake.set(DoubleSolenoid.Value.kReverse);
+    }
+
+    public void setHatchArm(boolean forward) {
+        mHatchArm.set(forward ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
     }
 
     private void engageBrake() {

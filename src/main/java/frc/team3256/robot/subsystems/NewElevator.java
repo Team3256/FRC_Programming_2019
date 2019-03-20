@@ -36,8 +36,9 @@ public class NewElevator extends SubsystemBase {
         WANTS_TO_HIGH_HATCH,
         WANTS_TO_MID_HATCH,
         WANTS_TO_LOW_HATCH,
-        WANTS_TO_SECURE_HATCH,
-        WANTS_TO_UNSECURE_HATCH
+        WANTS_TO_START_INTAKE_HATCH,
+        WANTS_TO_FINISH_INTAKE_HATCH,
+        WANTS_TO_FINISH_OUTTAKE_HATCH
     }
 
     private ElevatorControlState mCurrentState = ElevatorControlState.HOLD;
@@ -61,6 +62,7 @@ public class NewElevator extends SubsystemBase {
         @Override
         public void interruptFired(int interruptAssertedMask, NewElevator param) {
             mIsHomed = true;
+            zeroSensors();
         }
     };
 
@@ -120,6 +122,8 @@ public class NewElevator extends SubsystemBase {
         SmartDashboard.putNumber("Elevator RPM", mMaster.getEncoder().getVelocity() * kElevatorGearRatio);
 
         SmartDashboard.putString("Elevator State", mCurrentState.name());
+
+        SmartDashboard.putNumber("Elevator Inches Target", mClosedLoopTarget);
     }
 
     @Override
@@ -232,15 +236,22 @@ public class NewElevator extends SubsystemBase {
                 }
                 mUsingClosedLoop = true;
                 break;
-            case WANTS_TO_SECURE_HATCH:
+            case WANTS_TO_START_INTAKE_HATCH:
                 if (mStateChanged) {
-                    mClosedLoopTarget = kHatchHumanPlayerPosition + kHookOffset;
+                    mClosedLoopTarget = kHatchHumanPlayerPosition;
                 }
                 mUsingClosedLoop = true;
                 break;
-            case WANTS_TO_UNSECURE_HATCH:
+            case WANTS_TO_FINISH_INTAKE_HATCH:
                 if (mStateChanged) {
-                    mClosedLoopTarget = kHatchHumanPlayerPosition - kUnhookOffset;
+                    mClosedLoopTarget = kHatchHumanPlayerPosition + kHookOffset;
+                    System.out.println("IM BEING CALLED");
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_FINISH_OUTTAKE_HATCH:
+                if (mStateChanged) {
+                    mClosedLoopTarget = getCurrentPositionInches() + kUnhookOffset;
                 }
                 mUsingClosedLoop = true;
                 break;
@@ -330,7 +341,8 @@ public class NewElevator extends SubsystemBase {
     }
 
     public void setOpenLoop(double power) {
-        System.out.println("sestOpenLoop: " + power);
+        System.out.println("setOpenLoop: " + power);
+        mMaster.set(power);
     }
 
     public boolean isHomed() {

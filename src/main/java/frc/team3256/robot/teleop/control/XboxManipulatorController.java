@@ -42,13 +42,23 @@ public class XboxManipulatorController implements IManipulatorController {
     }
 
     @Override
-    public boolean shouldHatchIntake() {
-        return xboxController.getBumper(GenericHID.Hand.kRight);
+    public boolean shouldHatchStartIntake() {
+        return xboxController.getBumperPressed(GenericHID.Hand.kRight);
     }
 
     @Override
-    public boolean shouldHatchOuttake() {
-        return xboxController.getBumper(GenericHID.Hand.kLeft);
+    public boolean shouldHatchFinishIntake() {
+        return xboxController.getBumperReleased(GenericHID.Hand.kRight);
+    }
+
+    @Override
+    public boolean shouldHatchStartOuttake() {
+        return xboxController.getBumperPressed(GenericHID.Hand.kLeft);
+    }
+
+    @Override
+    public boolean shouldHatchFinishOuttake() {
+        return xboxController.getBumperReleased(GenericHID.Hand.kLeft);
     }
 
     @Override

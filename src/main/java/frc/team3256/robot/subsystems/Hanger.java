@@ -12,25 +12,26 @@ public class Hanger extends SubsystemBase implements Loop {
 
     private enum HangerState {
         HANGING,
-        RETRACTING
+        RETRACTED
     }
 
-    public enum WantedState {
+    private enum WantedState {
         WANTS_TO_HANG,
         WANTS_TO_RETRACT
     }
 
-    private HangerState mCurrentState = HangerState.RETRACTING;
+
+
+    private HangerState mCurrentState = HangerState.RETRACTED;
     private WantedState mWantedState = WantedState.WANTS_TO_RETRACT;
-    private boolean stateChanged = true;
 
-    public HangerState getHangerState() {
-        return mCurrentState;
+    public void getHangerState() {
+        //return m
     }
-
     public void setWantedState(WantedState wantedState){
-        mWantedState = wantedState;
+        this.mWantedState = wantedState;
     }
+
 
     private Hanger() {
         hang = new DoubleSolenoid(DriveTrainConstants.pcmId, kHangerForward, kHangerReverse);
@@ -38,50 +39,15 @@ public class Hanger extends SubsystemBase implements Loop {
 
     public static Hanger getInstance() { return instance == null ? instance = new Hanger() : instance; }
 
-    private HangerState handleHang() {
-        if (stateChanged) {
-            hang.set(DoubleSolenoid.Value.kForward);
-        }
-        return defaultStateTransfer();
+    public void hang() {
+        hang.set(DoubleSolenoid.Value.kForward);
     }
 
-    private HangerState handleRetract() {
-        if (stateChanged) {
-            hang.set(DoubleSolenoid.Value.kReverse);
-        }
-        return defaultStateTransfer();
-    }
-
-    private HangerState defaultStateTransfer() {
-        switch(mWantedState) {
-            case WANTS_TO_HANG:
-                return HangerState.HANGING;
-            case WANTS_TO_RETRACT:
-            default:
-                return HangerState.RETRACTING;
-        }
-    }
+    public void retract() {hang.set(DoubleSolenoid.Value.kReverse);}
 
     @Override
     public void update(double timestamp) {
-        HangerState newState;
-        switch(mCurrentState) {
-            case HANGING:
-                newState = handleHang();
-                break;
-            case RETRACTING:
-            default:
-                newState = handleRetract();
-                break;
-        }
-        if (newState != mCurrentState){
-            System.out.println("Current state:" + mCurrentState + "\tNew state:" + newState);
-            mCurrentState = newState;
-            stateChanged = true;
-        }
-        else {
-            stateChanged = false;
-        }
+
     }
 
     @Override

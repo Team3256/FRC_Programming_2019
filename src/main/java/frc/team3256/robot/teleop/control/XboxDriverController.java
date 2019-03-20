@@ -34,7 +34,7 @@ public class XboxDriverController implements IDriverController {
 
     @Override
     public boolean getHighGear() {
-        return xboxController.getTriggerAxis(GenericHID.Hand.kLeft) != 0;
+        return xboxController.getTriggerAxis(GenericHID.Hand.kLeft) < 0.25;
     }
 
     @Override

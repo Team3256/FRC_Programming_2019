@@ -11,9 +11,13 @@ public interface IManipulatorController {
 
     boolean shouldCargoOuttake();
 
-    boolean shouldHatchIntake();
+    boolean shouldHatchStartIntake();
 
-    boolean shouldHatchOuttake();
+    boolean shouldHatchFinishIntake();
+
+    boolean shouldHatchStartOuttake();
+
+    boolean shouldHatchFinishOuttake();
 
     boolean goToHigh();
 
