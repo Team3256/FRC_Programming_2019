@@ -1,6 +1,7 @@
 package frc.team3256.robot.teleop;
 
 import frc.team3256.robot.subsystems.DriveTrain;
+import frc.team3256.robot.subsystems.NewCargoIntake;
 import frc.team3256.robot.subsystems.NewElevator;
 import frc.team3256.robot.subsystems.NewPivot;
 import frc.team3256.robot.teleop.control.*;
@@ -13,8 +14,7 @@ public class TeleopUpdater {
     private IManipulatorController manipulatorController = XboxManipulatorController.getInstance();
     private NewElevator mElevator = NewElevator.getInstance();
     private NewPivot mPivot = NewPivot.getInstance();
-    private boolean prevIntakeHatch = false;
-    private boolean prevOuttakeHatch = false;
+    private NewCargoIntake mCargoIntake = NewCargoIntake.getInstance();
 
     private static TeleopUpdater instance;
     public static TeleopUpdater getInstance() {
@@ -84,14 +84,15 @@ public class TeleopUpdater {
             isPivotManualControl = true;
             System.out.println("Down");
             mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_MANUAL_DOWN);
-        } else if (shouldCargoIntake) {
-            isPivotManualControl = false;
-            mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_INTAKE_POS);
         } else {
             if (isPivotManualControl) {
                 mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_HOLD);
+            } else if (shouldCargoIntake) {
+                mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_INTAKE_POS);
+                mCargoIntake.setWantedState(NewCargoIntake.WantedState.WANTS_TO_INTAKE);
             } else if (mPivot.atClosedLoopTarget()) {
-                mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_DEPLOY_POS);
+                mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_HOLD);
+                mCargoIntake.setWantedState(NewCargoIntake.WantedState.WANTS_TO_STOP);
             }
         }
 
