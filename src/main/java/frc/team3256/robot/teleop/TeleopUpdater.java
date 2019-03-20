@@ -99,10 +99,12 @@ public class TeleopUpdater {
             mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_DEPLOY_HATCH);
             mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_START_INTAKE_HATCH);
             isElevatorManualControl = false;
+            isPivotManualControl = false;
         }
         else if (startOuttakeHatch) {
             mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_DEPLOY_HATCH);
             isElevatorManualControl = false;
+            isPivotManualControl = false;
         }
 
         if (finishIntakeHatch) {
@@ -110,11 +112,13 @@ public class TeleopUpdater {
             mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_FINISH_INTAKE_HATCH);
             mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_ELEVATOR_WAIT);
             isElevatorManualControl = false;
+            isPivotManualControl = false;
         }
         else if (finishOuttakeHatch) {
             mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_FINISH_OUTTAKE_HATCH);
             mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_ELEVATOR_WAIT);
             isElevatorManualControl = false;
+            isPivotManualControl = false;
         }
     }
 }
