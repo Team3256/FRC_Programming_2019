@@ -269,7 +269,6 @@ public class NewElevator extends SubsystemBase {
                 break;
             case WANTS_TO_START_OUTTAKE_HATCH:
                 allowMoveDown = true;
-                mUsingClosedLoop = true;
                 break;
             case WANTS_TO_FINISH_OUTTAKE_HATCH:
                 if (mStateChanged && allowMoveDown) {
