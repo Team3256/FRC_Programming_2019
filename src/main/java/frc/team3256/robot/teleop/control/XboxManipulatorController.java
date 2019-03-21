@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class XboxManipulatorController implements IManipulatorController {
-
     private static XboxManipulatorController instance;
     public static XboxManipulatorController getInstance() {
         return instance == null ? instance = new XboxManipulatorController() : instance;
@@ -17,8 +16,8 @@ public class XboxManipulatorController implements IManipulatorController {
     }
 
     @Override
-    public boolean getShouldClimb() {
-        return xboxController.getBackButton();
+    public boolean getShouldToggleClimb() {
+        return xboxController.getBackButtonReleased();
     }
 
     @Override

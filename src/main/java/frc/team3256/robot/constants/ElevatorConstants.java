@@ -29,6 +29,8 @@ public class ElevatorConstants {
     public static final double kElevatorClosedLoopIZone = 0;
     public static final double kElevatorClosedLoopF = 0.25;
 
+    public static final int kElevatorClosedLoopHangPort = 2;
+
     public static final double kDropPreset = 10.0;
 
     public static final double kPositionMax = 195;
@@ -47,6 +49,7 @@ public class ElevatorConstants {
     public static final double kPositionMidCargo = 55.5 + kCargoPositionOffset;
     public static final double kPositionLowCargo = 27.5 + kCargoPositionOffset;
     public static final double kPositionShip = 48 + kCargoPositionOffset;
+    public static final double kPositionHang = 60;
 
     public static final double kElevatorSpoolSize = 1.5;
     public static final double kElevatorGearRatio = 1.0 / 15.0;

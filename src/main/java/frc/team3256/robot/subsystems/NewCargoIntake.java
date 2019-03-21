@@ -13,6 +13,9 @@ public class NewCargoIntake extends SubsystemBase {
     private WPI_TalonSRX mCargoIntakeLeft, mCargoIntakeRight;
 
     private double startTime;
+    WantedState mPrevWantedState;
+    boolean mStateChanged;
+    boolean mWantedStateChanged;
 
     private enum SystemState {
         INTAKING,
@@ -37,6 +40,8 @@ public class NewCargoIntake extends SubsystemBase {
         return instance == null ? instance = new NewCargoIntake() : instance;
     }
 
+    private NewPivot mPivot = NewPivot.getInstance();
+
     private NewCargoIntake () {
         mCargoIntakeLeft = TalonSRXUtil.generateGenericTalon(kIntake);
         mCargoIntakeRight = TalonSRXUtil.generateSlaveTalon(kIntakeSlave, kIntake);
@@ -51,6 +56,8 @@ public class NewCargoIntake extends SubsystemBase {
     public void outputToDashboard() {
         SmartDashboard.putNumber("Cargo Left", mCargoIntakeLeft.getOutputCurrent());
         SmartDashboard.putNumber("Cargo Right", mCargoIntakeRight.getOutputCurrent());
+        SmartDashboard.putString("Cargo State", mWantedState.name());
+        SmartDashboard.putString("Cargo State", mCurrentState.name());
     }
 
     @Override
@@ -61,6 +68,11 @@ public class NewCargoIntake extends SubsystemBase {
 
     @Override
     public void update(double timestamp) {
+        if (mPrevWantedState != mWantedState){
+            mWantedStateChanged = true;
+            mPrevWantedState = mWantedState;
+        }
+        else mWantedStateChanged = false;
         SystemState newState;
         switch (mCurrentState) {
             case INTAKING:
@@ -88,23 +100,34 @@ public class NewCargoIntake extends SubsystemBase {
                     )
             );
             mCurrentState = newState;
+            mStateChanged = true;
+        } else {
+            mStateChanged = false;
         }
         this.outputToDashboard();
     }
 
     private SystemState handleIntake() {
+        mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_INTAKE_POS);
         setIntakePower(kIntakeSpeed);
         startTime = Timer.getFPGATimestamp();
         return defaultStateTransfer();
     }
 
     private SystemState handleExhaust() {
+        if (mStateChanged) {
+            mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_EXHAUST_POS);
+        }
         setIntakePower(-kIntakeSpeed);
         return defaultStateTransfer();
     }
 
     private SystemState handleStop() {
-        setIntakePower(0);
+        if (mStateChanged) {
+            mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_DEPLOY_POS);
+            setIntakePower(0);
+        }
+
         return defaultStateTransfer();
     }
 
@@ -119,10 +142,12 @@ public class NewCargoIntake extends SubsystemBase {
                 return SystemState.INTAKING;
             case WANTS_TO_EXHAUST:
                 return SystemState.EXHAUSTING;
-            case WANTS_TO_STOP: default:
+            case WANTS_TO_STOP:
                 return SystemState.STOP;
             case WANTS_TO_CLIMB_DRIVE:
                 return SystemState.CLIMB_DRIVING;
+            default:
+                return SystemState.STOP;
         }
     }
 
@@ -132,9 +157,10 @@ public class NewCargoIntake extends SubsystemBase {
     }
 
     private boolean hasBall () {
-        return (Timer.getFPGATimestamp() - startTime > kIntiialSpikeDelay - kInitialSpikeTolerance ||
-                Timer.getFPGATimestamp() - startTime < kIntiialSpikeDelay + kInitialSpikeTolerance) &&
-                mCargoIntakeLeft.getOutputCurrent() > kIntakeSpike;
+        return false;
+//        return (Timer.getFPGATimestamp() - startTime > kIntiialSpikeDelay - kInitialSpikeTolerance ||
+//                Timer.getFPGATimestamp() - startTime < kIntiialSpikeDelay + kInitialSpikeTolerance) &&
+//                mCargoIntakeLeft.getOutputCurrent() > kIntakeSpike;
     }
 
     @Override

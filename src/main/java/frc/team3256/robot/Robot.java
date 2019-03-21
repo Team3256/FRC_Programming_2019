@@ -12,17 +12,15 @@ import frc.team3256.warriorlib.loop.Looper;
 import frc.team3256.warriorlib.subsystem.DriveTrainBase;
 import frc.team3256.warriorlib.subsystem.SubsystemManager;
 
-import java.io.PrintStream;
-
 public class Robot extends TimedRobot {
 
 //	// Subsystems
 	private SubsystemManager subsystemManager;
 	private DriveTrain driveTrain = DriveTrain.getInstance();
 	private NewElevator elevator = NewElevator.getInstance();
-	private CargoIntake cargoIntake = CargoIntake.getInstance();
 	private NewPivot pivot = NewPivot.getInstance();
-	private Hanger hanger = Hanger.getInstance();
+	private NewHanger hanger = NewHanger.getInstance();
+	private NewCargoIntake intake = NewCargoIntake.getInstance();
 
 	private RobotCompressor robotCompressor = RobotCompressor.getInstance();
 
@@ -55,7 +53,7 @@ public class Robot extends TimedRobot {
 		driveTrain.resetGyro();
 		pivot.zeroSensors();
 
-		teleopLooper.addLoops(driveTrain, cargoIntake, pivot, elevator);
+		teleopLooper.addLoops(driveTrain, pivot, elevator, intake);
 
 		poseEstimatorLooper = new Looper(1 / 50D);
 		poseEstimator = PoseEstimator.getInstance();
@@ -69,13 +67,13 @@ public class Robot extends TimedRobot {
 
 		// Pneumatics
 		robotCompressor.turnOn();
-		hanger.retract();
+		hanger.setWantedState(NewHanger.WantedState.WANTS_TO_RETRACT);
 		pivot.releaseBrake();
 		pivot.setHatchArm(false);
 
 		teleopUpdater = TeleopUpdater.getInstance();
 
-		subsystemManager.addSubsystems(driveTrain, elevator, cargoIntake, pivot);
+		subsystemManager.addSubsystems(driveTrain, elevator, intake, pivot);
 	}
 
 	/**
@@ -92,7 +90,7 @@ public class Robot extends TimedRobot {
 		pivot.setHatchArm(false);
 
 		//elevator.runZeroPower();
-		cargoIntake.setIntakePower(0);
+		//cargoIntake.setIntakePower(0);
 		driveTrain.runZeroPower();
 		robotCompressor.turnOff();
 		poseEstimator.reset();
@@ -155,7 +153,6 @@ public class Robot extends TimedRobot {
 				autoModeExecuter.stop();
 				//make sure all our subsystems stop
 				//elevator.runZeroPower();
-				cargoIntake.setIntakePower(0);
 				//driveTrain.setPowerClosedLoop(0, 0);
 				//hatchPivot.setPositionDeploy();
 			}

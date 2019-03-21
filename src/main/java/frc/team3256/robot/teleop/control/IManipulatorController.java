@@ -1,7 +1,7 @@
 package frc.team3256.robot.teleop.control;
 
 public interface IManipulatorController {
-    boolean getShouldClimb();
+    boolean getShouldToggleClimb();
 
     double getElevatorThrottle();
 

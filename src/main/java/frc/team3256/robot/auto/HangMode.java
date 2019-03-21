@@ -2,7 +2,6 @@ package frc.team3256.robot.auto;
 
 import frc.team3256.robot.auto.action.HangActuatorAction;
 import frc.team3256.robot.auto.action.HangElevatorAction;
-import frc.team3256.robot.subsystems.Hanger;
 import frc.team3256.warriorlib.auto.AutoModeBase;
 import frc.team3256.warriorlib.auto.AutoModeEndedException;
 import frc.team3256.warriorlib.auto.action.Action;

@@ -18,6 +18,8 @@ public class NewPivot extends SubsystemBase {
     private NewElevator mElevator;
     private double mDeployStartTime;
 
+    private boolean mIsHanging = false;
+
     private enum SystemState {
         MANUAL_UP,
         MANUAL_DOWN,
@@ -27,6 +29,8 @@ public class NewPivot extends SubsystemBase {
         DEPLOY,
         RETRACT,
         ELEVATOR_WAIT,
+        HANG_WAIT,
+        HANGING,
         IN_ILLEGAL_AREA
     }
 
@@ -36,9 +40,12 @@ public class NewPivot extends SubsystemBase {
         WANTS_TO_HOLD,
         WANTS_TO_INTAKE_POS,
         WANTS_TO_DEPLOY_POS,
+        WANTS_TO_HANG_POS,
+        WANTS_TO_EXHAUST_POS,
         WANTS_TO_DEPLOY_HATCH,
         WANTS_TO_RETRACT_HATCH,
         WANTS_TO_ELEVATOR_WAIT,
+        WANTS_TO_HANG,
         WANTS_TO_IN_ILLEGAL_AREA,
     }
 
@@ -163,6 +170,9 @@ public class NewPivot extends SubsystemBase {
             case ELEVATOR_WAIT:
                 newState = handleElevatorWait();
                 break;
+            case HANG_WAIT:
+                newState = handleHangWait();
+                break;
         }
 
         if (newState != mCurrentState) {
@@ -184,7 +194,9 @@ public class NewPivot extends SubsystemBase {
         if (mStateChanged) {
             mMaster.selectProfileSlot(kHatchHoldPort, 0);
             mMaster.set(ControlMode.Position, getEncoderValue());
-            //engageBrake();
+            if (mIsHanging) {
+                engageBrake();
+            }
         }
 
         return defaultStateTransfer();
@@ -252,12 +264,24 @@ public class NewPivot extends SubsystemBase {
         if (mElevator.atClosedLoopTarget()) {
             System.out.println("bruh");
             setWantedState(WantedState.WANTS_TO_RETRACT_HATCH);
+            mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_HOLD);
             return defaultStateTransfer();
         }
 
         System.out.println("were doinga  wait");
 
         return SystemState.ELEVATOR_WAIT;
+    }
+
+    private SystemState handleHangWait() {
+        if (mElevator.atClosedLoopTarget()) {
+            System.out.println("Elevator is at hang position, about to move pivot down");
+            setWantedState(WantedState.WANTS_TO_HANG_POS);
+            mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_HOLD);
+            return defaultStateTransfer();
+        }
+
+        return SystemState.HANG_WAIT;
     }
 
     private SystemState defaultStateTransfer() {
@@ -281,17 +305,29 @@ public class NewPivot extends SubsystemBase {
                 mUsingClosedLoop = true;
                 mClosedLoopTarget = kPositionDeployHatch;
                 break;
+            case WANTS_TO_EXHAUST_POS:
+                mUsingClosedLoop = true;
+                mClosedLoopTarget = kPositionExhaustCargo;
+                break;
+            case WANTS_TO_HANG_POS:
+                mUsingClosedLoop = true;
+                mClosedLoopTarget = kPositionHang;
+                mIsHanging = true;
+                mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_HANG_DOWN);
+                break;
             case WANTS_TO_DEPLOY_HATCH:
                 return SystemState.DEPLOY;
             case WANTS_TO_RETRACT_HATCH:
                 return SystemState.RETRACT;
             case WANTS_TO_ELEVATOR_WAIT:
                 return SystemState.ELEVATOR_WAIT;
+            case WANTS_TO_HANG:
+                return SystemState.HANG_WAIT;
         }
 
         if (mClosedLoopTarget < getAngle() && mUsingClosedLoop) {
             nextState = SystemState.CLOSED_LOOP_UP;
-        } else if (mClosedLoopTarget < getAngle() && mUsingClosedLoop) {
+        } else if (mClosedLoopTarget > getAngle() && mUsingClosedLoop) {
             nextState = SystemState.CLOSED_LOOP_DOWN;
         } else nextState = SystemState.HOLD;
 
@@ -300,7 +336,7 @@ public class NewPivot extends SubsystemBase {
 
     public boolean atClosedLoopTarget() {
         if (!mUsingClosedLoop || mWantedStateChanged || mStateChanged) return false;
-        return (Math.abs(getAngle() - mClosedLoopTarget) < 1.0);
+        return (Math.abs(getAngle() - mClosedLoopTarget) < 3.0);
     }
 
     @Override
@@ -329,6 +365,9 @@ public class NewPivot extends SubsystemBase {
     }
 
     public void releaseBrake() {
+        if (mIsHanging) {
+            return;
+        }
         mBrake.set(DoubleSolenoid.Value.kReverse);
     }
 

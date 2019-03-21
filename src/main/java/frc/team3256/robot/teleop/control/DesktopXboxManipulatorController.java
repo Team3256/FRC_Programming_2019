@@ -44,7 +44,7 @@ public class DesktopXboxManipulatorController {
 //    }
 
 //    @Override
-//    public boolean getShouldClimb() {
+//    public boolean getShouldToggleClimb() {
 //        return buttons.back;
 //    }
 //

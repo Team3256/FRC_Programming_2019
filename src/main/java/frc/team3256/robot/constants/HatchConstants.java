@@ -12,23 +12,23 @@ public class HatchConstants {
     public static final double kHatchHoldI = 0.002;
     public static final double kHatchHoldD = 0.0;
     public static final double kHatchHoldIZone = 0;
-    public static final double kHatchHoldF = 0.045;
+    public static final double kHatchHoldF = 0.050;
 
     public static final int kHatchClosedLoopUpPort = 1;
     public static final double kHatchClosedLoopUpP = 0.5;
-    public static final double kHatchClosedLoopUpI = 0.002;
+    public static final double kHatchClosedLoopUpI = 0.0005;
     public static final double kHatchClosedLoopUpD = 0.0;
     public static final double kHatchClosedLoopUpIZone = 0;
-    public static final double kHatchClosedLoopUpF = 0;
+    public static final double kHatchClosedLoopUpF = 0.005;
 
     public static final int kHatchClosedLoopDownPort = 2;
     public static final double kHatchClosedLoopDownP = 0.5;
-    public static final double kHatchClosedLoopDownI = 0.002;
+    public static final double kHatchClosedLoopDownI = 0.00002;
     public static final double kHatchClosedLoopDownD = 0.0;
     public static final double kHatchClosedLoopDownIZone = 0;
-    public static final double kHatchClosedLoopDownF = 0;
+    public static final double kHatchClosedLoopDownF = 0.0;
 
-    public static final double kHatchPivotSpeed = 0.75;
+    public static final double kHatchPivotSpeed = 0.5;
 
     public static final int kHatchPivotPort = 13;
 
@@ -46,11 +46,12 @@ public class HatchConstants {
 
     public static final double kHatchAngleOffset = -94.5;
 
-    public static final double kPositionStarting = -94.5;
+    public static final double kPositionExhaustCargo = -90;
 
-    public static final double kPositionDeployHatch = -90;
-    public static final double kPositionFoldIn = 0;
-    public static final double kPositionCargoIntake = -35;
+    public static final double kPositionDeployHatch = -80;
+    public static final double kPositionFoldIn = -110;
+    public static final double kPositionCargoIntake = -29;
+    public static final double kPositionHang = 30;
     public static final double kHatchPivotGearRatio = 202.5/90.0; //motor rotations to actual rotations
 
     public static final double kHatchSensingRange = 3;

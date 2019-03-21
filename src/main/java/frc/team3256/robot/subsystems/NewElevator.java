@@ -22,7 +22,8 @@ public class NewElevator extends SubsystemBase {
         HOLD,
         HOMING,
         CLOSED_LOOP_UP,
-        CLOSED_LOOP_DOWN
+        CLOSED_LOOP_DOWN,
+        HANGING
     }
 
     public enum WantedState {
@@ -38,7 +39,9 @@ public class NewElevator extends SubsystemBase {
         WANTS_TO_LOW_HATCH,
         WANTS_TO_START_INTAKE_HATCH,
         WANTS_TO_FINISH_INTAKE_HATCH,
-        WANTS_TO_FINISH_OUTTAKE_HATCH
+        WANTS_TO_FINISH_OUTTAKE_HATCH,
+        WANTS_TO_HANG,
+        WANTS_TO_HANG_DOWN
     }
 
     private ElevatorControlState mCurrentState = ElevatorControlState.HOLD;
@@ -96,6 +99,16 @@ public class NewElevator extends SubsystemBase {
                 kElevatorClosedLoopD,
                 kElevatorClosedLoopIZone,
                 kElevatorClosedLoopF
+        );
+
+        SparkMAXUtil.setPIDGains(
+                mMaster.getPIDController(),
+                kElevatorClosedLoopHangPort,
+                kElevatorClosedLoopP/2.0,
+                kElevatorClosedLoopI/2.0,
+                kElevatorClosedLoopD/2.0,
+                kElevatorClosedLoopIZone/2.0,
+                kElevatorClosedLoopF/2.0
         );
 
         setBrake();
@@ -162,6 +175,9 @@ public class NewElevator extends SubsystemBase {
                 break;
             case MANUAL_DOWN:
                 newState = handleManualControlDown();
+                break;
+            case HANGING:
+                newState = handleHang();
                 break;
         }
 
@@ -252,9 +268,22 @@ public class NewElevator extends SubsystemBase {
             case WANTS_TO_FINISH_OUTTAKE_HATCH:
                 if (mStateChanged) {
                     mClosedLoopTarget = getCurrentPositionInches() + kUnhookOffset;
+                    Thread.dumpStack();
                 }
                 mUsingClosedLoop = true;
                 break;
+            case WANTS_TO_HANG:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionHang;
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_HANG_DOWN:
+                if (mStateChanged) {
+                    mClosedLoopTarget = 1.0;
+                }
+                mUsingClosedLoop = true;
+                return ElevatorControlState.HANGING;
         }
 
         if(mClosedLoopTarget > getCurrentPositionInches() && mUsingClosedLoop) {
@@ -323,6 +352,17 @@ public class NewElevator extends SubsystemBase {
     public ElevatorControlState handleManualControlDown() {
         setOpenLoop(-kElevatorSpeed);
         return defaultStateTransfer();
+    }
+
+    public ElevatorControlState handleHang() {
+        if (mStateChanged) {
+            mMaster.getPIDController().setReference(inchesToRotations(mClosedLoopTarget), ControlType.kPosition, kElevatorClosedLoopHangPort);
+        }
+
+        if (atClosedLoopTarget()) {
+            return defaultStateTransfer();
+        }
+        return ElevatorControlState.HANGING;
     }
 
     public boolean atClosedLoopTarget(){
