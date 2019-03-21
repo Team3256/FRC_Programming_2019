@@ -50,7 +50,7 @@ public class NewPivot extends SubsystemBase {
     }
 
     private SystemState mCurrentState = SystemState.HOLD;
-    private WantedState mWantedState = WantedState.WANTS_TO_HOLD;
+    private WantedState mWantedState = WantedState.WANTS_TO_DEPLOY_POS;
     private WantedState mPrevWantedState = WantedState.WANTS_TO_HOLD;
 
     private boolean mStateChanged = false;
@@ -335,7 +335,7 @@ public class NewPivot extends SubsystemBase {
     }
 
     public boolean atClosedLoopTarget() {
-        if (!mUsingClosedLoop || mWantedStateChanged || mStateChanged) return false;
+        if (!mUsingClosedLoop || mWantedStateChanged) return false;
         return (Math.abs(getAngle() - mClosedLoopTarget) < 3.0);
     }
 

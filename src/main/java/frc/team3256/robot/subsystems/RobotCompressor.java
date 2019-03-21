@@ -2,9 +2,12 @@ package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team3256.warriorlib.subsystem.SubsystemBase;
+
 import static frc.team3256.robot.constants.DriveTrainConstants.*;
 
-public class RobotCompressor {
+public class RobotCompressor extends SubsystemBase {
     private static RobotCompressor instance;
 
     private Compressor compressor;
@@ -13,6 +16,16 @@ public class RobotCompressor {
     private RobotCompressor() {
         compressor = new Compressor(pcmId);
         pressureSensor = new AnalogInput(kPressureSensorPort);
+    }
+
+    @Override
+    public void outputToDashboard() {
+        SmartDashboard.putNumber("Air Pressure Psi", getAirPressurePsi());
+    }
+
+    @Override
+    public void zeroSensors() {
+
     }
 
     public void turnOn() {
@@ -34,7 +47,22 @@ public class RobotCompressor {
         return compressor.getCompressorCurrent();
     }
 
-    public double getAirPressurePsi() { return 250.0 * (pressureSensor.getVoltage()/5.0) - 25; }
+    public double getAirPressurePsi() { return 250.0 * (pressureSensor.getVoltage()/4.5) - 25; }
 
     public static RobotCompressor getInstance() {return instance == null ? instance = new RobotCompressor(): instance;}
+
+    @Override
+    public void init(double timestamp) {
+
+    }
+
+    @Override
+    public void update(double timestamp) {
+
+    }
+
+    @Override
+    public void end(double timestamp) {
+
+    }
 }

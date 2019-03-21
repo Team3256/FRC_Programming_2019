@@ -2,6 +2,7 @@ package frc.team3256.robot.teleop.control;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.Elevator;
 
 public class XboxDriverController implements IDriverController {
@@ -34,7 +35,7 @@ public class XboxDriverController implements IDriverController {
 
     @Override
     public boolean getHighGear() {
-        return xboxController.getTriggerAxis(GenericHID.Hand.kLeft) < 0.25;
+        return xboxController.getTriggerAxis(GenericHID.Hand.kLeft) < 0.15;
     }
 
     @Override

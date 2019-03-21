@@ -349,7 +349,6 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public void setBrakeMode() {
-        //this.setCoastMode();
         SparkMAXUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
     }
 

@@ -73,7 +73,7 @@ public class Robot extends TimedRobot {
 
 		teleopUpdater = TeleopUpdater.getInstance();
 
-		subsystemManager.addSubsystems(driveTrain, elevator, intake, pivot);
+		subsystemManager.addSubsystems(driveTrain, elevator, intake, pivot, robotCompressor);
 	}
 
 	/**

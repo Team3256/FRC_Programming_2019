@@ -58,6 +58,9 @@ public class NewCargoIntake extends SubsystemBase {
         SmartDashboard.putNumber("Cargo Right", mCargoIntakeRight.getOutputCurrent());
         SmartDashboard.putString("Cargo State", mWantedState.name());
         SmartDashboard.putString("Cargo State", mCurrentState.name());
+        SmartDashboard.putNumber("Start Time", startTime);
+        SmartDashboard.putNumber("Current Time", Timer.getFPGATimestamp());
+        SmartDashboard.putBoolean("Has Ball", hasBall());
     }
 
     @Override
@@ -76,9 +79,10 @@ public class NewCargoIntake extends SubsystemBase {
         SystemState newState;
         switch (mCurrentState) {
             case INTAKING:
-                if(hasBall()){
-                    newState = handleStop();
-                } else newState = handleIntake();
+//                if(hasBall()){
+//                    newState = handleStop();
+//                } else
+                newState = handleIntake();
                 break;
             case EXHAUSTING:
                 newState = handleExhaust();
@@ -110,7 +114,14 @@ public class NewCargoIntake extends SubsystemBase {
     private SystemState handleIntake() {
         mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_INTAKE_POS);
         setIntakePower(kIntakeSpeed);
-        startTime = Timer.getFPGATimestamp();
+        if (mStateChanged) {
+            startTime = Timer.getFPGATimestamp();
+        }
+
+        if (hasBall()) {
+            setWantedState(WantedState.WANTS_TO_STOP);
+        }
+
         return defaultStateTransfer();
     }
 
@@ -157,10 +168,8 @@ public class NewCargoIntake extends SubsystemBase {
     }
 
     private boolean hasBall () {
-        return false;
-//        return (Timer.getFPGATimestamp() - startTime > kIntiialSpikeDelay - kInitialSpikeTolerance ||
-//                Timer.getFPGATimestamp() - startTime < kIntiialSpikeDelay + kInitialSpikeTolerance) &&
-//                mCargoIntakeLeft.getOutputCurrent() > kIntakeSpike;
+        return ((Timer.getFPGATimestamp() - startTime) > (kIntitialSpikeDelay)) &&
+                mCargoIntakeLeft.getOutputCurrent() > kIntakeSpike;
     }
 
     @Override

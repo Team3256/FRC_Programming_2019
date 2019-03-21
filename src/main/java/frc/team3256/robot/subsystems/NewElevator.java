@@ -34,6 +34,7 @@ public class NewElevator extends SubsystemBase {
         WANTS_TO_HIGH_CARGO,
         WANTS_TO_MID_CARGO,
         WANTS_TO_LOW_CARGO,
+        WANTS_TO_CARGO_SHIP,
         WANTS_TO_HIGH_HATCH,
         WANTS_TO_MID_HATCH,
         WANTS_TO_LOW_HATCH,
@@ -67,6 +68,7 @@ public class NewElevator extends SubsystemBase {
         @Override
         public void interruptFired(int interruptAssertedMask, NewElevator param) {
             mIsHomed = true;
+            setOpenLoop(0);
             zeroSensors();
         }
     };
@@ -103,15 +105,15 @@ public class NewElevator extends SubsystemBase {
                 kElevatorClosedLoopF
         );
 
-        SparkMAXUtil.setPIDGains(
-                mMaster.getPIDController(),
-                kElevatorClosedLoopHangPort,
-                kElevatorClosedLoopP/2.0,
-                kElevatorClosedLoopI/2.0,
-                kElevatorClosedLoopD/2.0,
-                kElevatorClosedLoopIZone/2.0,
-                kElevatorClosedLoopF/2.0
-        );
+//        SparkMAXUtil.setPIDGains(
+//                mMaster.getPIDController(),
+//                kElevatorClosedLoopHangPort,
+//                kElevatorClosedLoopP/2.0,
+//                kElevatorClosedLoopI/2.0,
+//                kElevatorClosedLoopD/2.0,
+//                kElevatorClosedLoopIZone/2.0,
+//                kElevatorClosedLoopF/2.0
+//        );
 
         setBrake();
 
@@ -236,6 +238,11 @@ public class NewElevator extends SubsystemBase {
                 }
                 mUsingClosedLoop = true;
                 break;
+            case WANTS_TO_CARGO_SHIP:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionShip;
+                }
+                break;
             case WANTS_TO_HIGH_HATCH:
                 if (mStateChanged) {
                     mClosedLoopTarget = kPositionHighHatch;
@@ -298,6 +305,10 @@ public class NewElevator extends SubsystemBase {
             nextState = ElevatorControlState.CLOSED_LOOP_DOWN;
         }
         else nextState = ElevatorControlState.HOLD;
+
+        if (atClosedLoopTarget() && mUsingClosedLoop) {
+            nextState = ElevatorControlState.HOLD;
+        }
 
         return nextState;
     }
@@ -371,8 +382,10 @@ public class NewElevator extends SubsystemBase {
     }
 
     public boolean atClosedLoopTarget(){
-        if (!mUsingClosedLoop || mWantedStateChanged || mStateChanged) return false;
-        return (Math.abs(getCurrentPositionInches() - mClosedLoopTarget) < 1.0);
+        if (!mUsingClosedLoop || mWantedStateChanged) {
+            return false;
+        }
+        return (Math.abs(getCurrentPositionInches() - mClosedLoopTarget) < 1.5);
     }
 
     public void setBrake() {

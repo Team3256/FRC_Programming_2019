@@ -20,7 +20,6 @@ public class CargoConstants {
     public static final double kPivotMaxOutput = 1;
     public static final double kPivotMinOutput = -1;
 
-    public static final double kIntakeSpike = 6.0;
-    public static final double kIntiialSpikeDelay = 0.3;
-    public static final double kInitialSpikeTolerance = 0.1;
+    public static final double kIntakeSpike = 10.0;
+    public static final double kIntitialSpikeDelay = 2.0;
 }
