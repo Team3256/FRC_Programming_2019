@@ -121,6 +121,7 @@ public class TeleopUpdater {
             isPivotManualControl = false;
         }
         else if (startOuttakeHatch) {
+            mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_START_OUTTAKE_HATCH);
             mPivot.setWantedState(NewPivot.WantedState.WANTS_TO_DEPLOY_HATCH);
             isElevatorManualControl = false;
             isPivotManualControl = false;

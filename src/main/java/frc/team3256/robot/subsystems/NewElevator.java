@@ -39,6 +39,7 @@ public class NewElevator extends SubsystemBase {
         WANTS_TO_LOW_HATCH,
         WANTS_TO_START_INTAKE_HATCH,
         WANTS_TO_FINISH_INTAKE_HATCH,
+        WANTS_TO_START_OUTTAKE_HATCH,
         WANTS_TO_FINISH_OUTTAKE_HATCH,
         WANTS_TO_HANG,
         WANTS_TO_HANG_DOWN
@@ -51,6 +52,7 @@ public class NewElevator extends SubsystemBase {
     private boolean mStateChanged = false;
     private boolean mWantedStateChanged = false;
     private boolean mUsingClosedLoop = false;
+    private boolean allowMoveDown = false;
 
     private double mClosedLoopTarget = 0.0;
 
@@ -265,10 +267,14 @@ public class NewElevator extends SubsystemBase {
                 }
                 mUsingClosedLoop = true;
                 break;
+            case WANTS_TO_START_OUTTAKE_HATCH:
+                allowMoveDown = true;
+                mUsingClosedLoop = true;
+                break;
             case WANTS_TO_FINISH_OUTTAKE_HATCH:
-                if (mStateChanged) {
+                if (mStateChanged && allowMoveDown) {
                     mClosedLoopTarget = getCurrentPositionInches() + kUnhookOffset;
-                    Thread.dumpStack();
+                    allowMoveDown = false; //prevents position from being set multiple times
                 }
                 mUsingClosedLoop = true;
                 break;
