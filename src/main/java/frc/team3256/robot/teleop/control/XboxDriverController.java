@@ -40,4 +40,8 @@ public class XboxDriverController implements IDriverController {
     public boolean getShouldClimb() {
         return xboxController.getStartButton();
     }
+
+    public boolean getShouldStopAuto() {
+        return xboxController.getAButton();
+    }
 }

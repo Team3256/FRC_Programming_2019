@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.auto.*;
 import frc.team3256.robot.subsystems.*;
 import frc.team3256.robot.teleop.TeleopUpdater;
+import frc.team3256.robot.teleop.control.XboxDriverController;
 import frc.team3256.warriorlib.auto.AutoModeExecuter;
 import frc.team3256.warriorlib.auto.purepursuit.PoseEstimator;
 import frc.team3256.warriorlib.auto.purepursuit.PurePursuitTracker;
@@ -29,7 +30,7 @@ public class Robot extends TimedRobot {
 	private PoseEstimator poseEstimator;
 
 	// Loopers
-	private Looper teleopLooper, poseEstimatorLooper;
+	private Looper enabledLooper, poseEstimatorLooper;
 	private TeleopUpdater teleopUpdater;
 
 	//Auto Teleop control
@@ -47,13 +48,13 @@ public class Robot extends TimedRobot {
 
 		Paths.initialize();
 
-		teleopLooper = new Looper(1 / 200D);
+		enabledLooper = new Looper(1 / 200D);
 		// Reset sensors
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
 		pivot.zeroSensors();
 
-		teleopLooper.addLoops(driveTrain, pivot, elevator, intake);
+		enabledLooper.addLoops(driveTrain, pivot, elevator, intake);
 
 		poseEstimatorLooper = new Looper(1 / 50D);
 		poseEstimator = PoseEstimator.getInstance();
@@ -80,7 +81,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
-		teleopLooper.stop();
+		enabledLooper.stop();
 
 		driveTrain.setCoastMode();
 		driveTrain.setHighGear(true);
@@ -92,7 +93,13 @@ public class Robot extends TimedRobot {
 		//cargoIntake.setIntakePower(0);
 		driveTrain.runZeroPower();
 		robotCompressor.turnOff();
+		driveTrain.resetEncoders();
+		driveTrain.resetGyro();
 		poseEstimator.reset();
+
+		elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOLD);
+		pivot.setWantedState(Pivot.WantedState.WANTS_TO_DEPLOY_POS);
+		intake.setWantedState(CargoIntake.WantedState.WANTS_TO_STOP);
 	}
 
 	/**
@@ -115,18 +122,18 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		driveTrain.resetEncoders();
-		//driveTrain.resetGyro();
+		driveTrain.resetGyro();
 		driveTrain.setBrakeMode();
 		//hatchPivot.zeroSensors();
 
 		poseEstimator.reset();
 		purePursuitTracker.reset();
+		enabledLooper.start();
 
 		//SmartDashboard.putString("alliance", DriverStation.getInstance().getAlliance().name());
 
 		if (SmartDashboard.getBoolean("autoEnabled", false)) {
 			maintainAutoExecution = true;
-			teleopLooper.stop();
 
 			autoModeExecuter = new AutoModeExecuter();
 			autoModeExecuter.setAutoMode(new AlignToTargetMode());
@@ -134,7 +141,6 @@ public class Robot extends TimedRobot {
 		}
 		else {
 			maintainAutoExecution = false;
-			teleopLooper.start();
 		}
 	}
 
@@ -146,7 +152,7 @@ public class Robot extends TimedRobot {
 		//basic logic below: keep executing auto until we disable it or it finishes, and don't allow it to be re-enabled
 		if (!maintainAutoExecution) {
 			teleopUpdater.update();
-		} else if (autoModeExecuter.isFinished()) {
+		} else if (XboxDriverController.getInstance().getShouldStopAuto() || autoModeExecuter.isFinished()) {
 			maintainAutoExecution = false;
 			if (!autoModeExecuter.isFinished()) {
 				autoModeExecuter.stop();
@@ -155,7 +161,8 @@ public class Robot extends TimedRobot {
 				//driveTrain.setPowerClosedLoop(0, 0);
 				//hatchPivot.setPositionDeploy();
 			}
-			teleopLooper.start();
+			enabledLooper.start();
+			subsystemManager.outputToDashboard();
 		}
 	}
 
@@ -166,7 +173,7 @@ public class Robot extends TimedRobot {
 	public void teleopInit() {
 		robotCompressor.turnOn();
 		driveTrain.setBrakeMode();
-		teleopLooper.start();
+		enabledLooper.start();
 		driveTrain.resetEncoders();
 		driveTrain.setGyroOffset(180.0);
 		poseEstimator.resetPosition();
