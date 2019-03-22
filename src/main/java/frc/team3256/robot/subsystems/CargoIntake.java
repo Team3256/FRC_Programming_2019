@@ -113,12 +113,18 @@ public class CargoIntake extends SubsystemBase {
 
     private SystemState handleIntake() {
         mPivot.setWantedState(Pivot.WantedState.WANTS_TO_INTAKE_POS);
-        setIntakePower(kIntakeSpeed);
+
         if (mStateChanged) {
             startTime = Timer.getFPGATimestamp();
         }
 
-        if (hasBall()) {
+        if (mPivot.isBrakeEngaged()) {
+            setIntakePower(1.0);
+        } else {
+            setIntakePower(kIntakeSpeed);
+        }
+
+        if (hasBall() && !mPivot.isBrakeEngaged()) {
             setWantedState(WantedState.WANTS_TO_STOP);
         }
 

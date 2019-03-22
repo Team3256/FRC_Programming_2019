@@ -53,7 +53,6 @@ public abstract class CommonControlScheme extends XboxListenerBase {
         if (value > 0.25 && !rightTriggerWasPressed) {
             mCargoIntake.setWantedState(CargoIntake.WantedState.WANTS_TO_INTAKE);
             mPivot.setWantedState(Pivot.WantedState.WANTS_TO_INTAKE_POS);
-            System.out.println("bruh moment");
             rightTriggerWasPressed = true;
         } else {
             mCargoIntake.setWantedState(CargoIntake.WantedState.WANTS_TO_STOP);
