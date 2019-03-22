@@ -17,10 +17,10 @@ public class Robot extends TimedRobot {
 //	// Subsystems
 	private SubsystemManager subsystemManager;
 	private DriveTrain driveTrain = DriveTrain.getInstance();
-	private NewElevator elevator = NewElevator.getInstance();
-	private NewPivot pivot = NewPivot.getInstance();
-	private NewHanger hanger = NewHanger.getInstance();
-	private NewCargoIntake intake = NewCargoIntake.getInstance();
+	private Elevator elevator = Elevator.getInstance();
+	private Pivot pivot = Pivot.getInstance();
+	private Hanger hanger = Hanger.getInstance();
+	private CargoIntake intake = CargoIntake.getInstance();
 
 	private RobotCompressor robotCompressor = RobotCompressor.getInstance();
 
@@ -67,7 +67,6 @@ public class Robot extends TimedRobot {
 
 		// Pneumatics
 		robotCompressor.turnOn();
-		hanger.setWantedState(NewHanger.WantedState.WANTS_TO_RETRACT);
 		pivot.releaseBrake();
 		pivot.setHatchArm(false);
 

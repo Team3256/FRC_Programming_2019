@@ -2,7 +2,6 @@ package frc.team3256.robot.teleop.control;
 
 import edu.wpi.first.wpilibj.Joystick;
 import frc.team3256.robot.auto.ZeroElevatorMode;
-import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.warriorlib.auto.AutoModeExecuter;
 import frc.team3256.warriorlib.control.ControllerObserver;
 import frc.team3256.warriorlib.control.XboxListenerBase;
@@ -115,7 +114,7 @@ public class GameCubeControllerObserver implements ControllerObserver {
             autoModeExecuter.start();
         }
         if (gamecubeController.getRawButtonPressed(14)) {
-            Elevator.getInstance().setPositionHome();
+            //Elevator.getInstance().setPositionHome();
         }
 
         double leftX = gamecubeController.getX();

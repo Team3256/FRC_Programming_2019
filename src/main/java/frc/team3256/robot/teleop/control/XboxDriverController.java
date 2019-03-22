@@ -2,8 +2,6 @@ package frc.team3256.robot.teleop.control;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3256.robot.subsystems.Elevator;
 
 public class XboxDriverController implements IDriverController {
 

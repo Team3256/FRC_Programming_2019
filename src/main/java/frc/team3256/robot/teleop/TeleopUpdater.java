@@ -19,10 +19,10 @@ public class TeleopUpdater {
     private CargoIntakeControlScheme cargoIntakeControlScheme;
     private HatchIntakeControlScheme hatchIntakeControlScheme;
 
-    private NewElevator mElevator = NewElevator.getInstance();
-    private NewPivot mPivot = NewPivot.getInstance();
-    private NewCargoIntake mCargoIntake = NewCargoIntake.getInstance();
-    private NewHanger mHanger = NewHanger.getInstance();
+    private Elevator mElevator = Elevator.getInstance();
+    private Pivot mPivot = Pivot.getInstance();
+    private CargoIntake mCargoIntake = CargoIntake.getInstance();
+    private Hanger mHanger = Hanger.getInstance();
     private RobotCompressor mRobotCompressor = RobotCompressor.getInstance();
 
     private static TeleopUpdater instance;
@@ -34,7 +34,6 @@ public class TeleopUpdater {
         manipulatorController = new XboxControllerObserver(1);
         cargoIntakeControlScheme = new CargoIntakeControlScheme();
         hatchIntakeControlScheme = new HatchIntakeControlScheme();
-//        climbControlScheme = new ClimbControlScheme();
 
         currentControlScheme = cargoIntakeControlScheme;
         manipulatorController.setListener(currentControlScheme);

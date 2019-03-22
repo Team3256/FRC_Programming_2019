@@ -1,7 +1,10 @@
 package frc.team3256.robot.subsystems;
 
-import com.revrobotics.*;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.ControlType;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
@@ -10,163 +13,390 @@ import static frc.team3256.robot.constants.ElevatorConstants.*;
 
 public class Elevator extends SubsystemBase {
 
-	private static Elevator instance;
-	private CANSparkMax master, slave;
-	private CANPIDController masterPID;
-	private CANEncoder masterEncoder;
-	private double elevatorTarget = kElevatorOffset;
+    private CANSparkMax mMaster, mSlave;
+    private DigitalInput mHallEffect;
 
-	private DigitalInput hallEffect;
-
-	private Elevator() {
-//		hallEffect = new DigitalInput(kHallEffectPort);
-
-		master = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
-        slave = SparkMAXUtil.generateGenericSparkMAX(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless);
-
-		master.setInverted(true);
-        slave.follow(master, true);
-
-		masterPID = master.getPIDController();
-		masterEncoder = master.getEncoder();
-
-		SparkMAXUtil.setBrakeMode(master, slave);
-
-		SparkMAXUtil.setPIDGains(masterPID, 0, kElevatorP, kElevatorI, kElevatorD, kElevatorF, kElevatorIz);
-		SparkMAXUtil.setPIDGains(masterPID, 1, 8e-6, 1e-6, 0, 0, 0);
-		SparkMAXUtil.setSmartMotionParams(masterPID, kMinOutputVelocity, kSmartMotionMaxVel, kSmartMotionMaxAccel, kSmartMotionAllowedClosedLoopError, 0);
-        master.setEncPosition(0);
-	}
-
-	public void resetEncoder() {
-        master.setEncPosition(0);
-	}
-
-	public static Elevator getInstance() {
-		return instance == null ? instance = new Elevator() : instance;
-	}
-
-	public void setOpenLoop(double power) {
-		master.getPIDController().setReference(power * 4000, ControlType.kVelocity, 1);
-	}
-
-	public void setPosition(double position) {
-		elevatorTarget = rotationToInches(position);
-        masterPID.setReference(position, ControlType.kSmartMotion, 0);
-	}
-
-	public void setPositionInches(double inches) {
-		if (inches < 0) {
-			setPositionHome();
-		} else if (inches > rotationToInches(kElevatorMaxPosition)) {
-			setPosition(kElevatorMaxPosition);
-		} else {
-			setPosition(inchesToRotations(inches));
-		}
-	}
-
-	public double getPosition() {
-		return masterEncoder.getPosition();
-	}
-
-	public double getPositionInches() {
-		return rotationToInches(getPosition());
-	}
-
-	public void moveToTarget() {
-		masterPID.setReference(elevatorTarget, ControlType.kSmartMotion);
-	}
-
-	public void runZeroPower() {
-		master.set(0);
-	}
-
-	@Override
-	public void outputToDashboard() {
-		SmartDashboard.putNumber("ElevatorPositionMaster", getPosition());
-//        SmartDashboard.putNumber("ElevatorSpeed", master.getEncoder().getVelocity());
-//		SmartDashboard.putNumber("ElevatorPositionSlave", slave.getEncoder().getPosition());
-
-//		SmartDashboard.putNumber("ElevatorCurrent", master.getOutputCurrent());
-//		SmartDashboard.putNumber("ElevatorCurrentSlave", slave.getOutputCurrent());
-		SmartDashboard.putBoolean("HallEffect", getHallEffectTriggered());
-		SmartDashboard.putNumber("SpoolInches", rotationToInches(getPosition()));
+    private enum ElevatorControlState {
+        MANUAL_UP,
+        MANUAL_DOWN,
+        HOLD,
+        HOMING,
+        CLOSED_LOOP_UP,
+        CLOSED_LOOP_DOWN
     }
 
-    public boolean getHallEffectTriggered() {
-        return !hallEffect.get();
-	}
+    public enum WantedState {
+        WANTS_TO_MANUAL_UP,
+        WANTS_TO_MANUAL_DOWN,
+        WANTS_TO_HOME,
+        WANTS_TO_HOLD,
+        WANTS_TO_HIGH_CARGO,
+        WANTS_TO_MID_CARGO,
+        WANTS_TO_LOW_CARGO,
+        WANTS_TO_CARGO_SHIP,
+        WANTS_TO_HIGH_HATCH,
+        WANTS_TO_MID_HATCH,
+        WANTS_TO_LOW_HATCH,
+        WANTS_TO_START_INTAKE_HATCH,
+        WANTS_TO_FINISH_INTAKE_HATCH,
+        WANTS_TO_START_OUTTAKE_HATCH,
+        WANTS_TO_FINISH_OUTTAKE_HATCH,
+        WANTS_TO_HANG
+    }
 
-	public void zeroSensors() {
-		master.setEncPosition(0);
-	}
+    private ElevatorControlState mCurrentState = ElevatorControlState.HOLD;
+    private WantedState mWantedState = WantedState.WANTS_TO_HOLD;
+    private WantedState mPrevWantedState = WantedState.WANTS_TO_HOLD;
 
-	public void init(double timestamp) {
-		master.setIdleMode(CANSparkMax.IdleMode.kBrake);
-		slave.setIdleMode(CANSparkMax.IdleMode.kBrake);
-	}
+    private boolean mStateChanged = false;
+    private boolean mWantedStateChanged = false;
+    private boolean mUsingClosedLoop = false;
+    private boolean allowMoveDown = false;
 
-	public void update(double timestamp) {
-		this.outputToDashboard();
-	}
+    private double mClosedLoopTarget = 0.0;
 
-	public void end(double timestamp) {
+    private boolean mIsHomed = true;
 
-	}
-	
-	public void setPositionHighCargo() {
-		setPositionInches(kPositionHighCargo);
-	}
+    private static Elevator instance;
+    public static Elevator getInstance() {
+        return instance == null ? instance = new Elevator() : instance;
+    }
 
-	public void setPositionMidCargo() {
-		setPositionInches(kPositionMidCargo);
-	}
+    private InterruptHandlerFunction<Elevator> ihr = new InterruptHandlerFunction<Elevator>() {
+        @Override
+        public void interruptFired(int interruptAssertedMask, Elevator param) {
+            mIsHomed = true;
+            setOpenLoop(0);
+            zeroSensors();
+        }
+    };
 
-	public void setPositionLowCargo() {
-		setPositionInches(kPositionLowCargo);
-	}
-	
-	public void setPositionHighHatch() {
-		setPositionInches(kPositionHighHatch);
-	}
+    private Elevator() {
+        mMaster = new CANSparkMax(kSparkMaxMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mSlave = new CANSparkMax(kSparkMaxSlave, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-	public void setPositionMidHatch() {
-		setPositionInches(kPositionMidHatch);
-	}
+        mMaster.setInverted(true);
+        mSlave.follow(mMaster, true);
 
-	public void setPositionLowHatch() {
-		setPositionInches(kPositionLowHatch);
-	}
+        mHallEffect = new DigitalInput(kHallEffectPort);
+        mHallEffect.requestInterrupts(ihr);
+        mHallEffect.setUpSourceEdge(false, true);
+        mHallEffect.enableInterrupts();
 
-	public void setPositionIntakeHatch() {
-		setPositionInches(kHatchHumanPlayerPosition);
-	}
+        SparkMAXUtil.setPIDGains(
+                mMaster.getPIDController(),
+                kElevatorHoldPort,
+                kElevatorHoldP,
+                kElevatorHoldI,
+                kElevatorHoldD,
+                kElevatorHoldIZone,
+                kElevatorF
+        );
 
-	public void setPositionHookHatch() {
-		setPositionInches(getPositionInches() + kHookOffset);
-	}
+        SparkMAXUtil.setPIDGains(
+                mMaster.getPIDController(),
+                kElevatorClosedLoopPort,
+                kElevatorClosedLoopP,
+                kElevatorClosedLoopI,
+                kElevatorClosedLoopD,
+                kElevatorClosedLoopIZone,
+                kElevatorClosedLoopF
+        );
 
-	public void setPositionUnhookHatch() {
-		setPositionInches(getPositionInches() + kUnhookOffset);
-	}
+//        SparkMAXUtil.setPIDGains(
+//                mMaster.getPIDController(),
+//                kElevatorClosedLoopHangPort,
+//                kElevatorClosedLoopP/2.0,
+//                kElevatorClosedLoopI/2.0,
+//                kElevatorClosedLoopD/2.0,
+//                kElevatorClosedLoopIZone/2.0,
+//                kElevatorClosedLoopF/2.0
+//        );
 
-	public void setPositionHome() {
-		setPosition(0);
-	}
+        setBrake();
+    }
 
-	public double rotationToInches(double rotations) {
-		return (rotations * kElevatorGearRatio * kElevatorSpoolSize * Math.PI) + kElevatorOffset;
-	}
+    public void setWantedState(WantedState wantedState){
+        this.mWantedState = wantedState;
+    }
 
-	public double inchesToRotations(double inches) {
-		return (inches - kElevatorOffset) / Math.PI / kElevatorGearRatio / kElevatorSpoolSize;
-	}
+    @Override
+    public void outputToDashboard() {
+        SmartDashboard.putNumber("Elevator Temp Master", mMaster.getMotorTemperature());
+        SmartDashboard.putNumber("Elevator Temp Slave", mSlave.getMotorTemperature());
 
-	public void setPositionShip() {
-		setPositionInches(kPositionShip);
-	}
+        SmartDashboard.putNumber("Elevator Current", mMaster.getOutputCurrent());
 
-	// Distances from ground
-	// 19.0 - distance to center of hatch human player
-	// 24.0 - distance to where we need to lift up to hook hatch on arm from human player
+        SmartDashboard.putNumber("Elevator Height", getCurrentPositionInches());
+        SmartDashboard.putNumber("Elevator Ticks", mMaster.getEncoder().getPosition());
+
+        SmartDashboard.putBoolean("Elevator Hall Effect", mHallEffect.get());
+
+        SmartDashboard.putNumber("Elevator RPM", mMaster.getEncoder().getVelocity() * kElevatorGearRatio);
+
+        SmartDashboard.putString("Elevator State", mCurrentState.name());
+
+        SmartDashboard.putNumber("Elevator Inches Target", mClosedLoopTarget);
+    }
+
+    @Override
+    public void zeroSensors() {
+        mMaster.setEncPosition(0);
+    }
+
+    @Override
+    public void init(double timestamp) {
+    }
+
+    @Override
+    public void update(double timestamp) {
+        if (mPrevWantedState != mWantedState){
+            mWantedStateChanged = true;
+            mPrevWantedState = mWantedState;
+        }
+        else mWantedStateChanged = false;
+
+        ElevatorControlState newState = ElevatorControlState.HOLD;
+        switch (mCurrentState) {
+            case HOLD:
+                newState = handleHold();
+                break;
+            case HOMING:
+                newState = handleHome();
+                break;
+            case CLOSED_LOOP_UP:
+                newState = handleClosedLoopUp();
+                break;
+            case CLOSED_LOOP_DOWN:
+                newState = handleClosedLoopDown();
+                break;
+            case MANUAL_UP:
+                newState = handleManualControlUp();
+                break;
+            case MANUAL_DOWN:
+                newState = handleManualControlDown();
+                break;
+        }
+
+        if (newState != mCurrentState) {
+            System.out.println(
+                    String.format(
+                        "CHANGED (%s) -> (%s)",
+                        mCurrentState.name(),
+                        newState.name()
+                    )
+            );
+            mCurrentState = newState;
+            mStateChanged = true;
+        } else {
+            mStateChanged = false;
+        }
+    }
+
+    @Override
+    public void end(double timestamp) {
+        this.setOpenLoop(0.0);
+    }
+
+    private ElevatorControlState defaultStateTransfer() {
+        ElevatorControlState nextState;
+
+        switch (mWantedState) {
+            case WANTS_TO_HOLD:
+                mUsingClosedLoop = false;
+                return ElevatorControlState.HOLD;
+            case WANTS_TO_HOME:
+                return ElevatorControlState.HOMING;
+            case WANTS_TO_MANUAL_UP:
+                mUsingClosedLoop = false;
+                return ElevatorControlState.MANUAL_UP;
+            case WANTS_TO_MANUAL_DOWN:
+                mUsingClosedLoop = false;
+                return ElevatorControlState.MANUAL_DOWN;
+            case WANTS_TO_HIGH_CARGO:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionHighCargo;
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_MID_CARGO:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionMidCargo;
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_LOW_CARGO:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionLowCargo;
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_CARGO_SHIP:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionShip;
+                }
+                break;
+            case WANTS_TO_HIGH_HATCH:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionHighHatch;
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_MID_HATCH:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionMidHatch;
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_LOW_HATCH:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionLowHatch;
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_START_INTAKE_HATCH:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kHatchHumanPlayerPosition;
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_FINISH_INTAKE_HATCH:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kHatchHumanPlayerPosition + kHookOffset;
+                    System.out.println("IM BEING CALLED");
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_START_OUTTAKE_HATCH:
+                allowMoveDown = true;
+                break;
+            case WANTS_TO_FINISH_OUTTAKE_HATCH:
+                if (mStateChanged && allowMoveDown) {
+                    mClosedLoopTarget = getCurrentPositionInches() + kUnhookOffset;
+                    allowMoveDown = false; //prevents position from being set multiple times
+                }
+                mUsingClosedLoop = true;
+                break;
+            case WANTS_TO_HANG:
+                if (mStateChanged) {
+                    mClosedLoopTarget = kPositionHang;
+                }
+                mUsingClosedLoop = true;
+                break;
+        }
+
+        if(mClosedLoopTarget > getCurrentPositionInches() && mUsingClosedLoop) {
+            nextState = ElevatorControlState.CLOSED_LOOP_UP;
+        }
+        else if (mClosedLoopTarget < getCurrentPositionInches() && mUsingClosedLoop){
+            nextState = ElevatorControlState.CLOSED_LOOP_DOWN;
+        }
+        else nextState = ElevatorControlState.HOLD;
+
+        if (atClosedLoopTarget() && mUsingClosedLoop) {
+            nextState = ElevatorControlState.HOLD;
+        }
+
+        return nextState;
+    }
+
+    public ElevatorControlState handleHold() {
+        mMaster.getPIDController().setReference(getCurrentPosition(), ControlType.kPosition, kElevatorHoldPort);
+
+        return defaultStateTransfer();
+    }
+
+    public ElevatorControlState handleHome() {
+        if (mIsHomed) {
+            return ElevatorControlState.HOLD;
+        } else {
+            if (mStateChanged) {
+                mMaster.set(-kElevatorSpeed);
+            }
+            return ElevatorControlState.HOMING;
+        }
+
+        //return ElevatorControlState.HOLD;
+    }
+
+    public ElevatorControlState handleClosedLoopUp() {
+        if (mIsHomed) {
+            if (atClosedLoopTarget()) {
+                return ElevatorControlState.HOLD;
+            }
+
+            mMaster.getPIDController().setReference(inchesToRotations(mClosedLoopTarget), ControlType.kPosition, kElevatorClosedLoopPort);
+
+            return defaultStateTransfer();
+        }
+
+        return defaultStateTransfer();
+    }
+
+    public ElevatorControlState handleClosedLoopDown() {
+        if (mIsHomed) {
+            if (atClosedLoopTarget()) {
+                return ElevatorControlState.HOLD;
+            }
+
+            mMaster.getPIDController().setReference(inchesToRotations(mClosedLoopTarget), ControlType.kPosition, kElevatorClosedLoopPort);
+
+            return defaultStateTransfer();
+        }
+
+        return defaultStateTransfer();
+    }
+
+    public ElevatorControlState handleManualControlUp() {
+        setOpenLoop(kElevatorSpeed);
+        return defaultStateTransfer();
+    }
+
+    public ElevatorControlState handleManualControlDown() {
+        setOpenLoop(-kElevatorSpeed);
+        return defaultStateTransfer();
+    }
+
+    public boolean atClosedLoopTarget(){
+        if (!mUsingClosedLoop || mWantedStateChanged) {
+            return false;
+        }
+        return (Math.abs(getCurrentPositionInches() - mClosedLoopTarget) < 1.5);
+    }
+
+    public void setBrake() {
+        mMaster.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        mSlave.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    }
+
+    public void setCoast() {
+        mMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        mSlave.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    }
+
+    public void setOpenLoop(double power) {
+        System.out.println("setOpenLoop: " + power);
+        mMaster.set(power);
+    }
+
+    public boolean isHomed() {
+        return mIsHomed;
+    }
+
+    public double getCurrentPositionInches() {
+        return rotationToInches(mMaster.getEncoder().getPosition());
+    }
+
+    public double getCurrentPosition() {
+        return mMaster.getEncoder().getPosition();
+    }
+
+    // Helper Functions
+    private double rotationToInches(double rotations) {
+        return (rotations * kElevatorGearRatio * kElevatorSpoolSize * Math.PI) + kElevatorOffset;
+    }
+
+    private double inchesToRotations(double inches) {
+        return (inches - kElevatorOffset) / Math.PI / kElevatorGearRatio / kElevatorSpoolSize;
+    }
 }

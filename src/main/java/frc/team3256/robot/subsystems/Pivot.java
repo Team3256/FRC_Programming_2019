@@ -10,12 +10,12 @@ import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
 import static frc.team3256.robot.constants.HatchConstants.*;
 
-public class NewPivot extends SubsystemBase {
+public class Pivot extends SubsystemBase {
 
     private WPI_TalonSRX mMaster;
     private DoubleSolenoid mBrake;
     private DoubleSolenoid mHatchArm;
-    private NewElevator mElevator;
+    private Elevator mElevator;
     private double mDeployStartTime;
 
     private boolean mIsHanging = false;
@@ -29,9 +29,7 @@ public class NewPivot extends SubsystemBase {
         DEPLOY,
         RETRACT,
         ELEVATOR_WAIT,
-        HANG_WAIT,
-        HANGING,
-        IN_ILLEGAL_AREA
+        HANG_WAIT
     }
 
     public enum WantedState {
@@ -46,7 +44,7 @@ public class NewPivot extends SubsystemBase {
         WANTS_TO_RETRACT_HATCH,
         WANTS_TO_ELEVATOR_WAIT,
         WANTS_TO_HANG,
-        WANTS_TO_IN_ILLEGAL_AREA,
+        WANTS_TO_GEAR_HOLD
     }
 
     private SystemState mCurrentState = SystemState.HOLD;
@@ -59,13 +57,13 @@ public class NewPivot extends SubsystemBase {
 
     private double mClosedLoopTarget = 0.0;
 
-    private static NewPivot instance;
+    private static Pivot instance;
 
-    public static NewPivot getInstance() {
-        return instance == null ? instance = new NewPivot() : instance;
+    public static Pivot getInstance() {
+        return instance == null ? instance = new Pivot() : instance;
     }
 
-    private NewPivot() {
+    private Pivot() {
         mMaster = TalonSRXUtil.generateGenericTalon(kHatchPivotPort);
 
         mMaster.setInverted(true);
@@ -107,7 +105,7 @@ public class NewPivot extends SubsystemBase {
         mMaster.selectProfileSlot(0, 0);
         mMaster.setSensorPhase(true);
 
-        mElevator = NewElevator.getInstance();
+        mElevator = Elevator.getInstance();
 
         mDeployStartTime = 0;
 
@@ -194,9 +192,10 @@ public class NewPivot extends SubsystemBase {
         if (mStateChanged) {
             mMaster.selectProfileSlot(kHatchHoldPort, 0);
             mMaster.set(ControlMode.Position, getEncoderValue());
-            if (mIsHanging) {
-                engageBrake();
-            }
+        }
+
+        if (isBrakeEngaged()) {
+            return SystemState.HOLD;
         }
 
         return defaultStateTransfer();
@@ -210,7 +209,6 @@ public class NewPivot extends SubsystemBase {
         if (mStateChanged) {
             mMaster.selectProfileSlot(0, 0);
             mMaster.selectProfileSlot(kHatchClosedLoopUpPort, 0);
-            releaseBrake();
         }
 
         mMaster.set(ControlMode.MotionMagic, angleToSensorUnits(mClosedLoopTarget));
@@ -226,7 +224,6 @@ public class NewPivot extends SubsystemBase {
         if (mStateChanged) {
             mMaster.selectProfileSlot(0, 0);
             mMaster.selectProfileSlot(kHatchClosedLoopDownPort, 0);
-            releaseBrake();
         }
 
         mMaster.set(ControlMode.MotionMagic, angleToSensorUnits(mClosedLoopTarget));
@@ -235,27 +232,23 @@ public class NewPivot extends SubsystemBase {
     }
 
     private SystemState handleManualControlUp() {
-        releaseBrake();
         setOpenLoop(kHatchPivotSpeed);
         return defaultStateTransfer();
     }
 
     private SystemState handleManualControlDown() {
-        releaseBrake();
         setOpenLoop(-kHatchPivotSpeed);
         return defaultStateTransfer();
     }
 
     private SystemState handleHatchDeploy() {
         mDeployStartTime = Timer.getFPGATimestamp();
-        releaseBrake();
         mHatchArm.set(DoubleSolenoid.Value.kForward);
         setWantedState(WantedState.WANTS_TO_DEPLOY_POS);
         return defaultStateTransfer();
     }
 
     private SystemState handleHatchRetract() {
-        releaseBrake();
         mHatchArm.set(DoubleSolenoid.Value.kReverse);
         return defaultStateTransfer();
     }
@@ -264,7 +257,7 @@ public class NewPivot extends SubsystemBase {
         if (mElevator.atClosedLoopTarget()) {
             System.out.println("bruh");
             setWantedState(WantedState.WANTS_TO_RETRACT_HATCH);
-            mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_HOLD);
+            mElevator.setWantedState(Elevator.WantedState.WANTS_TO_HOLD);
             return defaultStateTransfer();
         }
 
@@ -277,7 +270,7 @@ public class NewPivot extends SubsystemBase {
         if (mElevator.atClosedLoopTarget()) {
             System.out.println("Elevator is at hang position, about to move pivot down");
             setWantedState(WantedState.WANTS_TO_HANG_POS);
-            mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_HOLD);
+            mElevator.setWantedState(Elevator.WantedState.WANTS_TO_HOLD);
             return defaultStateTransfer();
         }
 
@@ -312,8 +305,6 @@ public class NewPivot extends SubsystemBase {
             case WANTS_TO_HANG_POS:
                 mUsingClosedLoop = true;
                 mClosedLoopTarget = kPositionHang;
-                mIsHanging = true;
-                mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_HANG_DOWN);
                 break;
             case WANTS_TO_DEPLOY_HATCH:
                 return SystemState.DEPLOY;
@@ -322,7 +313,13 @@ public class NewPivot extends SubsystemBase {
             case WANTS_TO_ELEVATOR_WAIT:
                 return SystemState.ELEVATOR_WAIT;
             case WANTS_TO_HANG:
+                mElevator.setWantedState(Elevator.WantedState.WANTS_TO_HANG);
                 return SystemState.HANG_WAIT;
+            case WANTS_TO_GEAR_HOLD:
+                if (!isBrakeEngaged()) {
+                    engageBrake();
+                }
+                return SystemState.HOLD;
         }
 
         if (mClosedLoopTarget < getAngle() && mUsingClosedLoop) {
@@ -364,18 +361,19 @@ public class NewPivot extends SubsystemBase {
         return sensorUnitsToAngle(mMaster.getSelectedSensorPosition(0));
     }
 
-    public void releaseBrake() {
-        if (mIsHanging) {
-            return;
-        }
-        mBrake.set(DoubleSolenoid.Value.kReverse);
-    }
-
     public void setHatchArm(boolean forward) {
         mHatchArm.set(forward ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
     }
 
-    private void engageBrake() {
+    public void releaseBrake() {
+        mBrake.set(DoubleSolenoid.Value.kReverse);
+    }
+
+    public void engageBrake() {
         mBrake.set(DoubleSolenoid.Value.kForward);
+    }
+
+    public boolean isBrakeEngaged() {
+        return mBrake.get() == DoubleSolenoid.Value.kForward;
     }
 }

@@ -1,34 +1,33 @@
 package frc.team3256.robot.teleop.scheme;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3256.robot.subsystems.NewElevator;
+import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.teleop.TeleopUpdater;
 
 public class HatchIntakeControlScheme extends CommonControlScheme {
-    private NewElevator mElevator = NewElevator.getInstance();
+    private Elevator mElevator = Elevator.getInstance();
     @Override
     public void onAPressed() {
         //elevator.setPositionLowCargo();
-        mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_LOW_HATCH);
+        mElevator.setWantedState(Elevator.WantedState.WANTS_TO_LOW_HATCH);
     }
 
     @Override
     public void onBPressed() {
         //elevator.setPositionShip();
-        //mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_HOME);
+        //mElevator.setWantedState(Elevator.WantedState.WANTS_TO_HOME);
     }
 
     // Home elevator
     @Override
     public void onXPressed() {
         //elevator.setPositionMidCargo();
-        mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_MID_HATCH);
+        mElevator.setWantedState(Elevator.WantedState.WANTS_TO_MID_HATCH);
     }
 
     @Override
     public void onYPressed() {
         //elevator.setPositionHighCargo();
-        mElevator.setWantedState(NewElevator.WantedState.WANTS_TO_HIGH_HATCH);
+        mElevator.setWantedState(Elevator.WantedState.WANTS_TO_HIGH_HATCH);
     }
 
     @Override
@@ -52,26 +51,6 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
     }
 
     @Override
-    public void onLeftDpadPressed() {
-
-    }
-
-    @Override
-    public void onRightDpadPressed() {
-
-    }
-
-    @Override
-    public void onUpDpadPressed() {
-        SmartDashboard.putBoolean("dpa", true);
-    }
-
-    @Override
-    public void onDownDpadPressed() {
-
-    }
-
-    @Override
     public void onLeftDpadReleased() {
 
     }
@@ -83,7 +62,6 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
 
     @Override
     public void onUpDpadReleased() {
-        SmartDashboard.putBoolean("dpa", false);
     }
 
     @Override
@@ -93,9 +71,9 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
 
     @Override
     public void onStartPressed() {
-//        if (getController() != null) {
-//            getController().setRumbleForDuration(1.0, 300);
-//        }
+        if (getController() != null) {
+            getController().setRumbleForDuration(1.0, 300);
+        }
         TeleopUpdater.getInstance().changeToCargoControlScheme();
     }
 
@@ -106,7 +84,6 @@ public class HatchIntakeControlScheme extends CommonControlScheme {
 
     @Override
     public void onStartReleased() {
-
     }
 
     @Override
