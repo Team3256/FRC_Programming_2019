@@ -1,11 +1,13 @@
 package frc.team3256.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.auto.*;
 import frc.team3256.robot.subsystems.*;
 import frc.team3256.robot.teleop.TeleopUpdater;
 import frc.team3256.robot.teleop.control.XboxDriverController;
+import frc.team3256.warriorlib.auto.AutoModeBase;
 import frc.team3256.warriorlib.auto.AutoModeExecuter;
 import frc.team3256.warriorlib.auto.purepursuit.PoseEstimator;
 import frc.team3256.warriorlib.auto.purepursuit.PurePursuitTracker;
@@ -36,6 +38,8 @@ public class Robot extends TimedRobot {
 	//Auto Teleop control
 	private AutoModeExecuter autoModeExecuter;
 	private boolean maintainAutoExecution = true;
+
+	SendableChooser<AutoModeBase> autoChooser = new SendableChooser<>();
 
 	/**
 	 * This function is called when the robot is first started up and should be
@@ -74,6 +78,13 @@ public class Robot extends TimedRobot {
 		teleopUpdater = TeleopUpdater.getInstance();
 
 		subsystemManager.addSubsystems(driveTrain, elevator, intake, pivot, robotCompressor);
+
+		autoChooser.setDefaultOption("Do Nothing", new DoNothingAutoMode());
+		autoChooser.addOption("Baseline", new BaselineAutoMode());
+		autoChooser.addOption("Left Single Hatch Auto", new LeftSingleHatchAutoMode());
+		//autoChooser.addOption("Right Single Hatch Auto", new LeftSingleHatchAutoMode());
+
+		SmartDashboard.putData("Auto Chooser", autoChooser);
 	}
 
 	/**
@@ -130,13 +141,11 @@ public class Robot extends TimedRobot {
 		purePursuitTracker.reset();
 		enabledLooper.start();
 
-		//SmartDashboard.putString("alliance", DriverStation.getInstance().getAlliance().name());
-
-		if (SmartDashboard.getBoolean("autoEnabled", false)) {
+		if (SmartDashboard.getBoolean("autoEnabled", true)) {
 			maintainAutoExecution = true;
 
 			autoModeExecuter = new AutoModeExecuter();
-			autoModeExecuter.setAutoMode(new AlignToTargetMode());
+			autoModeExecuter.setAutoMode(autoChooser.getSelected());
 			autoModeExecuter.start();
 		}
 		else {
@@ -156,6 +165,7 @@ public class Robot extends TimedRobot {
 			maintainAutoExecution = false;
 			if (!autoModeExecuter.isFinished()) {
 				autoModeExecuter.stop();
+				driveTrain.runZeroPower();
 				//make sure all our subsystems stop
 				//elevator.runZeroPower();
 				//driveTrain.setPowerClosedLoop(0, 0);
