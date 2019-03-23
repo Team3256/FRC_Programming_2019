@@ -28,7 +28,7 @@ public class DriveTrainConstants {
     public static final double kAllowedErr = 0;
     public static final double kAngularPowerScalar = 1.7; // 1.7
     //Analog for Pressure Sensor
-    public static final int kPressureSensorPort = 4; //Should be 0 for comp
+    public static final int kPressureSensorPort = 0; //Should be 0 for comp
 
     public static final int pcmId = 15;
 
@@ -39,8 +39,8 @@ public class DriveTrainConstants {
 
     public static final int kShifterForward = 1; // 6
     public static final int kShifterReverse = 6; // 1
-    public static final int kHangerForward = 7; //TBD
-    public static final int kHangerReverse = 0; //TBD
+    public static final int kHangerForward = 0; //TBD
+    public static final int kHangerReverse = 7; //TBD
 
     public static final double kWheelDiameter = 4;
     public static final double kMagEncoderTicksTalon = 4096.0; //4096 = # of ticks per revolution | 4 X decoding for Talon SRX & Canifier only

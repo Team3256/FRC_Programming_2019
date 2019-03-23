@@ -1,6 +1,7 @@
 package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.constants.DriveTrainConstants;
 import frc.team3256.warriorlib.loop.Loop;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
@@ -86,7 +87,7 @@ public class Hanger extends SubsystemBase implements Loop {
 
     @Override
     public void outputToDashboard() {
-
+        SmartDashboard.putString("Hanger State", mCurrentState.name());
     }
 
     @Override

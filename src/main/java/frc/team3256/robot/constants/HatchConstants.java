@@ -10,7 +10,7 @@ public class HatchConstants {
     public static final int kHatchHoldPort = 0;
     public static final double kHatchHoldP = 2.60;
     public static final double kHatchHoldI = 0.004;
-    public static final double kHatchHoldD = 0.0;
+    public static final double kHatchHoldD = 0.0005;
     public static final double kHatchHoldIZone = 0;
     public static final double kHatchHoldF = 0.052;
 
@@ -47,10 +47,8 @@ public class HatchConstants {
     public static final double kHatchAngleOffset = -94.5;
 
     public static final double kPositionExhaustCargo = -90;
-
-    public static final double kPositionDeployHatch = -80;
-    public static final double kPositionFoldIn = -110;
-    public static final double kPositionCargoIntake = -29;
+    public static final double kPositionDeployHatch = -75;
+    public static final double kPositionCargoIntake = -28;
     public static final double kPositionHang = 30;
     public static final double kHatchPivotGearRatio = 202.5/90.0; //motor rotations to actual rotations
 

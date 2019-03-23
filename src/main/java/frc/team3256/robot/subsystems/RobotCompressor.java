@@ -47,7 +47,7 @@ public class RobotCompressor extends SubsystemBase {
         return compressor.getCompressorCurrent();
     }
 
-    public double getAirPressurePsi() { return 250.0 * (pressureSensor.getVoltage()/4.5) - 25; }
+    public double getAirPressurePsi() { return 250.0 * (pressureSensor.getVoltage()/4.75) - 25; }
 
     public static RobotCompressor getInstance() {return instance == null ? instance = new RobotCompressor(): instance;}
 

@@ -16,7 +16,7 @@ public class ElevatorConstants {
     public static final double kElevatorIz = 0; //0
 
     public static final int kElevatorHoldPort = 0;
-    public static final double kElevatorHoldP = 0.5;
+    public static final double kElevatorHoldP = 0.55;
     public static final double kElevatorHoldI = 0.002;
     public static final double kElevatorHoldD = 0.00002;
     public static final double kElevatorHoldIZone = 0;
@@ -24,12 +24,12 @@ public class ElevatorConstants {
 
     public static final int kElevatorClosedLoopPort = 1;
     public static final double kElevatorClosedLoopP = 0.35;
-    public static final double kElevatorClosedLoopI = 0.25;
+    public static final double kElevatorClosedLoopI = 0.20;
     public static final double kElevatorClosedLoopD = 0.0;
     public static final double kElevatorClosedLoopIZone = 0;
     public static final double kElevatorClosedLoopF = 0.25;
 
-    public static final int kElevatorClosedLoopHangPort = 2;
+    public static final int kElevatorClosedLoopIntakePort = 2;
 
     public static final double kDropPreset = 10.0;
 
@@ -37,9 +37,9 @@ public class ElevatorConstants {
     public static final double kPositionMin = 0;
 
     public static final double kUnhookOffset = -5.0; //has to be negative
-    public static final double kElevatorOffset = 10.75; // 10.75 comp
+    public static final double kElevatorOffset = 9.0; // 10.75 comp
     public static final double kHookOffset = 5.0;
-    public static final double kHatchHumanPlayerPosition = 7 + kElevatorOffset; // 1
+    public static final double kHatchHumanPlayerPosition = 12.5; // 1
     private static final double kHatchPositionOffset = 0; //has to be negative
     public static final double kPositionHighHatch = 73 + kHatchPositionOffset;
     public static final double kPositionMidHatch = 46 + kHatchPositionOffset;

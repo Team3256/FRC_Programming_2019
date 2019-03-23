@@ -47,6 +47,7 @@ public class Elevator extends SubsystemBase {
     private ElevatorControlState mCurrentState = ElevatorControlState.HOLD;
     private WantedState mWantedState = WantedState.WANTS_TO_HOLD;
     private WantedState mPrevWantedState = WantedState.WANTS_TO_HOLD;
+    private int mClosedLoopPIDPort = kElevatorClosedLoopPort;
 
     private boolean mStateChanged = false;
     private boolean mWantedStateChanged = false;
@@ -55,7 +56,7 @@ public class Elevator extends SubsystemBase {
 
     private double mClosedLoopTarget = 0.0;
 
-    private boolean mIsHomed = true;
+    private boolean mIsHomed = false;
 
     private static Elevator instance;
     public static Elevator getInstance() {
@@ -65,9 +66,11 @@ public class Elevator extends SubsystemBase {
     private InterruptHandlerFunction<Elevator> ihr = new InterruptHandlerFunction<Elevator>() {
         @Override
         public void interruptFired(int interruptAssertedMask, Elevator param) {
-            mIsHomed = true;
-            setOpenLoop(0);
-            zeroSensors();
+            if (!mIsHomed) {
+                mIsHomed = true;
+                setOpenLoop(0);
+                zeroSensors();
+            }
         }
     };
 
@@ -103,15 +106,15 @@ public class Elevator extends SubsystemBase {
                 kElevatorClosedLoopF
         );
 
-//        SparkMAXUtil.setPIDGains(
-//                mMaster.getPIDController(),
-//                kElevatorClosedLoopHangPort,
-//                kElevatorClosedLoopP/2.0,
-//                kElevatorClosedLoopI/2.0,
-//                kElevatorClosedLoopD/2.0,
-//                kElevatorClosedLoopIZone/2.0,
-//                kElevatorClosedLoopF/2.0
-//        );
+        SparkMAXUtil.setPIDGains(
+                mMaster.getPIDController(),
+                kElevatorClosedLoopIntakePort,
+                kElevatorClosedLoopP/2.0,
+                kElevatorClosedLoopI/2.0,
+                kElevatorClosedLoopD/2.0,
+                kElevatorClosedLoopIZone/2.0,
+                kElevatorClosedLoopF/2.0
+        );
 
         setBrake();
     }
@@ -215,66 +218,77 @@ public class Elevator extends SubsystemBase {
                 return ElevatorControlState.MANUAL_DOWN;
             case WANTS_TO_HIGH_CARGO:
                 if (mStateChanged) {
+                    mClosedLoopPIDPort = kElevatorClosedLoopPort;
                     mClosedLoopTarget = kPositionHighCargo;
                 }
                 mUsingClosedLoop = true;
                 break;
             case WANTS_TO_MID_CARGO:
                 if (mStateChanged) {
+                    mClosedLoopPIDPort = kElevatorClosedLoopPort;
                     mClosedLoopTarget = kPositionMidCargo;
                 }
                 mUsingClosedLoop = true;
                 break;
             case WANTS_TO_LOW_CARGO:
                 if (mStateChanged) {
+                    mClosedLoopPIDPort = kElevatorClosedLoopPort;
                     mClosedLoopTarget = kPositionLowCargo;
                 }
                 mUsingClosedLoop = true;
                 break;
             case WANTS_TO_CARGO_SHIP:
                 if (mStateChanged) {
+                    mClosedLoopPIDPort = kElevatorClosedLoopPort;
                     mClosedLoopTarget = kPositionShip;
                 }
                 break;
             case WANTS_TO_HIGH_HATCH:
                 if (mStateChanged) {
+                    mClosedLoopPIDPort = kElevatorClosedLoopPort;
                     mClosedLoopTarget = kPositionHighHatch;
                 }
                 mUsingClosedLoop = true;
                 break;
             case WANTS_TO_MID_HATCH:
                 if (mStateChanged) {
+                    mClosedLoopPIDPort = kElevatorClosedLoopPort;
                     mClosedLoopTarget = kPositionMidHatch;
                 }
                 mUsingClosedLoop = true;
                 break;
             case WANTS_TO_LOW_HATCH:
                 if (mStateChanged) {
-                    mClosedLoopTarget = kPositionLowHatch;
                 }
+                    mClosedLoopPIDPort = kElevatorClosedLoopPort;
+                    mClosedLoopTarget = kPositionLowHatch;
                 mUsingClosedLoop = true;
                 break;
             case WANTS_TO_START_INTAKE_HATCH:
                 if (mStateChanged) {
                     mClosedLoopTarget = kHatchHumanPlayerPosition;
+                    mClosedLoopPIDPort = kElevatorClosedLoopIntakePort;
                 }
                 mUsingClosedLoop = true;
                 break;
             case WANTS_TO_FINISH_INTAKE_HATCH:
                 if (mStateChanged) {
                     mClosedLoopTarget = kHatchHumanPlayerPosition + kHookOffset;
+                    mClosedLoopPIDPort = kElevatorClosedLoopIntakePort;
                     System.out.println("IM BEING CALLED");
                 }
                 mUsingClosedLoop = true;
                 break;
             case WANTS_TO_START_OUTTAKE_HATCH:
                 allowMoveDown = true;
+                mClosedLoopPIDPort = kElevatorClosedLoopIntakePort;
                 break;
             case WANTS_TO_FINISH_OUTTAKE_HATCH:
                 if (mStateChanged && allowMoveDown) {
                     mClosedLoopTarget = getCurrentPositionInches() + kUnhookOffset;
                     allowMoveDown = false; //prevents position from being set multiple times
                 }
+                mClosedLoopPIDPort = kElevatorClosedLoopIntakePort;
                 mUsingClosedLoop = true;
                 break;
             case WANTS_TO_HANG:
@@ -285,7 +299,7 @@ public class Elevator extends SubsystemBase {
                 break;
         }
 
-        if(mClosedLoopTarget > getCurrentPositionInches() && mUsingClosedLoop) {
+        if (mClosedLoopTarget > getCurrentPositionInches() && mUsingClosedLoop) {
             nextState = ElevatorControlState.CLOSED_LOOP_UP;
         }
         else if (mClosedLoopTarget < getCurrentPositionInches() && mUsingClosedLoop){
@@ -325,7 +339,7 @@ public class Elevator extends SubsystemBase {
                 return ElevatorControlState.HOLD;
             }
 
-            mMaster.getPIDController().setReference(inchesToRotations(mClosedLoopTarget), ControlType.kPosition, kElevatorClosedLoopPort);
+            mMaster.getPIDController().setReference(inchesToRotations(mClosedLoopTarget), ControlType.kPosition, mClosedLoopPIDPort);
 
             return defaultStateTransfer();
         }
@@ -339,7 +353,7 @@ public class Elevator extends SubsystemBase {
                 return ElevatorControlState.HOLD;
             }
 
-            mMaster.getPIDController().setReference(inchesToRotations(mClosedLoopTarget), ControlType.kPosition, kElevatorClosedLoopPort);
+            mMaster.getPIDController().setReference(inchesToRotations(mClosedLoopTarget), ControlType.kPosition, mClosedLoopPIDPort);
 
             return defaultStateTransfer();
         }
@@ -361,7 +375,12 @@ public class Elevator extends SubsystemBase {
         if (!mUsingClosedLoop || mWantedStateChanged) {
             return false;
         }
-        return (Math.abs(getCurrentPositionInches() - mClosedLoopTarget) < 1.5);
+
+        if (getCurrentPosition() < 1 && getCurrentPosition() > -1) {
+            return true;
+        }
+
+        return (Math.abs(getCurrentPositionInches() - mClosedLoopTarget) < 0.8);
     }
 
     public void setBrake() {

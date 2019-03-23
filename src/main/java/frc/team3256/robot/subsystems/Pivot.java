@@ -244,12 +244,13 @@ public class Pivot extends SubsystemBase {
     private SystemState handleHatchDeploy() {
         mDeployStartTime = Timer.getFPGATimestamp();
         mHatchArm.set(DoubleSolenoid.Value.kForward);
-        setWantedState(WantedState.WANTS_TO_DEPLOY_POS);
+        setWantedState(WantedState.WANTS_TO_EXHAUST_POS);
         return defaultStateTransfer();
     }
 
     private SystemState handleHatchRetract() {
         mHatchArm.set(DoubleSolenoid.Value.kReverse);
+        setWantedState(WantedState.WANTS_TO_DEPLOY_POS);
         return defaultStateTransfer();
     }
 

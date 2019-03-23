@@ -47,7 +47,7 @@ public class CargoIntake extends SubsystemBase {
         mCargoIntakeRight = TalonSRXUtil.generateSlaveTalon(kIntakeSlave, kIntake);
 
         mCargoIntakeLeft.setInverted(false);
-        mCargoIntakeRight.setInverted(false);
+        mCargoIntakeRight.setInverted(true);
     }
 
     public void setWantedState(WantedState wantedState) { this.mWantedState = wantedState; }
@@ -56,10 +56,8 @@ public class CargoIntake extends SubsystemBase {
     public void outputToDashboard() {
         SmartDashboard.putNumber("Cargo Left", mCargoIntakeLeft.getOutputCurrent());
         SmartDashboard.putNumber("Cargo Right", mCargoIntakeRight.getOutputCurrent());
-        SmartDashboard.putString("Cargo State", mWantedState.name());
-        SmartDashboard.putString("Cargo State", mCurrentState.name());
-        SmartDashboard.putNumber("Start Time", startTime);
-        SmartDashboard.putNumber("Current Time", Timer.getFPGATimestamp());
+        SmartDashboard.putString("Cargo W State", mWantedState.name());
+        SmartDashboard.putString("Cargo C State", mCurrentState.name());
         SmartDashboard.putBoolean("Has Ball", hasBall());
     }
 
@@ -173,9 +171,10 @@ public class CargoIntake extends SubsystemBase {
         mCargoIntakeRight.set(power);
     }
 
-    private boolean hasBall () {
-        return ((Timer.getFPGATimestamp() - startTime) > (kIntitialSpikeDelay)) &&
-                mCargoIntakeLeft.getOutputCurrent() > kIntakeSpike;
+    public boolean hasBall() {
+//        return ((Timer.getFPGATimestamp() - startTime) > kIntitialSpikeDelay) &&
+//                mCargoIntakeLeft.getOutputCurrent() > kIntakeSpike;
+        return false;
     }
 
     @Override
