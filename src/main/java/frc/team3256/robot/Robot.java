@@ -84,6 +84,7 @@ public class Robot extends TimedRobot {
 		autoChooser.addOption("Left Single Hatch Auto", new LeftSingleHatchAutoMode());
 		autoChooser.addOption("Left Spline Cargo Rocket", new LeftBackwardsDoubleHatchSpline());
 		autoChooser.addOption("Left Turn Cargo Rocket", new LeftRocketCargoDoubleHatchAutoMode());
+		autoChooser.addOption("Right Single Hatch Auto", new RightSingleHatchAutoMode());
 		//autoChooser.addOption("Right Single Hatch Auto", new LeftSingleHatchAutoMode());
 
 		SmartDashboard.putData("Auto Chooser", autoChooser);

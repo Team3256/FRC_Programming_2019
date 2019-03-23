@@ -17,6 +17,7 @@ public abstract class Paths {
     private static List<Path> baselineAutoPath;
     private static List<Path> backwardsAutoPath;
     private static List<Path> centerLeftSingleHatchPath;
+    private static List<Path> centerRightSingleHatchPath;
     private static List<Path> centerDoubleHatchBackwardsAutoPath;
     private static List<Path> centerTwoHatchAutoPath;
 
@@ -24,6 +25,7 @@ public abstract class Paths {
         getCenterRightDoubleCargoHatch();
         getBaselineAutoPath();
         getCenterLeftSingleHatchAuto();
+        getCenterRightSingleHatchAuto();
         getCenterLeftDoubleCargoHatch();
         getCenterLeftDoubleBackAuto();
         getCenterTwoHatchAutoPath();
@@ -314,6 +316,52 @@ public abstract class Paths {
 
         centerLeftSingleHatchPath = Arrays.asList(firstSegmentPath, backSegOnePath, secondSegmentPath);
         return centerLeftSingleHatchPath;
+    }
+
+    public static List<Path> getCenterRightSingleHatchAuto() {
+        if (centerRightSingleHatchPath != null)
+            return centerRightSingleHatchPath;
+
+        PathGenerator firstSegment = new PathGenerator(spacing, true);
+
+        firstSegment.addPoint(new Vector(0,0));
+        firstSegment.addPoint(new Vector(-28.9,110));
+        firstSegment.addPoint(new Vector(-28.9,120));
+        firstSegment.addPoint(new Vector(-28.9,130));
+        firstSegment.addPoint(new Vector(-28.9, 135));
+
+        firstSegment.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
+        firstSegment.setVelocities(maxVel, maxAccel, maxVelk);
+
+        Path firstSegmentPath = firstSegment.generatePath();
+
+        PathGenerator backSegOne = new PathGenerator(spacing, false);
+
+        backSegOne.addPoint(new Vector(-28.9, 135));
+        backSegOne.addPoint(new Vector(-28.9, 90));
+
+        backSegOne.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
+        backSegOne.setVelocities(maxVel, maxAccel, maxVelk);
+
+        Path backSegOnePath = backSegOne.generatePath();
+
+        PathGenerator secondSegment = new PathGenerator(spacing, true);
+
+        secondSegment.addPoint(new Vector(0,0));
+        secondSegment.addPoint(new Vector(0, 20));
+        secondSegment.addPoint(new Vector(0, 30));
+        secondSegment.addPoint(new Vector(0, 34.2));
+        secondSegment.addPoint(new Vector(75, 34.2));
+        secondSegment.addPoint(new Vector(85, 34.2));
+        secondSegment.addPoint(new Vector(90, 34.2));
+
+        secondSegment.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
+        secondSegment.setVelocities(maxVel, maxAccel, maxVelk);
+
+        Path secondSegmentPath = secondSegment.generatePath();
+
+        centerRightSingleHatchPath = Arrays.asList(firstSegmentPath, backSegOnePath, secondSegmentPath);
+        return centerRightSingleHatchPath;
     }
 
     public static List<Path> getCenterLeftDoubleBackAuto() {
