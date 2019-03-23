@@ -39,7 +39,7 @@ public class Hanger extends SubsystemBase implements Loop {
 
     private Hanger() {
         hang = new DoubleSolenoid(pcmId, kHangerForward, kHangerReverse);
-        outerHang = new DoubleSolenoid(pcmId, kOuterHangerForward, kOuterHangerReverse);
+        outerHang = new DoubleSolenoid(pcmId2, kOuterHangerForward, kOuterHangerReverse);
     }
 
     public static Hanger getInstance() { return instance == null ? instance = new Hanger() : instance; }
