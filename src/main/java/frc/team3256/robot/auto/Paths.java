@@ -17,11 +17,16 @@ public abstract class Paths {
     private static List<Path> baselineAutoPath;
     private static List<Path> backwardsAutoPath;
     private static List<Path> centerLeftSingleHatchPath;
+    private static List<Path> centerDoubleHatchBackwardsAutoPath;
+    private static List<Path> centerTwoHatchAutoPath;
 
     public static void initialize() {
         getCenterRightDoubleCargoHatch();
         getBaselineAutoPath();
         getCenterLeftSingleHatchAuto();
+        getCenterLeftDoubleCargoHatch();
+        getCenterLeftDoubleBackAuto();
+        getCenterTwoHatchAutoPath();
     }
 
     public static List<Path> getCenterRightDoubleCargoHatch() {
@@ -148,7 +153,7 @@ public abstract class Paths {
         firstSegment.addPoint(new Vector(51.8,110));
         firstSegment.addPoint(new Vector(51.8,120));
         firstSegment.addPoint(new Vector(51.8,130));
-        firstSegment.addPoint(new Vector(51.8,133)); // correct value: 136
+        firstSegment.addPoint(new Vector(51.8,135)); // correct value: 136
 
         firstSegment.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
         firstSegment.setVelocities(maxVel, maxAccel, maxVelk);
@@ -157,7 +162,7 @@ public abstract class Paths {
 
         PathGenerator backSegmentOne = new PathGenerator(spacing, false);
 
-        backSegmentOne.addPoint(new Vector(51.8,133)); //136
+        backSegmentOne.addPoint(new Vector(51.8,135)); //136
         backSegmentOne.addPoint(new Vector(51.8,120)); //51.8
 
         backSegmentOne.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
@@ -275,7 +280,7 @@ public abstract class Paths {
         firstSegment.addPoint(new Vector(28.9,110));
         firstSegment.addPoint(new Vector(28.9,120));
         firstSegment.addPoint(new Vector(28.9,130));
-        firstSegment.addPoint(new Vector(28.9, 133));
+        firstSegment.addPoint(new Vector(28.9, 135));
 
         firstSegment.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
         firstSegment.setVelocities(maxVel, maxAccel, maxVelk);
@@ -284,7 +289,7 @@ public abstract class Paths {
 
         PathGenerator backSegOne = new PathGenerator(spacing, false);
 
-        backSegOne.addPoint(new Vector(28.9, 133));
+        backSegOne.addPoint(new Vector(28.9, 135));
         backSegOne.addPoint(new Vector(28.9, 90));
 
         backSegOne.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
@@ -310,5 +315,147 @@ public abstract class Paths {
         centerLeftSingleHatchPath = Arrays.asList(firstSegmentPath, backSegOnePath, secondSegmentPath);
         return centerLeftSingleHatchPath;
     }
+
+    public static List<Path> getCenterLeftDoubleBackAuto() {
+        if (centerDoubleHatchBackwardsAutoPath != null) {
+            return centerDoubleHatchBackwardsAutoPath;
+        }
+
+        PathGenerator firstSegment = new PathGenerator(spacing, true);
+
+        firstSegment.addPoint(new Vector(0,0));
+        firstSegment.addPoint(new Vector(28.9,110));
+        firstSegment.addPoint(new Vector(28.9,120));
+        firstSegment.addPoint(new Vector(28.9,130));
+        firstSegment.addPoint(new Vector(28.9, 135));
+
+        firstSegment.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
+        firstSegment.setVelocities(maxVel, maxAccel, maxVelk);
+
+        Path firstSegmentPath = firstSegment.generatePath();
+
+        PathGenerator backSegOne = new PathGenerator(spacing, false);
+
+        backSegOne.addPoint(new Vector(28.9, 135));
+        backSegOne.addPoint(new Vector(28.9, 90));
+
+        backSegOne.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
+        backSegOne.setVelocities(maxVel, maxAccel, maxVelk);
+
+        Path backSegOnePath = backSegOne.generatePath();
+
+        PathGenerator secondSegment = new PathGenerator(spacing, true);
+
+        secondSegment.addPoint(new Vector(0,0));
+        secondSegment.addPoint(new Vector(0, 20));
+        secondSegment.addPoint(new Vector(0, 30));
+        secondSegment.addPoint(new Vector(0, 60));
+        secondSegment.addPoint(new Vector(-75, 96));
+        secondSegment.addPoint(new Vector(-90, 124.9));
+        secondSegment.addPoint(new Vector(-115, 124.9));
+        secondSegment.addPoint(new Vector(-139, 124.9));
+
+        secondSegment.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
+        secondSegment.setVelocities(maxVel, maxAccel, maxVelk);
+
+        Path secondSegmentPath = secondSegment.generatePath();
+
+        PathGenerator backSegmentTwo = new PathGenerator(spacing, false);
+
+        backSegmentTwo.addPoint(new Vector(0,0));
+        backSegmentTwo.addPoint(new Vector(0, -100));
+        backSegmentTwo.addPoint(new Vector(-96, -100));
+
+        backSegmentTwo.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
+        backSegmentTwo.setVelocities(maxVel, maxAccel, maxVelk);
+
+        Path backSegmentTwoPath = backSegmentTwo.generatePath();
+
+        PathGenerator lastSegment = new PathGenerator(spacing, true);
+
+        lastSegment.addPoint(new Vector(-96,-100));
+        lastSegment.addPoint(new Vector(-8, -139));
+        lastSegment.addPoint(new Vector(-0, -166));
+
+        lastSegment.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
+        lastSegment.setVelocities(maxVel, maxAccel, maxVelk);
+
+        Path lastSegmentPath = lastSegment.generatePath();
+
+        centerDoubleHatchBackwardsAutoPath = Arrays.asList(firstSegmentPath, backSegOnePath, secondSegmentPath, backSegmentTwoPath, lastSegmentPath);
+        return centerDoubleHatchBackwardsAutoPath;
+    }
+
+    public static List<Path> getCenterTwoHatchAutoPath() {
+        if (centerTwoHatchAutoPath != null) {
+            return centerTwoHatchAutoPath;
+        }
+
+        PathGenerator firstSegment = new PathGenerator(spacing, true);
+
+        firstSegment.addPoint(new Vector(0,0));
+        firstSegment.addPoint(new Vector(28.9,110));
+        firstSegment.addPoint(new Vector(28.9,120));
+        firstSegment.addPoint(new Vector(28.9,130));
+        firstSegment.addPoint(new Vector(28.9, 135));
+
+        firstSegment.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
+        firstSegment.setVelocities(maxVel, maxAccel, maxVelk);
+
+        Path firstSegmentPath = firstSegment.generatePath();
+
+        PathGenerator backSegOne = new PathGenerator(spacing, false);
+
+        backSegOne.addPoint(new Vector(28.9, 135));
+        backSegOne.addPoint(new Vector(28.9, 90));
+
+        backSegOne.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
+        backSegOne.setVelocities(maxVel, maxAccel, maxVelk);
+
+        Path backSegOnePath = backSegOne.generatePath();
+
+        PathGenerator secondSegment = new PathGenerator(spacing, true);
+
+        secondSegment.addPoint(new Vector(0,0));
+        secondSegment.addPoint(new Vector(0, 20));
+        secondSegment.addPoint(new Vector(0, 30));
+        secondSegment.addPoint(new Vector(0, 60));
+        secondSegment.addPoint(new Vector(-75, 96));
+        secondSegment.addPoint(new Vector(-90, 124.9));
+        secondSegment.addPoint(new Vector(-115, 124.9));
+        secondSegment.addPoint(new Vector(-139, 124.9));
+
+        secondSegment.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
+        secondSegment.setVelocities(maxVel, maxAccel, maxVelk);
+
+        Path secondSegmentPath = secondSegment.generatePath();
+
+        PathGenerator backSegmentTwo = new PathGenerator(spacing, false);
+
+        backSegmentTwo.addPoint(new Vector(0,0));
+        backSegmentTwo.addPoint(new Vector(0, -158));
+
+        backSegmentTwo.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
+        backSegmentTwo.setVelocities(maxVel, maxAccel, maxVelk);
+
+        Path backSegmentTwoPath = backSegmentTwo.generatePath();
+
+        PathGenerator lastSegment = new PathGenerator(spacing, true);
+
+        lastSegment.addPoint(new Vector(0,0));
+        lastSegment.addPoint(new Vector(0, 20));
+
+        lastSegment.setSmoothingParameters(purePursuitA, purePursuitB, smoothingTolerance);
+        lastSegment.setVelocities(maxVel, maxAccel, maxVelk);
+
+        Path lastSegmentPath = lastSegment.generatePath();
+
+        centerTwoHatchAutoPath = Arrays.asList(firstSegmentPath, backSegOnePath, secondSegmentPath, backSegmentTwoPath, lastSegmentPath);
+        return centerTwoHatchAutoPath;
+    }
+
+    //total y: 184
+    //139
+    //total x: 124.9
 
 }

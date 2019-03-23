@@ -82,6 +82,8 @@ public class Robot extends TimedRobot {
 		autoChooser.setDefaultOption("Do Nothing", new DoNothingAutoMode());
 		autoChooser.addOption("Baseline", new BaselineAutoMode());
 		autoChooser.addOption("Left Single Hatch Auto", new LeftSingleHatchAutoMode());
+		autoChooser.addOption("Left Spline Cargo Rocket", new LeftBackwardsDoubleHatchSpline());
+		autoChooser.addOption("Left Turn Cargo Rocket", new LeftRocketCargoDoubleHatchAutoMode());
 		//autoChooser.addOption("Right Single Hatch Auto", new LeftSingleHatchAutoMode());
 
 		SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -92,6 +94,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
+		if (autoModeExecuter != null && !autoModeExecuter.isFinished())
+			autoModeExecuter.stop();
 		enabledLooper.stop();
 
 		driveTrain.setCoastMode();
@@ -185,9 +189,9 @@ public class Robot extends TimedRobot {
 		driveTrain.setBrakeMode();
 		enabledLooper.start();
 		driveTrain.resetEncoders();
-		driveTrain.setGyroOffset(180.0);
+		//driveTrain.setGyroOffset(180.0);
 		poseEstimator.resetPosition();
-		poseEstimator.offsetPoseAngle(180.0);
+		//poseEstimator.offsetPoseAngle(180.0);
 		pivot.releaseBrake();
 	}
 
