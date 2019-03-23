@@ -29,7 +29,7 @@ public class DriveTrainConstants {
     public static final double kAngularPowerScalar = 1.7; // 1.7
 
     public static final int pcmId = 15;
-    public static final int pcmId2 = 0; //TBD
+    public static final int pcmId2 = 16; //TBD
 
     public static final double kTurnP = 0.0045;
     public static final double kTurnI = 0.0;
@@ -40,8 +40,8 @@ public class DriveTrainConstants {
     public static final int kShifterReverse = 6; // 1
     public static final int kHangerForward = 0; //TBD
     public static final int kHangerReverse = 7; //TBD
-    public static final int kOuterHangerForward = 4; //TBD 2nd PCM
-    public static final int kOuterHangerReverse = 3; //TBD 2nd PCM
+    public static final int kOuterHangerForward = 3; //TBD 2nd PCM
+    public static final int kOuterHangerReverse = 4; //TBD 2nd PCM
 
     public static final double kWheelDiameter = 4;
     public static final double kMagEncoderTicksTalon = 4096.0; //4096 = # of ticks per revolution | 4 X decoding for Talon SRX & Canifier only

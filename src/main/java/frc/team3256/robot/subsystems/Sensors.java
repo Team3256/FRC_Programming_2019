@@ -19,8 +19,8 @@ public class Sensors extends SubsystemBase {
     private Sensors() {
         compressor = new Compressor(pcmId);
         pressureSensor = new AnalogInput(kPressureSensorPort);
-        climbSensor = new Ultrasonic(kClimbTrigger, kClimbEcho);
-        climbSensor.setAutomaticMode(true);
+        //climbSensor = new Ultrasonic(kClimbTrigger, kClimbEcho);
+        //climbSensor.setAutomaticMode(true);
     }
 
     public static Sensors getInstance() {return instance == null ? instance = new Sensors(): instance;}
@@ -54,7 +54,7 @@ public class Sensors extends SubsystemBase {
     @Override
     public void outputToDashboard() {
         SmartDashboard.putNumber("Air Pressure Psi", getAirPressurePsi());
-        SmartDashboard.putNumber("Climb Ultrasonic", getRangeMM());
+        //SmartDashboard.putNumber("Climb Ultrasonic", getRangeMM());
     }
 
     @Override

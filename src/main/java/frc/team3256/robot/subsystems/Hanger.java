@@ -54,11 +54,11 @@ public class Hanger extends SubsystemBase implements Loop {
 
     private HangerState handleRetract() {
         if (stateChanged) {
-            hang.set(DoubleSolenoid.Value.kReverse);
+            outerHang.set(DoubleSolenoid.Value.kReverse);
             startTime = Timer.getFPGATimestamp();
         }
-        if(Timer.getFPGATimestamp() - startTime > 2) {
-            outerHang.set(DoubleSolenoid.Value.kReverse);
+        if(Timer.getFPGATimestamp() - startTime > 1) {
+            hang.set(DoubleSolenoid.Value.kReverse);
         }
         return defaultStateTransfer();
     }

@@ -1,5 +1,8 @@
 package frc.team3256.robot;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoMode;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -47,6 +50,12 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
+//		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+//		camera.setResolution(640, 480);
+//        camera.setFPS(30);
+//        camera.setPixelFormat(VideoMode.PixelFormat.kMJPEG);
+//        System.out.println(camera.getVideoMode().pixelFormat);
+
 		subsystemManager = new SubsystemManager();
 		DriveTrainBase.setDriveTrain(driveTrain);
 
@@ -58,7 +67,7 @@ public class Robot extends TimedRobot {
 		driveTrain.resetGyro();
 		pivot.zeroSensors();
 
-		enabledLooper.addLoops(driveTrain, pivot, elevator, intake, hanger);
+		enabledLooper.addLoops(driveTrain, pivot, elevator, intake, hanger, sensors);
 
 		poseEstimatorLooper = new Looper(1 / 50D);
 		poseEstimator = PoseEstimator.getInstance();
