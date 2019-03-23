@@ -1,6 +1,7 @@
 package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.warriorlib.subsystem.SubsystemBase;
 
 import static frc.team3256.robot.constants.UltrasonicConstants.*;
@@ -15,17 +16,17 @@ public class UltrasonicSensor extends SubsystemBase {
         climbUltrasonic.setEnabled(true);
     }
 
-    public void getRangeMM() {
-        climbUltrasonic.getRangeMM();
+    public static UltrasonicSensor getInstance() { return instance == null ? instance = new UltrasonicSensor() : instance; }
+
+    public double getRangeMM() {
+        return climbUltrasonic.getRangeMM();
     }
 
-    public void getRangeInches() {
-        climbUltrasonic.getRangeInches();
-    }
+    public double getRangeInches() { return climbUltrasonic.getRangeInches(); }
 
     @Override
     public void outputToDashboard() {
-
+        SmartDashboard.putNumber("UltraSonic MM", getRangeMM());
     }
 
     @Override

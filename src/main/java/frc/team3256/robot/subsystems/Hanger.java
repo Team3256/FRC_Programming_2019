@@ -1,6 +1,7 @@
 package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.constants.DriveTrainConstants;
 import frc.team3256.warriorlib.loop.Loop;
@@ -10,6 +11,9 @@ import static frc.team3256.robot.constants.DriveTrainConstants.*;
 public class Hanger extends SubsystemBase implements Loop {
     private static Hanger instance;
     private DoubleSolenoid hang;
+    private DoubleSolenoid outerHang;
+
+    private double startTime;
 
     public enum HangerState {
         HANGING,
@@ -34,7 +38,8 @@ public class Hanger extends SubsystemBase implements Loop {
     }
 
     private Hanger() {
-        hang = new DoubleSolenoid(DriveTrainConstants.pcmId, kHangerForward, kHangerReverse);
+        hang = new DoubleSolenoid(pcmId, kHangerForward, kHangerReverse);
+        outerHang = new DoubleSolenoid(pcmId, kOuterHangerForward, kOuterHangerReverse);
     }
 
     public static Hanger getInstance() { return instance == null ? instance = new Hanger() : instance; }
@@ -42,6 +47,7 @@ public class Hanger extends SubsystemBase implements Loop {
     private HangerState handleHang() {
         if (stateChanged) {
             hang.set(DoubleSolenoid.Value.kForward);
+            outerHang.set(DoubleSolenoid.Value.kForward);
         }
         return defaultStateTransfer();
     }
@@ -49,6 +55,10 @@ public class Hanger extends SubsystemBase implements Loop {
     private HangerState handleRetract() {
         if (stateChanged) {
             hang.set(DoubleSolenoid.Value.kReverse);
+            startTime = Timer.getFPGATimestamp();
+        }
+        if(Timer.getFPGATimestamp() - startTime > 2) {
+            outerHang.set(DoubleSolenoid.Value.kReverse);
         }
         return defaultStateTransfer();
     }
