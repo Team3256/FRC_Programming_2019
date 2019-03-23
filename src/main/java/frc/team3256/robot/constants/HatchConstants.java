@@ -47,7 +47,7 @@ public class HatchConstants {
     public static final double kHatchAngleOffset = -94.5;
 
     public static final double kPositionExhaustCargo = -90;
-    public static final double kPositionDeployHatch = -75;
+    public static final double kPositionDeployHatch = -73;
     public static final double kPositionCargoIntake = -28;
     public static final double kPositionHang = 30;
     public static final double kHatchPivotGearRatio = 202.5/90.0; //motor rotations to actual rotations

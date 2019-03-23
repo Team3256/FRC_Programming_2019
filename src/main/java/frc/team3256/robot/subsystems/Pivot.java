@@ -56,6 +56,7 @@ public class Pivot extends SubsystemBase {
     private boolean mUsingClosedLoop = false;
 
     private double mClosedLoopTarget = 0.0;
+    private double mStartIntakeTime = 0.0;
 
     private static Pivot instance;
 
@@ -119,6 +120,7 @@ public class Pivot extends SubsystemBase {
 
     @Override
     public void outputToDashboard() {
+        SmartDashboard.putNumber("Pivot Wait Time", mStartIntakeTime);
         SmartDashboard.putString("Pivot State", mCurrentState.name());
         SmartDashboard.putBoolean("Pivot Brake", mBrake.get() == DoubleSolenoid.Value.kForward);
         SmartDashboard.putNumber("Pivot Angle", getAngle());
@@ -249,16 +251,26 @@ public class Pivot extends SubsystemBase {
     }
 
     private SystemState handleHatchRetract() {
-        mHatchArm.set(DoubleSolenoid.Value.kReverse);
-        setWantedState(WantedState.WANTS_TO_DEPLOY_POS);
+        if (mStateChanged) {
+            mStartIntakeTime = Timer.getFPGATimestamp();
+        }
+
+        if (Timer.getFPGATimestamp() - mStartIntakeTime > 0.5) {
+            mHatchArm.set(DoubleSolenoid.Value.kReverse);
+            setWantedState(WantedState.WANTS_TO_DEPLOY_POS);
+            return defaultStateTransfer();
+        }
+
         return defaultStateTransfer();
     }
 
     private SystemState handleElevatorWait() {
-        if (mElevator.atClosedLoopTarget()) {
-            System.out.println("bruh");
+        if (mStateChanged) {
+            mStartIntakeTime = Timer.getFPGATimestamp();
+        }
+
+        if (mElevator.atClosedLoopTarget() && Timer.getFPGATimestamp() - mStartIntakeTime > 0.5) {
             setWantedState(WantedState.WANTS_TO_RETRACT_HATCH);
-            mElevator.setWantedState(Elevator.WantedState.WANTS_TO_HOLD);
             return defaultStateTransfer();
         }
 

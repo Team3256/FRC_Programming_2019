@@ -41,6 +41,7 @@ public class CargoIntake extends SubsystemBase {
     }
 
     private Pivot mPivot = Pivot.getInstance();
+    private Elevator mElevator = Elevator.getInstance();
 
     private CargoIntake() {
         mCargoIntakeLeft = TalonSRXUtil.generateGenericTalon(kIntake);
@@ -114,6 +115,10 @@ public class CargoIntake extends SubsystemBase {
 
         if (mStateChanged) {
             startTime = Timer.getFPGATimestamp();
+            if (!mPivot.isBrakeEngaged()) {
+                mElevator.setWantedState(Elevator.WantedState.WANTS_TO_INTAKE_CARGO);
+                mPivot.setWantedState(Pivot.WantedState.WANTS_TO_INTAKE_POS);
+            }
         }
 
         if (mPivot.isBrakeEngaged()) {
@@ -170,6 +175,7 @@ public class CargoIntake extends SubsystemBase {
         mCargoIntakeLeft.set(power);
         mCargoIntakeRight.set(power);
     }
+
 
     public boolean hasBall() {
 //        return ((Timer.getFPGATimestamp() - startTime) > kIntitialSpikeDelay) &&

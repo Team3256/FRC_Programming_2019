@@ -66,7 +66,7 @@ public class Robot extends TimedRobot {
 		poseEstimatorLooper.start();
 
 		// Default SmartDashboard
-		SmartDashboard.putBoolean("visionEnabled", true);
+		SmartDashboard.putBoolean("visionEnabled", false);
 		SmartDashboard.putBoolean("autoEnabled", true);
 		SmartDashboard.putString("ControlScheme", "Cargo");
 

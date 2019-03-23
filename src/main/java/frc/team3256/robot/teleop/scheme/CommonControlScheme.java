@@ -1,5 +1,6 @@
 package frc.team3256.robot.teleop.scheme;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.subsystems.CargoIntake;
 import frc.team3256.robot.subsystems.Hanger;
@@ -52,7 +53,6 @@ public abstract class CommonControlScheme extends XboxListenerBase {
         System.out.println("Right trigger");
         if (value > 0.25 && !rightTriggerWasPressed) {
             mCargoIntake.setWantedState(CargoIntake.WantedState.WANTS_TO_INTAKE);
-            mPivot.setWantedState(Pivot.WantedState.WANTS_TO_INTAKE_POS);
             rightTriggerWasPressed = true;
         } else {
             mCargoIntake.setWantedState(CargoIntake.WantedState.WANTS_TO_STOP);

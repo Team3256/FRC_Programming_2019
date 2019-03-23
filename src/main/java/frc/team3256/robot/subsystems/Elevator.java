@@ -30,6 +30,7 @@ public class Elevator extends SubsystemBase {
         WANTS_TO_MANUAL_DOWN,
         WANTS_TO_HOME,
         WANTS_TO_HOLD,
+        WANTS_TO_INTAKE_CARGO,
         WANTS_TO_HIGH_CARGO,
         WANTS_TO_MID_CARGO,
         WANTS_TO_LOW_CARGO,
@@ -56,7 +57,7 @@ public class Elevator extends SubsystemBase {
 
     private double mClosedLoopTarget = 0.0;
 
-    private boolean mIsHomed = false;
+    private boolean mIsHomed = true;
 
     private static Elevator instance;
     public static Elevator getInstance() {
@@ -216,6 +217,13 @@ public class Elevator extends SubsystemBase {
             case WANTS_TO_MANUAL_DOWN:
                 mUsingClosedLoop = false;
                 return ElevatorControlState.MANUAL_DOWN;
+            case WANTS_TO_INTAKE_CARGO:
+                if (mStateChanged) {
+                    mClosedLoopPIDPort = kElevatorClosedLoopPort;
+                    mClosedLoopTarget = kPositionIntakeCargo;
+                }
+                mUsingClosedLoop = true;
+                break;
             case WANTS_TO_HIGH_CARGO:
                 if (mStateChanged) {
                     mClosedLoopPIDPort = kElevatorClosedLoopPort;
@@ -242,6 +250,7 @@ public class Elevator extends SubsystemBase {
                     mClosedLoopPIDPort = kElevatorClosedLoopPort;
                     mClosedLoopTarget = kPositionShip;
                 }
+                mUsingClosedLoop = true;
                 break;
             case WANTS_TO_HIGH_HATCH:
                 if (mStateChanged) {
@@ -259,9 +268,9 @@ public class Elevator extends SubsystemBase {
                 break;
             case WANTS_TO_LOW_HATCH:
                 if (mStateChanged) {
-                }
                     mClosedLoopPIDPort = kElevatorClosedLoopPort;
                     mClosedLoopTarget = kPositionLowHatch;
+                }
                 mUsingClosedLoop = true;
                 break;
             case WANTS_TO_START_INTAKE_HATCH:
@@ -376,9 +385,9 @@ public class Elevator extends SubsystemBase {
             return false;
         }
 
-        if (getCurrentPosition() < 1 && getCurrentPosition() > -1) {
-            return true;
-        }
+//        if (getCurrentPosition() < 1 && getCurrentPosition() > -1) {
+//            return true;
+//        }
 
         return (Math.abs(getCurrentPositionInches() - mClosedLoopTarget) < 0.8);
     }
