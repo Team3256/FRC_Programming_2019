@@ -23,7 +23,7 @@ public class TeleopUpdater {
     private Pivot mPivot = Pivot.getInstance();
     private CargoIntake mCargoIntake = CargoIntake.getInstance();
     private Hanger mHanger = Hanger.getInstance();
-    private RobotCompressor mRobotCompressor = RobotCompressor.getInstance();
+    private Sensors mSensors = Sensors.getInstance();
 
     private static TeleopUpdater instance;
     public static TeleopUpdater getInstance() {
@@ -48,6 +48,15 @@ public class TeleopUpdater {
                 driverController.getHighGear()
         );
         driveTrain.setHighGear(drivePower.getHighGear());
+
+        //Implement once we get Ultrasonics installed
+//        if(mSensors.getRangeMM() < 70 && mHanger.getHangerState() == Hanger.HangerState.HANGING) {
+//            driveTrain.setHighGear(false);
+//            driveTrain.setPowerOpenLoop(drivePower.getLeft()/2, drivePower.getRight()/2);
+//        } else {
+//            driveTrain.setPowerOpenLoop(drivePower.getLeft(), drivePower.getRight());
+//        }
+
         driveTrain.setPowerOpenLoop(drivePower.getLeft(), drivePower.getRight());
     }
 

@@ -27,8 +27,6 @@ public class DriveTrainConstants {
     public static final double kMaxAccel = 1000;
     public static final double kAllowedErr = 0;
     public static final double kAngularPowerScalar = 1.7; // 1.7
-    //Analog for Pressure Sensor
-    public static final int kPressureSensorPort = 0; //Should be 0 for comp
 
     public static final int pcmId = 15;
 
