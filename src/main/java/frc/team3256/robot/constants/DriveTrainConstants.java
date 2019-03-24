@@ -22,6 +22,12 @@ public class DriveTrainConstants {
     public static final double kVelocityHighGearD = 0;
     public static final double kVelocityHighGearIZone = 0;
     public static final double kVelocityHighGearF = 1e-5;
+
+    //Align
+    public static final double kAlignkP = 0.0;
+    public static final double kAlignkI = 0.0;
+    public static final double kAlignkD = 0.0;
+
     //Common
     public static final double kVelocityMaxRPM = 4150;
     public static final double kMaxAccel = 1000;
@@ -34,7 +40,6 @@ public class DriveTrainConstants {
     public static final double kTurnP = 0.0045;
     public static final double kTurnI = 0.0;
     public static final double kTurnD = 0.00001;
-    public static final double kAlignP = 0.005;
 
     public static final int kShifterForward = 1; // 6
     public static final int kShifterReverse = 6; // 1

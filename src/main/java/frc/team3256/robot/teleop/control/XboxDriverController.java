@@ -41,6 +41,11 @@ public class XboxDriverController implements IDriverController {
         return xboxController.getStartButton();
     }
 
+    @Override
+    public boolean getShouldAssist() {
+        return xboxController.getXButton();
+    }
+
     public boolean getShouldStopAuto() {
         return xboxController.getAButton();
     }

@@ -25,6 +25,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     private boolean init = false;
     private PigeonIMU gyro;
     private PIDController turnPIDController = new PIDController(kTurnP, kTurnI, kTurnD);
+    private PIDController alignPIDController;
     private double gyroOffset = 0;
 
     private static final double kThrottleDeadband = 0.02;
@@ -143,9 +144,26 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         rightMaster.setInverted(false); //false
         leftMaster.setInverted(true); //true
 
+        alignPIDController  = new PIDController(kAlignkP, kAlignkI, kAlignkD);
+
 //        leftMaster.setClosedLoopRampRate(0.0);
 //        rightMaster.setClosedLoopRampRate(0.0);
     }
+
+    //pynetworktables
+    //opencv3
+    //gstreamer
+    //ugly
+    public DrivePower autoAlignAssist(double throttle, double pixelDisplacement) {
+        if (throttle == 0) {
+            return new DrivePower(0,0,true);
+        }
+        double turnOutput = alignPIDController.calculatePID(pixelDisplacement, 0);
+        double leftOutput = throttle + turnOutput;
+        double rightOutput = throttle - turnOutput;
+        return new DrivePower(leftOutput, rightOutput, true);
+    }
+
 
     public DrivePower betterCurvatureDrive(double throttle, double wheel, boolean isQuickTurn, boolean highGear) {
         wheel = handleDeadband(wheel, kWheelDeadband);

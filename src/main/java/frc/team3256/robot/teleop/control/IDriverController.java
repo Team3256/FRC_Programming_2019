@@ -8,4 +8,5 @@ public interface IDriverController {
     boolean getHighGear();
 
     boolean getShouldClimb();
+    boolean getShouldAssist();
 }

@@ -44,12 +44,18 @@ public class TeleopUpdater {
 
     public void handleDrive() {
         driveTrain.setBrakeMode();
-        DrivePower drivePower = DriveTrain.getInstance().betterCurvatureDrive(
-                Math.abs(driverController.getThrottle()) > 0.15 ? driverController.getThrottle() : 0.0,
-                driverController.getTurn()*(driverController.getHighGear() ? 0.6 : 1.0),
-                driverController.getQuickTurn(),
-                driverController.getHighGear()
-        );
+        DrivePower drivePower;
+        if (driverController.getShouldAssist()) {
+            int pixelDisplacement = (int) SmartDashboard.getNumber("PixelDisplacement", 0);
+            drivePower = driveTrain.autoAlignAssist(driverController.getThrottle(), pixelDisplacement);
+        } else {
+            drivePower = DriveTrain.getInstance().betterCurvatureDrive(
+                    Math.abs(driverController.getThrottle()) > 0.15 ? driverController.getThrottle() : 0.0,
+                    driverController.getTurn() * (driverController.getHighGear() ? 0.6 : 1.0),
+                    driverController.getQuickTurn(),
+                    driverController.getHighGear()
+            );
+        }
         driveTrain.setHighGear(drivePower.getHighGear());
 
         //Implement once we get Ultrasonics installed
