@@ -28,8 +28,7 @@ public class Robot extends TimedRobot {
 	private Hanger hanger = Hanger.getInstance();
 	private CargoIntake intake = CargoIntake.getInstance();
 
-	private Sensors sensors = Sensors.getInstance();
-	private UltrasonicSensor ultrasonicSensor = UltrasonicSensor.getInstance();
+	private NewSensors newSensors = NewSensors.getInstance();
 
 	// Pure Pursuit
 	private PurePursuitTracker purePursuitTracker = PurePursuitTracker.getInstance();
@@ -81,13 +80,13 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putString("ControlScheme", "Cargo");
 
 		// Pneumatics
-		sensors.turnOnCompressor();
+		newSensors.turnOnCompressor();
 		pivot.releaseBrake();
 		pivot.setHatchArm(false);
 
 		teleopUpdater = TeleopUpdater.getInstance();
 
-		subsystemManager.addSubsystems(driveTrain, elevator, intake, pivot, ultrasonicSensor);
+		subsystemManager.addSubsystems(driveTrain, elevator, intake, pivot, newSensors);
 
 		autoChooser.setDefaultOption("Do Nothing", new DoNothingAutoMode());
 		autoChooser.addOption("Baseline", new BaselineAutoMode());
@@ -119,7 +118,7 @@ public class Robot extends TimedRobot {
 		//elevator.runZeroPower();
 		//cargoIntake.setIntakePower(0);
 		driveTrain.runZeroPower();
-		sensors.turnOffCompressor();
+		newSensors.turnOffCompressor();
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
 		poseEstimator.reset();
@@ -197,7 +196,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		sensors.turnOnCompressor();
+		newSensors.turnOnCompressor();
 		driveTrain.setBrakeMode();
 		enabledLooper.start();
 		driveTrain.resetEncoders();

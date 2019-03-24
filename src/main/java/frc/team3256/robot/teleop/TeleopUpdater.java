@@ -9,7 +9,7 @@ import frc.team3256.warriorlib.control.DrivePower;
 import frc.team3256.warriorlib.control.XboxControllerObserver;
 import frc.team3256.warriorlib.control.XboxListenerBase;
 
-import static frc.team3256.robot.constants.UltrasonicConstants.*;
+import static frc.team3256.robot.constants.NewSensorConstants.*;
 
 public class TeleopUpdater {
     private DriveTrain driveTrain = DriveTrain.getInstance();
@@ -25,8 +25,7 @@ public class TeleopUpdater {
     private Pivot mPivot = Pivot.getInstance();
     private CargoIntake mCargoIntake = CargoIntake.getInstance();
     private Hanger mHanger = Hanger.getInstance();
-    private Sensors mSensors = Sensors.getInstance();
-    private UltrasonicSensor ultrasonicSensor = UltrasonicSensor.getInstance();
+    private NewSensors mNewSensors = NewSensors.getInstance();
 
     private static TeleopUpdater instance;
     public static TeleopUpdater getInstance() {
@@ -58,15 +57,17 @@ public class TeleopUpdater {
         }
         driveTrain.setHighGear(drivePower.getHighGear());
 
-        //Implement once we get Ultrasonics installed
-//        if(ultrasonicSensor.getClimbRangeMM() < kClimbGroundRange
-//           && mHanger.getHangerState() == Hanger.HangerState.HANGING
-//           && mElevator.getCurrentPosition() < 0) {
-//            driveTrain.setHighGear(false);
-//            driveTrain.setPowerOpenLoop(drivePower.getLeft()/2, drivePower.getRight()/2);
-//        } else {
-//            driveTrain.setPowerOpenLoop(drivePower.getLeft(), drivePower.getRight());
-//        }
+        //Implement and test once we get Ultrasonics installed and determine range
+        if((mNewSensors.getClimbLeftRange() < kClimbGroundRange
+                || mNewSensors.getClimbRightRange() < kClimbGroundRange
+                || mNewSensors.getFrontRange() < kClimbWallRange)
+                && mHanger.getHangerState() == Hanger.HangerState.HANGING
+                && mElevator.getCurrentPosition() < 0) { //Should be half elevator height
+            driveTrain.setHighGear(false);
+            driveTrain.setPowerOpenLoop(drivePower.getLeft()/2, drivePower.getRight()/2);
+        } else {
+            driveTrain.setPowerOpenLoop(drivePower.getLeft(), drivePower.getRight());
+        }
 
         driveTrain.setPowerOpenLoop(drivePower.getLeft(), drivePower.getRight());
     }
