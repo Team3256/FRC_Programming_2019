@@ -160,7 +160,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
             return new DrivePower(0,0,false);
         }
         double turnOutput = alignPIDController.calculatePID(pixelDisplacement, 0);
-        turnOutput = Range.clip(turnOutput, -1, 1)
+        turnOutput = Range.clip(turnOutput, -1, 1);
         double leftOutput = throttle + turnOutput;
         double rightOutput = throttle - turnOutput;
         return new DrivePower(leftOutput, rightOutput, false);
