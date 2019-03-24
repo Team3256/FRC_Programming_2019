@@ -82,7 +82,8 @@ public class TeleopUpdater {
 
         //Implement and test once we get Ultrasonics installed and determine range
 //        if(mNewSensors.getFrontRange() < kHatchRange
-//                && mCargoIntake.getCargoState() == CargoIntake.SystemState.INTAKING) {
+//                && mCargoIntake.getCargoState() == CargoIntake.SystemState.INTAKING
+//                && drivePower.getLeft() > 0 && drivePower.getRight() > 0) {
 //            driveTrain.setPowerOpenLoop(0,0);
 //        }
 
