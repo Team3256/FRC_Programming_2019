@@ -70,14 +70,20 @@ public class TeleopUpdater {
 
         //Implement and test once we get Ultrasonics installed and determine range
 //        if((mNewSensors.getClimbLeftRange() < kClimbGroundRange
-//                || mNewSensors.getClimbRightRange() < kClimbGroundRange
-//                || mNewSensors.getFrontRange() < kClimbWallRange)
-//                && mHanger.getHangerState() == Hanger.HangerState.HANGING
-//                && mElevator.getCurrentPosition() < 0) { //Should be half elevator height
+//              || mNewSensors.getClimbRightRange() < kClimbGroundRange
+//              || mNewSensors.getFrontRange() < kClimbWallRange)
+//              && mHanger.getHangerState() == Hanger.HangerState.HANGING
+//              && mElevator.getCurrentPosition() < 0) { //Should be half elevator height
 //            driveTrain.setHighGear(false);
 //            driveTrain.setPowerOpenLoop(drivePower.getLeft()/2, drivePower.getRight()/2);
 //        } else {
 //            driveTrain.setPowerOpenLoop(drivePower.getLeft(), drivePower.getRight());
+//        }
+
+        //Implement and test once we get Ultrasonics installed and determine range
+//        if(mNewSensors.getFrontRange() < kHatchRange
+//                && mCargoIntake.getCargoState() == CargoIntake.SystemState.INTAKING) {
+//            driveTrain.setPowerOpenLoop(0,0);
 //        }
 
         driveTrain.setPowerOpenLoop(drivePower.getLeft(), drivePower.getRight());

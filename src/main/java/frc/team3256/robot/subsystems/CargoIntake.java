@@ -17,7 +17,7 @@ public class CargoIntake extends SubsystemBase {
     boolean mStateChanged;
     boolean mWantedStateChanged;
 
-    private enum SystemState {
+    public enum SystemState {
         INTAKING,
         EXHAUSTING,
         STOP,
@@ -175,6 +175,11 @@ public class CargoIntake extends SubsystemBase {
         mCargoIntakeLeft.set(power);
         mCargoIntakeRight.set(power);
     }
+
+    public SystemState getCargoState() {
+        return mCurrentState;
+    }
+
 
 
     public boolean hasBall() {
