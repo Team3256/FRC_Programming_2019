@@ -44,7 +44,7 @@ public class HatchConstants {
     public static final int kHatchPingChannel = 0;
     public static final int kHatchEchoChannel = 0;
 
-    public static final double kHatchAngleOffset = -94.5;
+    public static final double kHatchAngleOffset = -91.5;
 
     public static final double kPositionExhaustCargo = -90;
     public static final double kPositionDeployHatch = -73;

@@ -29,6 +29,7 @@ public class Robot extends TimedRobot {
 	private CargoIntake intake = CargoIntake.getInstance();
 
 	private Sensors sensors = Sensors.getInstance();
+	private UltrasonicSensor ultrasonicSensor = UltrasonicSensor.getInstance();
 
 	// Pure Pursuit
 	private PurePursuitTracker purePursuitTracker = PurePursuitTracker.getInstance();
@@ -67,7 +68,7 @@ public class Robot extends TimedRobot {
 		driveTrain.resetGyro();
 		pivot.zeroSensors();
 
-		enabledLooper.addLoops(driveTrain, pivot, elevator, intake, hanger, sensors);
+		enabledLooper.addLoops(driveTrain, pivot, elevator, intake, hanger);
 
 		poseEstimatorLooper = new Looper(1 / 50D);
 		poseEstimator = PoseEstimator.getInstance();
@@ -86,7 +87,7 @@ public class Robot extends TimedRobot {
 
 		teleopUpdater = TeleopUpdater.getInstance();
 
-		subsystemManager.addSubsystems(driveTrain, elevator, intake, pivot, sensors);
+		subsystemManager.addSubsystems(driveTrain, elevator, intake, pivot, ultrasonicSensor);
 
 		autoChooser.setDefaultOption("Do Nothing", new DoNothingAutoMode());
 		autoChooser.addOption("Baseline", new BaselineAutoMode());

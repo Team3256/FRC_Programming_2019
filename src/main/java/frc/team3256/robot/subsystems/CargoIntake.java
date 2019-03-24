@@ -48,7 +48,7 @@ public class CargoIntake extends SubsystemBase {
         mCargoIntakeRight = TalonSRXUtil.generateSlaveTalon(kIntakeSlave, kIntake);
 
         mCargoIntakeLeft.setInverted(false);
-        mCargoIntakeRight.setInverted(true);
+        mCargoIntakeRight.setInverted(false);
     }
 
     public void setWantedState(WantedState wantedState) { this.mWantedState = wantedState; }

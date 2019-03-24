@@ -41,7 +41,7 @@ public class ElevatorConstants {
     public static final double kElevatorOffset = 9.0;
     private static final double kHatchPositionOffset = -7; //has to be negative
     public static final double kPositionIntakeCargo = 7.0;
-    public static final double kHatchHumanPlayerPosition = 19.0 + kHatchPositionOffset; // 1
+    public static final double kHatchHumanPlayerPosition = 17.5 + kHatchPositionOffset; // 1
     public static final double kPositionHighHatch = 75 + kHatchPositionOffset;
     public static final double kPositionMidHatch = 48 + kHatchPositionOffset;
     public static final double kPositionLowHatch = 21.5 + kHatchPositionOffset;

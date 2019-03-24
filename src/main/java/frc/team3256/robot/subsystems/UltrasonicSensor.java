@@ -9,24 +9,29 @@ import static frc.team3256.robot.constants.UltrasonicConstants.*;
 public class UltrasonicSensor extends SubsystemBase {
     private static UltrasonicSensor instance;
 
-    private Ultrasonic climbUltrasonic;
+    private Ultrasonic climbUltrasonic, hatchUltrasonic;
 
     private UltrasonicSensor() {
-        climbUltrasonic = new Ultrasonic(kClimbUltrasonicPing,kClimbUltrasonicEcho);
+        climbUltrasonic = new Ultrasonic(kClimbUltrasonicPing, kClimbUltrasonicEcho);
+        hatchUltrasonic = new Ultrasonic(kHatchUltrasonicPing, kHatchUltrasSonicEcho);
         climbUltrasonic.setEnabled(true);
+        hatchUltrasonic.setEnabled(true);
     }
 
     public static UltrasonicSensor getInstance() { return instance == null ? instance = new UltrasonicSensor() : instance; }
 
-    public double getRangeMM() {
+    public double getClimbRangeMM() {
         return climbUltrasonic.getRangeMM();
     }
 
-    public double getRangeInches() { return climbUltrasonic.getRangeInches(); }
+    public double getHatchRangeMM() {
+        return hatchUltrasonic.getRangeMM();
+    }
 
     @Override
     public void outputToDashboard() {
-        SmartDashboard.putNumber("UltraSonic MM", getRangeMM());
+        SmartDashboard.putNumber("UltraSonic MM", getClimbRangeMM());
+        SmartDashboard.putNumber("Hatch MM", getHatchRangeMM());
     }
 
     @Override

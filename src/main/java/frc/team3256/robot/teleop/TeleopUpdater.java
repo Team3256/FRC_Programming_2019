@@ -9,6 +9,8 @@ import frc.team3256.warriorlib.control.DrivePower;
 import frc.team3256.warriorlib.control.XboxControllerObserver;
 import frc.team3256.warriorlib.control.XboxListenerBase;
 
+import static frc.team3256.robot.constants.UltrasonicConstants.*;
+
 public class TeleopUpdater {
     private DriveTrain driveTrain = DriveTrain.getInstance();
 
@@ -24,6 +26,7 @@ public class TeleopUpdater {
     private CargoIntake mCargoIntake = CargoIntake.getInstance();
     private Hanger mHanger = Hanger.getInstance();
     private Sensors mSensors = Sensors.getInstance();
+    private UltrasonicSensor ultrasonicSensor = UltrasonicSensor.getInstance();
 
     private static TeleopUpdater instance;
     public static TeleopUpdater getInstance() {
@@ -50,7 +53,9 @@ public class TeleopUpdater {
         driveTrain.setHighGear(drivePower.getHighGear());
 
         //Implement once we get Ultrasonics installed
-//        if(mSensors.getRangeMM() < 70 && mHanger.getHangerState() == Hanger.HangerState.HANGING) {
+//        if(ultrasonicSensor.getClimbRangeMM() < kClimbGroundRange
+//           && mHanger.getHangerState() == Hanger.HangerState.HANGING
+//           && mElevator.getCurrentPosition() < 0) {
 //            driveTrain.setHighGear(false);
 //            driveTrain.setPowerOpenLoop(drivePower.getLeft()/2, drivePower.getRight()/2);
 //        } else {
