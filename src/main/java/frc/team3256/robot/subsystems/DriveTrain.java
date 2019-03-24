@@ -156,12 +156,12 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     //ugly
     public DrivePower autoAlignAssist(double throttle, double pixelDisplacement) {
         if (throttle == 0) {
-            return new DrivePower(0,0,true);
+            return new DrivePower(0,0,false);
         }
         double turnOutput = alignPIDController.calculatePID(pixelDisplacement, 0);
         double leftOutput = throttle + turnOutput;
         double rightOutput = throttle - turnOutput;
-        return new DrivePower(leftOutput, rightOutput, true);
+        return new DrivePower(leftOutput, rightOutput, false);
     }
 
 
