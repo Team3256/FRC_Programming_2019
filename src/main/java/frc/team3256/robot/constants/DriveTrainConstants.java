@@ -24,7 +24,7 @@ public class DriveTrainConstants {
     public static final double kVelocityHighGearF = 1e-5;
 
     //Align
-    public static final double kAlignkP = 0.0;
+    public static final double kAlignkP = 0.003;
     public static final double kAlignkI = 0.0;
     public static final double kAlignkD = 0.0;
 

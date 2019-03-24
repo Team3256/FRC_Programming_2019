@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.constants.DriveTrainConstants;
 import frc.team3256.robot.operations.PIDController;
+import frc.team3256.robot.operations.Range;
 import frc.team3256.warriorlib.control.DrivePower;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 import frc.team3256.warriorlib.loop.Loop;
@@ -159,6 +160,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
             return new DrivePower(0,0,false);
         }
         double turnOutput = alignPIDController.calculatePID(pixelDisplacement, 0);
+        turnOutput = Range.clip(turnOutput, -1, 1)
         double leftOutput = throttle + turnOutput;
         double rightOutput = throttle - turnOutput;
         return new DrivePower(leftOutput, rightOutput, false);

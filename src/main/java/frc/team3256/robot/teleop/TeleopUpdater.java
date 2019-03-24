@@ -27,6 +27,8 @@ public class TeleopUpdater {
     private Hanger mHanger = Hanger.getInstance();
     private NewSensors mNewSensors = NewSensors.getInstance();
 
+    private boolean assisted;
+
     private static TeleopUpdater instance;
     public static TeleopUpdater getInstance() {
         return instance == null ? instance = new TeleopUpdater() : instance;
@@ -47,6 +49,11 @@ public class TeleopUpdater {
         if (driverController.getShouldAssist()) {
             int pixelDisplacement = (int) SmartDashboard.getNumber("PixelDisplacement", 0);
             drivePower = driveTrain.autoAlignAssist(driverController.getThrottle(), pixelDisplacement);
+
+            if (!assisted) {
+                assisted = true;
+                SmartDashboard.putBoolean("visionEnabled", true);
+            }
         } else {
             drivePower = DriveTrain.getInstance().betterCurvatureDrive(
                     Math.abs(driverController.getThrottle()) > 0.15 ? driverController.getThrottle() : 0.0,
@@ -54,6 +61,10 @@ public class TeleopUpdater {
                     driverController.getQuickTurn(),
                     driverController.getHighGear()
             );
+            if (assisted) {
+                assisted = false;
+                SmartDashboard.putBoolean("visionEnabled", false);
+            }
         }
         driveTrain.setHighGear(drivePower.getHighGear());
 
