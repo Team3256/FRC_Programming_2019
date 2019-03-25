@@ -27,7 +27,7 @@ public class TeleopUpdater {
     private Hanger mHanger = Hanger.getInstance();
     private NewSensors mNewSensors = NewSensors.getInstance();
 
-    private boolean assisted;
+    private boolean assisted = false;
 
     private static TeleopUpdater instance;
     public static TeleopUpdater getInstance() {

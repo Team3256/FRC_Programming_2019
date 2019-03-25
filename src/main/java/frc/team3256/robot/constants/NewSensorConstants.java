@@ -5,12 +5,10 @@ public class NewSensorConstants {
     public static final int kPressureSensorPort = 0; //Should be 0 for comp
 
     //DIO
-    public static final int kClimbUltrasonicLeftPing = 3; //TBD
-    public static final int kClimbUltrasonicLeftEcho = 4; //TBD
-    public static final int kClimbUltrasonicRightPing = 1; //TBD
-    public static final int kClimbUltrasonicRightEcho = 2; //TBD
-    public static final int kFrontUltrasonicPing = 5; //TBD
-    public static final int kFrontUltrasonicEcho = 6; //TBD
+    public static final int kClimbUltrasonicPing = 3; //TBD
+    public static final int kClimbUltrasonicEcho = 4; //TBD
+    public static final int kFrontUltrasonicPing = 1; //TBD
+    public static final int kFrontUltrasonicEcho = 2; //TBD
 
     //Ranges
     public static final double kClimbGroundRange = 60; //TBD

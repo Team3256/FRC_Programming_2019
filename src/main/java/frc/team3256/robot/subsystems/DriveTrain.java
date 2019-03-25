@@ -151,10 +151,6 @@ public class DriveTrain extends DriveTrainBase implements Loop {
 //        rightMaster.setClosedLoopRampRate(0.0);
     }
 
-    //pynetworktables
-    //opencv3
-    //gstreamer
-    //ugly
     public DrivePower autoAlignAssist(double throttle, double pixelDisplacement) {
         if (throttle == 0) {
             return new DrivePower(0,0,false);

@@ -14,16 +14,14 @@ public class NewSensors extends SubsystemBase {
 
     private Compressor compressor;
     private AnalogInput pressureSensor;
-    private Ultrasonic climbUltrasonicLeft, climbUltrasonicRight, ultrasonicFront;
+    private Ultrasonic climbUltrasonic, ultrasonicFront;
 
     private NewSensors() {
         compressor = new Compressor(pcmId);
         pressureSensor = new AnalogInput(kPressureSensorPort);
-        climbUltrasonicLeft = new Ultrasonic(kClimbUltrasonicLeftPing, kClimbUltrasonicLeftEcho);
-        climbUltrasonicRight = new Ultrasonic(kClimbUltrasonicRightPing, kClimbUltrasonicRightEcho);
+        climbUltrasonic = new Ultrasonic(kClimbUltrasonicPing, kClimbUltrasonicEcho);
         ultrasonicFront = new Ultrasonic(kFrontUltrasonicPing, kFrontUltrasonicEcho);
-        climbUltrasonicLeft.setEnabled(true);
-        climbUltrasonicRight.setEnabled(true);
+        climbUltrasonic.setEnabled(true);
         ultrasonicFront.setEnabled(true);
     }
 
@@ -40,9 +38,7 @@ public class NewSensors extends SubsystemBase {
 
     public double getAirPressurePsi() { return 250.0 * (pressureSensor.getVoltage()/4.75) - 25; }
 
-    public double getClimbLeftRange() { return climbUltrasonicLeft.getRangeMM(); }
-
-    public double getClimbRightRange() { return climbUltrasonicRight.getRangeMM(); }
+    public double getClimbRange() { return climbUltrasonic.getRangeMM(); }
 
     public double getFrontRange() { return ultrasonicFront.getRangeMM(); }
 
@@ -50,8 +46,7 @@ public class NewSensors extends SubsystemBase {
     @Override
     public void outputToDashboard() {
         SmartDashboard.putNumber("Air Pressure Psi", getAirPressurePsi());
-        SmartDashboard.putNumber("ClimbLeft MM", getClimbLeftRange());
-        SmartDashboard.putNumber("ClimbRight MM", getClimbRightRange());
+        SmartDashboard.putNumber("Climb MM", getClimbRange());
         SmartDashboard.putNumber("Front MM", getFrontRange());
     }
 

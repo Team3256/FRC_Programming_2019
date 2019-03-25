@@ -192,11 +192,16 @@ public class Pivot extends SubsystemBase {
 
     private SystemState handleHold() {
         if (mStateChanged) {
-            mMaster.selectProfileSlot(kHatchHoldPort, 0);
-            mMaster.set(ControlMode.Position, getEncoderValue());
+            if (isBrakeEngaged()) {
+                mMaster.set(ControlMode.PercentOutput, 0.0);
+            } else {
+                mMaster.selectProfileSlot(kHatchHoldPort, 0);
+                mMaster.set(ControlMode.Position, getEncoderValue());
+            }
         }
 
         if (isBrakeEngaged()) {
+            mMaster.set(ControlMode.PercentOutput, 0.0);
             return SystemState.HOLD;
         }
 
