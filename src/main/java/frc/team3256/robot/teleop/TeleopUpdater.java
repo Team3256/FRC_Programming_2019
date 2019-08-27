@@ -52,9 +52,9 @@ public class TeleopUpdater {
 //                driverControlScheme.getRightX()*(driverControlScheme.isHighGear() ? 0.6 : 1.0),
 //                driverControlScheme.isQuickTurn(),
 //                driverControlScheme.isHighGear());
-        DrivePower drivePower = DriveTrain.getInstance().curvatureDrive(
+        DrivePower drivePower = DriveTrain.getInstance().betterCurvatureDrive(
                 driverControlScheme.getLeftY(),
-                driverControlScheme.getRightX()*(driverControlScheme.isHighGear() ? 0.6 : 1.0),
+                driverControlScheme.getRightX(),
                 driverControlScheme.isQuickTurn(),
                 driverControlScheme.isHighGear()
         );

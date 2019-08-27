@@ -164,7 +164,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		robotCompressor.turnOn();
+		//robotCompressor.turnOn();
 		driveTrain.setBrakeMode();
 		teleopLooper.start();
 		driveTrain.resetEncoders();
