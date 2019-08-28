@@ -18,8 +18,8 @@ public class Robot extends TimedRobot {
 //	// Subsystems
 	private DriveTrain driveTrain = DriveTrain.getInstance();
 	private Elevator elevator = Elevator.getInstance();
-	private CargoIntake cargoIntake = CargoIntake.getInstance();
-	private HatchPivot hatchPivot = HatchPivot.getInstance();
+	private CargoIntakeStateBased cargoIntake = CargoIntakeStateBased.getInstance();
+	private PivotStateBased hatchPivot = PivotStateBased.getInstance();
 	private Hanger hanger = Hanger.getInstance();
 
 	private RobotCompressor robotCompressor = RobotCompressor.getInstance();
@@ -69,7 +69,7 @@ public class Robot extends TimedRobot {
 		// Pneumatics
 		robotCompressor.turnOn();
 		hanger.retract();
-		hatchPivot.retractHatch();
+		hatchPivot.setWantedState(PivotStateBased.WantedState.WANTS_TO_RETRACT_HATCH);
 		hatchPivot.engageBrake();
 
 		teleopUpdater = TeleopUpdater.getInstance();
@@ -85,10 +85,10 @@ public class Robot extends TimedRobot {
 		driveTrain.setCoastMode();
 		driveTrain.setHighGear(true);
 
-		elevator.runZeroPower();
-		cargoIntake.setIntakePower(0);
+		elevator.setWantedState(Elevator.WantedState.WANTS_TO_ZERO_POWER);
+		cargoIntake.setWantedState(CargoIntakeStateBased.WantedState.WANTS_TO_STOP);
 		driveTrain.runZeroPower();
-		hatchPivot.setPositionDeploy();
+		hatchPivot.setWantedState(PivotStateBased.WantedState.WANTS_TO_DEPLOY_HATCH);
 		robotCompressor.turnOff();
 		poseEstimator.reset();
 	}
@@ -150,8 +150,8 @@ public class Robot extends TimedRobot {
 			if (!autoModeExecuter.isFinished()) {
 				autoModeExecuter.stop();
 				//make sure all our subsystems stop
-				elevator.runZeroPower();
-				cargoIntake.setIntakePower(0);
+				elevator.setWantedState(Elevator.WantedState.WANTS_TO_ZERO_POWER);
+				cargoIntake.setWantedState(CargoIntakeStateBased.WantedState.WANTS_TO_STOP);
 				driveTrain.setPowerClosedLoop(0, 0, true);
 				//hatchPivot.setPositionDeploy();
 			}
@@ -164,7 +164,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		//robotCompressor.turnOn();
+		robotCompressor.turnOn();
 		driveTrain.setBrakeMode();
 		teleopLooper.start();
 		driveTrain.resetEncoders();

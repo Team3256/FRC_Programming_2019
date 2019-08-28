@@ -1,27 +1,28 @@
 package frc.team3256.robot.teleop.control;
 
+import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.teleop.TeleopUpdater;
 
 public class HatchIntakeControlScheme extends CommonControlScheme {
 
     @Override
     public void onAPressed() {
-        elevator.setPositionLowHatch();
+        elevator.setWantedState(Elevator.WantedState.WANTS_TO_LOW_HATCH);
     }
 
     @Override
     public void onBPressed() {
-        elevator.setPositionHome();
+        elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOME);
     }
 
     @Override
     public void onXPressed() {
-        elevator.setPositionMidHatch();
+        elevator.setWantedState(Elevator.WantedState.WANTS_TO_MID_HATCH);
     }
 
     @Override
     public void onYPressed() {
-        elevator.setPositionHighHatch();
+        elevator.setWantedState(Elevator.WantedState.WANTS_TO_HIGH_HATCH);
     }
 
     @Override

@@ -1,28 +1,29 @@
 package frc.team3256.robot.teleop.control;
 
+import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.teleop.TeleopUpdater;
 
 
 public class CargoIntakeControlScheme extends CommonControlScheme {
     @Override
     public void onAPressed() {
-        elevator.setPositionLowCargo();
+        elevator.setWantedState(Elevator.WantedState.WANTS_TO_MANUAL_DOWN);
     }
 
     @Override
     public void onBPressed() {
-        elevator.setPositionShip();
+        elevator.setWantedState(Elevator.WantedState.WANTS_TO_MID_CARGO);
     }
 
     // Home elevator
     @Override
     public void onXPressed() {
-        elevator.setPositionMidCargo();
+        elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOME);
     }
 
     @Override
     public void onYPressed() {
-        elevator.setPositionHighCargo();
+        elevator.setWantedState(Elevator.WantedState.WANTS_TO_MANUAL_UP);
     }
 
     @Override

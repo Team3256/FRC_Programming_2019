@@ -3,6 +3,7 @@ package frc.team3256.robot.teleop;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.DriveTrain;
+import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.teleop.control.*;
 import frc.team3256.warriorlib.control.DrivePower;
 import frc.team3256.warriorlib.control.XboxControllerObserver;
@@ -18,6 +19,7 @@ public class TeleopUpdater {
     private HatchIntakeControlScheme hatchIntakeControlScheme;
     private ClimbControlScheme climbControlScheme;
     private DriverControlScheme driverControlScheme;
+    private Elevator mElevator = Elevator.getInstance();
 
     private XboxListenerBase currentControlScheme;
 

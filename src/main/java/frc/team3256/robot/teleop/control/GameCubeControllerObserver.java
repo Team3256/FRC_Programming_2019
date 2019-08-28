@@ -115,7 +115,7 @@ public class GameCubeControllerObserver implements ControllerObserver {
             autoModeExecuter.start();
         }
         if (gamecubeController.getRawButtonPressed(14)) {
-            Elevator.getInstance().setPositionHome();
+            //Elevator.getInstance().setPositionHome();
         }
 
         double leftX = gamecubeController.getX();

@@ -110,37 +110,37 @@ public abstract class CommonControlScheme extends XboxListenerBase {
     // Set position to unhook, then retract
     @Override
     public void onLeftShoulderReleased() {
-        elevator.setPositionUnhookHatch();
-        Thread thread = new Thread(() -> {
-            try {
-                Thread.sleep(750);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            hatchPivot.retractHatch();
-        });
-        thread.start();
+//        elevator.setPositionUnhookHatch();
+//        Thread thread = new Thread(() -> {
+//            try {
+//                Thread.sleep(750);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            hatchPivot.retractHatch();
+//        });
+//        thread.start();
     }
 
     @Override
     public void onRightShoulderPressed() {
-        elevator.setPositionIntakeHatch();
-        hatchPivot.deployHatch();
+//        elevator.setPositionIntakeHatch();
+//        hatchPivot.deployHatch();
     }
 
     // Set the position to hook, then retract
     @Override
     public void onRightShoulderReleased() {
-        elevator.setPositionHookHatch();
-        Thread thread = new Thread(() -> {
-            try {
-                Thread.sleep(750);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            hatchPivot.retractHatch();
-        });
-        thread.start();
+//        elevator.setPositionHookHatch();
+//        Thread thread = new Thread(() -> {
+//            try {
+//                Thread.sleep(750);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            hatchPivot.retractHatch();
+//        });
+//        thread.start();
     }
 
     @Override

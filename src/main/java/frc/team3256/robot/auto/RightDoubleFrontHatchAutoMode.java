@@ -27,11 +27,11 @@ public class RightDoubleFrontHatchAutoMode extends AutoModeBase {
 		runAction(new WaitAction(1.0));
 		runAction(new ResetPursuitAction());
 		DriveTrain.getInstance().setHighGear(true);
-		Elevator.getInstance().setPositionLowHatch();
+		Elevator.getInstance().setWantedState(Elevator.WantedState.WANTS_TO_LOW_HATCH);
 		HatchPivot.getInstance().deployHatch();
 		runAction(new PurePursuitAction(0));
 		runAction(new WaitAction(0.75));
-		Elevator.getInstance().setPositionUnhookHatch();
+		//Elevator.getInstance().setPositionUnhookHatch();
 		runAction(new WaitAction(0.75));
 		HatchPivot.getInstance().retractHatch();
 		runAction(new WaitAction(0.50));

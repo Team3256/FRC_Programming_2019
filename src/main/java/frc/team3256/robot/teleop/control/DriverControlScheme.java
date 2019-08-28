@@ -1,15 +1,16 @@
 package frc.team3256.robot.teleop.control;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3256.robot.subsystems.CargoIntake;
-import frc.team3256.robot.subsystems.Hanger;
-import frc.team3256.robot.subsystems.HatchPivot;
+import frc.team3256.robot.subsystems.*;
 import frc.team3256.warriorlib.control.XboxListenerBase;
 
 public class DriverControlScheme extends XboxListenerBase {
     protected CargoIntake cargoIntake = CargoIntake.getInstance();
     protected HatchPivot hatchPivot = HatchPivot.getInstance();
     protected Hanger hanger = Hanger.getInstance();
+    protected Elevator elevator = Elevator.getInstance();
+    protected CargoIntakeStateBased cargo = CargoIntakeStateBased.getInstance();
+    protected PivotStateBased pivot = PivotStateBased.getInstance();
 
     private boolean highGear = true;
     private boolean quickTurn = false;
@@ -21,11 +22,11 @@ public class DriverControlScheme extends XboxListenerBase {
     private double rightY = 0.0;
 
     public boolean isHighGear() {
-        return highGear;
+        return false;
     }
 
     public boolean isQuickTurn() {
-        return quickTurn;
+        return true;
     }
 
     public double getLeftX() {
@@ -46,29 +47,34 @@ public class DriverControlScheme extends XboxListenerBase {
 
     @Override
     public void onAPressed() {
-
+        elevator.setOpenLoop(-0.2);
     }
 
     @Override
     public void onBPressed() {
+        if (!elevator.atTarget(39.5)) {
+            elevator.elevatorSetPosition(39.5);
+        }
     }
 
     @Override
     public void onXPressed() {
+        elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOME);
     }
 
     @Override
     public void onYPressed() {
+        elevator.setOpenLoop(0.2);
     }
 
     @Override
     public void onAReleased() {
-
+        elevator.setOpenLoop(0.0);
     }
 
     @Override
     public void onBReleased() {
-
+        elevator.setOpenLoop(0.0);
     }
 
     @Override
@@ -78,7 +84,7 @@ public class DriverControlScheme extends XboxListenerBase {
 
     @Override
     public void onYReleased() {
-
+        elevator.setOpenLoop(0.0);
     }
 
     @Override
@@ -165,13 +171,30 @@ public class DriverControlScheme extends XboxListenerBase {
 
     @Override
     public void onLeftTrigger(double value) {
-        highGear = value > 0.25;
-        SmartDashboard.putBoolean("HighGear", highGear);
+//        highGear = value > 0.25;
+//        SmartDashboard.putBoolean("HighGear", highGear);
+        if(value > 0.25) {
+            pivot.setPosition(pivot.angleToSensorUnits(-90));
+            //System.out.println(pivot.getAngle());
+            cargo.setIntakePower(0.6);
+        }
+        else {
+            pivot.setPosition(pivot.angleToSensorUnits(-90));
+            cargo.setIntakePower(0.0);
+        }
     }
 
     @Override
     public void onRightTrigger(double value) {
-        quickTurn = value < 0.25;
+//        quickTurn = value < 0.25;
+        if(value > 0.25) {
+            pivot.setPosition(pivot.angleToSensorUnits(-40));
+            cargo.setIntakePower(-0.6);
+        }
+        else {
+            pivot.setPosition(pivot.angleToSensorUnits(-90));
+            cargo.setIntakePower(0.0);
+        }
     }
 
     @Override

@@ -10,7 +10,7 @@ public class HangElevatorAction implements Action {
 
     @Override
     public boolean isFinished() {
-        return elevator.getHallEffectTriggered() || Timer.getFPGATimestamp() - timestamp > 5;
+        return true;//elevator.getHallEffectTriggered() || Timer.getFPGATimestamp() - timestamp > 5;
     }
 
     @Override
@@ -21,7 +21,7 @@ public class HangElevatorAction implements Action {
     @Override
     public void done() {
         elevator.setOpenLoop(0);
-        elevator.resetEncoder();
+        //elevator.resetEncoder();
     }
 
     @Override
