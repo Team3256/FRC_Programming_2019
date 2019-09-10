@@ -155,6 +155,7 @@ public class DriverControlScheme extends XboxListenerBase {
     @Override
     public void onLeftShoulderReleased() {
         //cargoIntake.setIntakePower(0);
+        hatchPivot.releaseBrake();
     }
 
     @Override
@@ -167,6 +168,8 @@ public class DriverControlScheme extends XboxListenerBase {
     public void onRightShoulderReleased() {
         //cargoIntake.setIntakePower(0);
         //hatchPivot.setPositionDeploy();
+        pivot.setOpenLoop(0.0);
+        hatchPivot.engageBrake();
     }
 
     @Override
@@ -188,12 +191,12 @@ public class DriverControlScheme extends XboxListenerBase {
     public void onRightTrigger(double value) {
 //        quickTurn = value < 0.25;
         if(value > 0.25) {
-            pivot.setPosition(pivot.angleToSensorUnits(-40));
-            cargo.setIntakePower(-0.6);
+            pivot.setPosition(pivot.angleToSensorUnits(-30));
+            cargo.setIntakePower(-0.3);
         }
         else {
-            pivot.setPosition(pivot.angleToSensorUnits(-90));
-            cargo.setIntakePower(0.0);
+            pivot.setPosition(pivot.angleToSensorUnits(-87));
+            cargo.setIntakePower(-0.1);
         }
     }
 

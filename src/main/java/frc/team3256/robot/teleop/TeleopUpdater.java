@@ -54,14 +54,16 @@ public class TeleopUpdater {
 //                driverControlScheme.getRightX()*(driverControlScheme.isHighGear() ? 0.6 : 1.0),
 //                driverControlScheme.isQuickTurn(),
 //                driverControlScheme.isHighGear());
-        DrivePower drivePower = DriveTrain.getInstance().betterCurvatureDrive(
-                driverControlScheme.getLeftY(),
-                driverControlScheme.getRightX(),
-                driverControlScheme.isQuickTurn(),
-                driverControlScheme.isHighGear()
-        );
+//        DrivePower drivePower = DriveTrain.getInstance().betterCurvatureDrive(
+//                driverControlScheme.getLeftY(),
+//                driverControlScheme.getRightY(),
+//                driverControlScheme.isQuickTurn(),
+//                driverControlScheme.isHighGear()
+//        );
+        DrivePower drivePower = DriveTrain.getInstance().tankDrive(driverControlScheme.getLeftY(), driverControlScheme.getRightY());
         driveTrain.setHighGear(drivePower.getHighGear());
-        driveTrain.setPowerClosedLoop(drivePower.getLeft(), drivePower.getRight(), drivePower.getHighGear());
+        //driveTrain.setPowerClosedLoop(drivePower.getLeft(), drivePower.getRight(), drivePower.getHighGear());
+        driveTrain.setPowerOpenLoop(drivePower.getLeft(), drivePower.getRight());
     }
 
     public void changeToCargoControlScheme() {

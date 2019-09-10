@@ -27,7 +27,8 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     private PIDController turnPIDController = new PIDController(kTurnP, kTurnI, kTurnD);
     private double gyroOffset = 0;
 
-    private static final double kThrottleDeadband = 0.02;
+    private static final double kThrottleDeadband = 0.15; //0.06
+    private static final double kWheelDeadband = 0.15;
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
@@ -96,7 +97,6 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         return new DrivePower(left/2, right/2, highGear);
     }
 
-    private static final double kWheelDeadband = 0.02;
     private static final double kTurnSensitivity = 1.0;
     double mQuickStopAccumulator;
 
@@ -148,6 +148,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public DrivePower betterCurvatureDrive(double throttle, double wheel, boolean isQuickTurn, boolean highGear) {
+        setBrakeMode();
         wheel = handleDeadband(wheel, kWheelDeadband);
         throttle = handleDeadband(throttle, kThrottleDeadband);
 
@@ -201,7 +202,16 @@ public class DriveTrain extends DriveTrainBase implements Loop {
 //            rightPwm = -1.0;
 //        }
 
-        return new DrivePower(leftPwm/2, rightPwm/2, false);
+        return new DrivePower(wheel, throttle, false);
+    }
+
+    public DrivePower tankDrive(double left, double right) {
+        setBrakeMode();
+        double leftPower = handleDeadband(left, 0.1);
+        double rightPower = handleDeadband(right, 0.1);
+        System.out.println(rightMaster.getBusVoltage());
+        System.out.println(leftMaster.getBusVoltage());
+        return new DrivePower(leftPower, rightPower, false);
     }
 
     public double handleDeadband(double val, double deadband) {
@@ -215,6 +225,11 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     public void setPowerClosedLoop(double leftPower, double rightPower, boolean highGear) {
         leftPIDController.setReference(leftPower*kVelocityMaxRPM, ControlType.kVelocity, highGear ? kVelocityHighGearSlot : kVelocityLowGearSlot);
         rightPIDController.setReference(rightPower*kVelocityMaxRPM, ControlType.kVelocity, highGear ? kVelocityHighGearSlot : kVelocityLowGearSlot);
+    }
+
+    public void setPowerOpenLoop(double leftPower, double rightPower) {
+        leftMaster.set(leftPower*0.3);
+        rightMaster.set(-rightPower*0.3);
     }
 
     /**
