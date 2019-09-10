@@ -60,7 +60,7 @@ public class TeleopUpdater {
 //                driverControlScheme.isQuickTurn(),
 //                driverControlScheme.isHighGear()
 //        );
-        DrivePower drivePower = DriveTrain.getInstance().tankDrive(driverControlScheme.getLeftY(), driverControlScheme.getRightY());
+        DrivePower drivePower = DriveTrain.getInstance().jankDrive(driverControlScheme.getLeftY(), driverControlScheme.getRightX());
         driveTrain.setHighGear(drivePower.getHighGear());
         //driveTrain.setPowerClosedLoop(drivePower.getLeft(), drivePower.getRight(), drivePower.getHighGear());
         driveTrain.setPowerOpenLoop(drivePower.getLeft(), drivePower.getRight());
