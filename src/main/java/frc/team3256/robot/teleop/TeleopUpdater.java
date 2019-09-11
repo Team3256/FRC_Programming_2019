@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.Elevator;
+import frc.team3256.robot.subsystems.HatchPivot;
+import frc.team3256.robot.subsystems.PivotStateBased;
 import frc.team3256.robot.teleop.control.*;
 import frc.team3256.warriorlib.control.DrivePower;
 import frc.team3256.warriorlib.control.XboxControllerObserver;
@@ -20,6 +22,7 @@ public class TeleopUpdater {
     private ClimbControlScheme climbControlScheme;
     private DriverControlScheme driverControlScheme;
     private Elevator mElevator = Elevator.getInstance();
+    private HatchPivot mHatchPivot = HatchPivot.getInstance();
 
     private XboxListenerBase currentControlScheme;
 
@@ -64,7 +67,8 @@ public class TeleopUpdater {
         driveTrain.setHighGear(drivePower.getHighGear());
         //driveTrain.setPowerClosedLoop(drivePower.getLeft(), drivePower.getRight(), drivePower.getHighGear());
         driveTrain.setPowerOpenLoop(drivePower.getLeft(), drivePower.getRight());
-        System.out.println(mElevator.getVoltage());
+//        System.out.println(mElevator.getVoltage());
+        System.out.println(driverController.getXboxController().getYButton());
     }
 
     public void changeToCargoControlScheme() {
