@@ -219,7 +219,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         double right = throttle - turn;
 //        System.out.println(rightMaster.getBusVoltage());
 //        System.out.println(leftMaster.getBusVoltage());
-        return new DrivePower(left, right, false);
+        return new DrivePower(left, right, true);
     }
 
     public double handleDeadband(double val, double deadband) {

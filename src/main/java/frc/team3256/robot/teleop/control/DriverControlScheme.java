@@ -57,21 +57,21 @@ public class DriverControlScheme extends XboxListenerBase {
 
     @Override
     public void onBPressed() {
-        if (!elevator.atTarget(39.5)) {
-            elevator.elevatorSetPosition(39.5);
-        }
-    }
-
-    @Override
-    public void onXPressed() {
         elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOME);
     }
 
     @Override
-    public void onYPressed() {
+    public void onXPressed() {
         pivot.setPosition(pivot.angleToSensorUnits(-87));
         System.out.println("pivot angle "+pivot.getAngle());
         elevator.setOpenLoop(0.4);
+    }
+
+    @Override
+    public void onYPressed() {
+        if (!elevator.atTarget(39.5)) {
+            elevator.elevatorSetPosition(39.5);
+        }
         System.out.println("Y PRESSED SDKJFLDSK");
     }
 
@@ -88,12 +88,13 @@ public class DriverControlScheme extends XboxListenerBase {
 
     @Override
     public void onXReleased() {
+
+        elevator.setOpenLoop(0.0);
     }
 
     @Override
     public void onYReleased() {
         System.out.println("SDFJlskdfjlskdFJL Y RELEASED");
-        elevator.setOpenLoop(0.0);
     }
 
     @Override
