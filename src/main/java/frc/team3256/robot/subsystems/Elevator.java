@@ -156,6 +156,7 @@ public class Elevator extends SubsystemBase {
 
 	@Override
 	public void update(double timestamp) {
+		System.out.println(mMaster.getBusVoltage());
 		if (mPrevWantedState != mWantedState){
 			mWantedStateChanged = true;
 			mPrevWantedState = mWantedState;
@@ -452,5 +453,9 @@ public class Elevator extends SubsystemBase {
 
 	private double inchesToRotations(double inches) {
 		return (inches - kElevatorOffset) / Math.PI / kElevatorGearRatio / kElevatorSpoolSize;
+	}
+
+	public double getVoltage() {
+		return mMaster.getAppliedOutput();
 	}
 }

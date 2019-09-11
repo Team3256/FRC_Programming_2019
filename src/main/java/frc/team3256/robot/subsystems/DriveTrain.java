@@ -217,8 +217,8 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     public DrivePower jankDrive(double throttle, double turn) {
         double left = throttle + turn;
         double right = throttle - turn;
-        System.out.println(rightMaster.getBusVoltage());
-        System.out.println(leftMaster.getBusVoltage());
+//        System.out.println(rightMaster.getBusVoltage());
+//        System.out.println(leftMaster.getBusVoltage());
         return new DrivePower(left, right, false);
     }
 

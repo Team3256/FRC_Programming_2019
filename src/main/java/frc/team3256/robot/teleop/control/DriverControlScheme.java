@@ -21,6 +21,8 @@ public class DriverControlScheme extends XboxListenerBase {
     private double rightX = 0.0;
     private double rightY = 0.0;
 
+    private boolean hatchPivotOut = false;
+
     public boolean isHighGear() {
         return false;
     }
@@ -47,7 +49,9 @@ public class DriverControlScheme extends XboxListenerBase {
 
     @Override
     public void onAPressed() {
-        elevator.setOpenLoop(-0.2);
+
+        pivot.setPosition(pivot.angleToSensorUnits(-90));
+        elevator.setOpenLoop(-0.4);
     }
 
     @Override
@@ -64,7 +68,8 @@ public class DriverControlScheme extends XboxListenerBase {
 
     @Override
     public void onYPressed() {
-        elevator.setOpenLoop(0.2);
+        pivot.setPosition(pivot.angleToSensorUnits(-90));
+        elevator.setOpenLoop(0.4);
     }
 
     @Override
@@ -149,27 +154,36 @@ public class DriverControlScheme extends XboxListenerBase {
 
     @Override
     public void onLeftShoulderPressed() {
+        pivot.setPosition(pivot.angleToSensorUnits(-96));
+        cargo.setIntakePower(0.0);
         //cargoIntake.exhaust();
+        if (hatchPivotOut) {
+            hatchPivot.retractHatch();
+            hatchPivotOut = false;
+        } else {
+            hatchPivot.deployHatch();
+            hatchPivotOut = true;
+        }
     }
 
     @Override
     public void onLeftShoulderReleased() {
         //cargoIntake.setIntakePower(0);
-        hatchPivot.releaseBrake();
     }
 
     @Override
     public void onRightShoulderPressed() {
         //hatchPivot.setPositionCargoIntake();
         //cargoIntake.intake();
+        elevator.setOpenLoop(0.0);
     }
 
     @Override
     public void onRightShoulderReleased() {
         //cargoIntake.setIntakePower(0);
         //hatchPivot.setPositionDeploy();
-        pivot.setOpenLoop(0.0);
-        hatchPivot.engageBrake();
+        //pivot.setOpenLoop(0.0);
+        //hatchPivot.engageBrake();
     }
 
     @Override
