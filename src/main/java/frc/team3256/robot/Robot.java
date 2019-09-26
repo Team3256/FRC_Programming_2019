@@ -1,9 +1,6 @@
 package frc.team3256.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3256.robot.auto.*;
-import frc.team3256.robot.subsystems.*;
 import frc.team3256.robot.teleop.TeleopUpdater;
 import frc.team3256.warriorlib.auto.AutoModeExecuter;
 import frc.team3256.warriorlib.auto.purepursuit.PoseEstimator;
@@ -17,24 +14,10 @@ public class Robot extends TimedRobot {
 
 //	// Subsystems
 	private DriveTrain driveTrain = DriveTrain.getInstance();
-	private Elevator elevator = Elevator.getInstance();
-	private CargoIntakeStateBased cargoIntake = CargoIntakeStateBased.getInstance();
-	private PivotStateBased hatchPivot = PivotStateBased.getInstance();
-	private Hanger hanger = Hanger.getInstance();
-
-	private RobotCompressor robotCompressor = RobotCompressor.getInstance();
-
-	// Pure Pursuit
-	private PurePursuitTracker purePursuitTracker = PurePursuitTracker.getInstance();
-	private PoseEstimator poseEstimator;
-
 	// Loopers
-	private Looper teleopLooper, poseEstimatorLooper;
+	private Looper teleopLooper;
 	private TeleopUpdater teleopUpdater;
 
-	//Auto Teleop control
-	private AutoModeExecuter autoModeExecuter;
-	private boolean maintainAutoExecution = true;
 
 	/**
 	 * This function is called when the robot is first started up and should be
@@ -46,32 +29,8 @@ public class Robot extends TimedRobot {
 //		camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 640, 360, 15);
 		DriveTrainBase.setDriveTrain(driveTrain);
 
-		Paths.initialize();
-
 		teleopLooper = new Looper(1 / 200D);
-		// Reset sensors
-		driveTrain.resetEncoders();
-		driveTrain.resetGyro();
-		hatchPivot.zeroSensors();
-
-		teleopLooper.addLoops(driveTrain, cargoIntake, hatchPivot, elevator);
-
-		poseEstimatorLooper = new Looper(1 / 50D);
-		poseEstimator = PoseEstimator.getInstance();
-		poseEstimatorLooper.addLoops(poseEstimator);
-		poseEstimatorLooper.start();
-
-		// Default SmartDashboard
-		SmartDashboard.putBoolean("visionEnabled", true);
-		SmartDashboard.putBoolean("autoEnabled", true);
-		SmartDashboard.putString("ControlScheme", "Cargo");
-
-		// Pneumatics
-		robotCompressor.turnOn();
-		hanger.retract();
-		hatchPivot.setWantedState(PivotStateBased.WantedState.WANTS_TO_RETRACT_HATCH);
-		hatchPivot.engageBrake();
-
+		teleopLooper.addLoops(driveTrain);
 		teleopUpdater = TeleopUpdater.getInstance();
 	}
 
@@ -81,16 +40,6 @@ public class Robot extends TimedRobot {
 	@Override
 	public void disabledInit() {
 		teleopLooper.stop();
-
-		driveTrain.setCoastMode();
-		driveTrain.setHighGear(true);
-
-		elevator.setWantedState(Elevator.WantedState.WANTS_TO_ZERO_POWER);
-		cargoIntake.setWantedState(CargoIntakeStateBased.WantedState.WANTS_TO_STOP);
-		driveTrain.runZeroPower();
-		hatchPivot.setWantedState(PivotStateBased.WantedState.WANTS_TO_DEPLOY_HATCH);
-		robotCompressor.turnOff();
-		poseEstimator.reset();
 	}
 
 	/**
@@ -103,8 +52,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotPeriodic(){
-		SmartDashboard.putNumber("Pose X", poseEstimator.getPose().x);
-		SmartDashboard.putNumber("Pose Y", poseEstimator.getPose().y);
 	}
 
 	/**
@@ -112,28 +59,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		driveTrain.resetEncoders();
-		//driveTrain.resetGyro();
-		driveTrain.setBrakeMode();
-		//hatchPivot.zeroSensors();
-
-		poseEstimator.reset();
-		purePursuitTracker.reset();
-
-		//SmartDashboard.putString("alliance", DriverStation.getInstance().getAlliance().name());
-
-		if (SmartDashboard.getBoolean("autoEnabled", false)) {
-			maintainAutoExecution = true;
-			teleopLooper.stop();
-
-			autoModeExecuter = new AutoModeExecuter();
-			autoModeExecuter.setAutoMode(new AlignToTargetMode());
-			autoModeExecuter.start();
-		}
-		else {
-			maintainAutoExecution = false;
-			teleopLooper.start();
-		}
 	}
 
 	/**
@@ -141,22 +66,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		boolean stopAuto = TeleopUpdater.getInstance().getDriverController().getAButtonPressed();
-		//basic logic below: keep executing auto until we disable it or it finishes, and don't allow it to be re-enabled
-		if (!maintainAutoExecution) {
-			teleopUpdater.update();
-		} else if (stopAuto || autoModeExecuter.isFinished()) {
-			maintainAutoExecution = false;
-			if (!autoModeExecuter.isFinished()) {
-				autoModeExecuter.stop();
-				//make sure all our subsystems stop
-				elevator.setWantedState(Elevator.WantedState.WANTS_TO_ZERO_POWER);
-				cargoIntake.setWantedState(CargoIntakeStateBased.WantedState.WANTS_TO_STOP);
-				driveTrain.setPowerClosedLoop(0, 0, true);
-				//hatchPivot.setPositionDeploy();
-			}
-			teleopLooper.start();
-		}
 	}
 
 	/**
@@ -164,14 +73,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		robotCompressor.turnOn();
-		driveTrain.setBrakeMode();
-		teleopLooper.start();
-		driveTrain.resetEncoders();
-		driveTrain.setGyroOffset(180.0);
-		poseEstimator.resetPosition();
-		poseEstimator.offsetPoseAngle(180.0);
-		hatchPivot.engageBrake();
 	}
 
 	/**
@@ -181,35 +82,6 @@ public class Robot extends TimedRobot {
 	public void teleopPeriodic() {
 		teleopUpdater.update();
 
-//		poseEstimator.reset();
-		//SmartDashboard.putNumber("Gyro", DriveTrain.getInstance().getAngle());
-//		SmartDashboard.putNumber("hatchPivot", hatchPivot.getAngle());
-//		SmartDashboard.putNumber("hatchPosition", hatchPivot.getEncoderValue());
-//		SmartDashboard.putBoolean("hallEffect", elevator.getHallEffectTriggered());
-		double robotCenterToCamera = 14.0 - 5.5;
-		double cameraDistance = SmartDashboard.getNumber("visionDistance0", 0);
-		double cameraAngleFromTarget = SmartDashboard.getNumber("visionAngle0",0) * Math.PI/180.0;
-		double m = Math.cos(cameraAngleFromTarget) * cameraDistance;
-		double n = Math.sin(cameraAngleFromTarget) * cameraDistance;
-		double angleFromTarget = Math.atan(n / (m + robotCenterToCamera));
-		double distance = n / Math.sin(angleFromTarget);
-		angleFromTarget = angleFromTarget * 180.0 / Math.PI;
-
-		double absPosition = 90-driveTrain.getAngle();
-
-
-		double angleDelta = (absPosition - angleFromTarget) * Math.PI / 180.0;
-		double x = Math.cos(angleDelta) * distance;
-		double y = Math.sin(angleDelta) * distance;
-		SmartDashboard.putNumber("Target Y", y);
-		SmartDashboard.putNumber("Target X", x);
-		SmartDashboard.putNumber("Gyro Angle", driveTrain.getAngle());
-		SmartDashboard.putNumber("Robot angle", (absPosition));
-		SmartDashboard.putNumber("Corrected distance", distance);
-		SmartDashboard.putNumber("Corrected angle", angleFromTarget);
-		SmartDashboard.putNumber("Total angle", (absPosition - angleFromTarget));
-		SmartDashboard.putNumber("Air Pressure Psi", robotCompressor.getAirPressurePsi());
-
 	}
 
 	/**
@@ -217,66 +89,9 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-//		poseEstimatorLooper.start();
-//		System.out.println("Pose: " + poseEstimator.getPose());
-//		SmartDashboard.putString("Pose", poseEstimator.getPose().toString());
-		//cargoIntake.setIntakePower(0.5);
-//		SmartDashboard.putNumber("Pose X", poseEstimator.getPose().x);
-//		SmartDashboard.putNumber("Pose Y", poseEstimator.getPose().y);
-//		SmartDashboard.putNumber("right encoder", driveTrain.getRightDistance());
-//		SmartDashboard.putNumber("left encoder", driveTrain.getLeftDistance());
-
-		double distance = SmartDashboard.getNumber("visionDistance1", 0);
-		double angleFromTarget = SmartDashboard.getNumber("visionAngle1",0);
-		double absPosition = -driveTrain.getAngle() - 90;
-		while (absPosition < -180)
-			absPosition += 360;
-		while (absPosition > 180)
-			absPosition -= 360;
-		absPosition = 180 - absPosition;
-		double angleDelta = (absPosition - angleFromTarget) * Math.PI/180;
-		double x = Math.cos(angleDelta) * distance;
-		double y = Math.sin(angleDelta) * distance;
-
-		hatchPivot.outputToDashboard();
-
-//		SmartDashboard.putNumber("Y", y);
-//		SmartDashboard.putNumber("X", x);
-//		SmartDashboard.putNumber("Gyro Angle", driveTrain.getAngle());
-//        SmartDashboard.putNumber("Robot angle", (absPosition));
-//        SmartDashboard.putNumber("Total angle", (absPosition - angleFromTarget));
 	}
 
 	@Override
 	public void disabledPeriodic() {
-//		System.out.println("Pose: " + poseEstimator.getPose());
-//		System.out.println("Gyro: " + driveTrain.getAngle());
-//		poseEstimator.reset();
-		//SmartDashboard.putNumber("Gyro", DriveTrain.getInstance().getAngle());
-//		SmartDashboard.putNumber("hatchPivot", hatchPivot.getAngle());
-//		SmartDashboard.putNumber("hatchPosition", hatchPivot.getEncoderValue());
-//		SmartDashboard.putBoolean("hallEffect", elevator.getHallEffectTriggered());
-//		double robotCenterToCamera = 14.0 - 5.5;
-//		double cameraDistance = SmartDashboard.getNumber("visionDistance0", 0);
-//		double cameraAngleFromTarget = SmartDashboard.getNumber("visionAngle0",0) * Math.PI/180.0;
-//		double m = Math.cos(cameraAngleFromTarget) * cameraDistance;
-//		double n = Math.sin(cameraAngleFromTarget) * cameraDistance;
-//		double angleFromTarget = Math.atan(n / (m + robotCenterToCamera));
-//		double distance = n / Math.sin(angleFromTarget);
-//		angleFromTarget = angleFromTarget * 180.0 / Math.PI;
-//
-//		double absPosition = 270-driveTrain.getAngle();
-//
-//
-//		double angleDelta = (absPosition - angleFromTarget) * Math.PI / 180.0;
-//		double x = Math.cos(angleDelta) * distance;
-//		double y = Math.sin(angleDelta) * distance;
-//		SmartDashboard.putNumber("Target Y", y);
-//		SmartDashboard.putNumber("Target X", x);
-//		SmartDashboard.putNumber("Gyro Angle", driveTrain.getAngle());
-//		SmartDashboard.putNumber("Robot angle", (absPosition));
-//		SmartDashboard.putNumber("Corrected distance", distance);
-//		SmartDashboard.putNumber("Corrected angle", angleFromTarget);
-//		SmartDashboard.putNumber("Total angle", (absPosition - angleFromTarget));
 	}
 }

@@ -1,13 +1,13 @@
 package frc.team3256.robot.constants;
 
-public class DriveTrainConstants {
+public class Constants {
     //Curvature Drive
     public static final double kQuickTurnDeltaLimit = 2.0 / 1000.0 / 12.0 * 20.0;
     //CAN
-    public static final int kLeftDriveMaster = 3;
-    public static final int kLeftDriveSlave = 4;
-    public static final int kRightDriveMaster = 5;
-    public static final int kRightDriveSlave = 6;
+    public static final int kLeftDriveMaster = 0;
+    public static final int kLeftDriveSlave = 1;
+    public static final int kRightDriveMaster = 3;
+    public static final int kRightDriveSlave = 4;
     //Low Gear
     public static final int kVelocityLowGearSlot = 0;
     public static final double kVelocityLowGearP = 5e-6;
