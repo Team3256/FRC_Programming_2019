@@ -132,7 +132,6 @@ public class DriveTrain extends DriveTrainBase implements Loop {
 //        TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
 //        leftMaster.set(ControlMode.PercentOutput, leftPower);
 //        rightMaster.set(ControlMode.PercentOutput, rightPower);
-        System.out.println("leftPower: " + leftPower);
         leftMaster.set(leftPower);
         leftSlave.set(leftPower);
         rightMaster.set(rightPower);

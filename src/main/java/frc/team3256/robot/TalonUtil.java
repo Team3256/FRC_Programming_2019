@@ -89,7 +89,7 @@ public class TalonUtil{
         if (talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)!= ErrorCode.OK){
             DriverStation.reportError("DID NOT DETECT MAG ENCODER ON TALON " + talon.getDeviceID(), false);
         }
-        talon.getStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000* Constants.loopTime));
+        talon.getStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000* 1/200));
     }
 
     public static void setCurrentLimit(TalonSRX talon, int peakAmps, int continuousAmps, int continuousDuration){
