@@ -1,6 +1,8 @@
 package frc.team3256.robot.odometry;
 
-import math.*;
+
+import frc.team3256.robot.DriveTrain;
+import frc.team3256.robot.math.*;
 
 /**
     This class should implement Loop and be added to the loops in Robot.java in the robot code so that the pose updates
@@ -13,7 +15,7 @@ public class PoseEstimator {
     private RigidTransform prevPose;
     private double prevLeftDist = 0;
     private double prevRightDist = 0;
-    //private DriveTrain driveTrain = DriveTrain.getInstance();
+    private DriveTrain driveTrain = DriveTrain.getInstance();
 
     private static PoseEstimator instance;
 
@@ -106,7 +108,7 @@ public class PoseEstimator {
         double deltaLeftDist = leftDist - prevLeftDist;
         double deltaRightDist = rightDist - prevRightDist;
         //the creation of a new Rotation below is a place holder - refer to implementation above
-        Rotation deltaHeading = prevPose.getRotation().inverse().rotate(new Rotation(0,0));
+        Rotation deltaHeading = prevPose.getRotation().inverse().rotate(driveTrain.getRotationAngleUpdated());
         //Use encoders + gyro to determine our velocity
         velocity = Kinematics.forwardKinematics(deltaLeftDist, deltaRightDist, deltaHeading.radians());
         //use velocity to determine our pose

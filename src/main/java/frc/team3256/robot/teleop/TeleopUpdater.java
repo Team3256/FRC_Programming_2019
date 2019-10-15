@@ -50,7 +50,7 @@ public class TeleopUpdater {
 
 
     public void handleDrive() {
-        driveTrain.setOpenLoop(deadband(-driver.getRawAxis(5), 0.1)*0.5, deadband(-driver.getRawAxis(1), 0.1)*0.5);
+        driveTrain.setPowerOpenLoop(deadband(-driver.getRawAxis(5), 0.1)*0.5, deadband(-driver.getRawAxis(1), 0.1)*0.5);
         if (driver.getPOV() == 0) {
             System.out.println(pivot.getBusVoltage());
             pivot.set(-0.6);

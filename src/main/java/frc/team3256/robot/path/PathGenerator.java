@@ -45,7 +45,7 @@ public class PathGenerator {
 
     public static void main(String[] args) {
         PathGenerator path = new PathGenerator();
-        ArrayList<Waypoint> w = path.generatePath("/Users/rohanviswanathan/Desktop/test.csv");
+        ArrayList<Waypoint> w = path.generatePath("C:\\Users\\WB17\\Documents\\Ramsete Test Paths\\Straight.pf1.csv");
         for (int i = 0; i < w.size(); i++) {
             System.out.println(w.get(i));
         }

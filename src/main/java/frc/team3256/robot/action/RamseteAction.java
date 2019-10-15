@@ -1,9 +1,10 @@
 package frc.team3256.robot.action;
 
-import control.DrivePower;
-import ramsete.RamseteTracker;
-import odometry.PoseEstimator;
-import path.PathGenerator;
+import frc.team3256.robot.DriveTrain;
+import frc.team3256.robot.control.DrivePower;
+import frc.team3256.robot.odometry.PoseEstimator;
+import frc.team3256.robot.path.PathGenerator;
+import frc.team3256.robot.ramsete.RamseteTracker;
 
 public class RamseteAction implements Action {
 
@@ -12,7 +13,7 @@ public class RamseteAction implements Action {
     private PathGenerator pathGenerator;
     private String pathCSV;
     private double b, g;
-    //private DriveTrain driveTrain = DriveTrain.getInstance();
+    private DriveTrain driveTrain = DriveTrain.getInstance();
 
     public RamseteAction(String pathCSV, double b, double g) {
         pathGenerator = new PathGenerator();
@@ -29,8 +30,8 @@ public class RamseteAction implements Action {
     @Override
     public void update() {
         DrivePower drivePower = ramseteTracker.update(poseEstimator.getPoseX(), poseEstimator.getPoseY(), poseEstimator.getPoseTheta(), b, g);
-        //drive.setHighGear(drivePower.getHighGear);
-        //drivetrain.setVelocityClosedLoop(drivePower.getLeft(), drivePower.getRight());
+        driveTrain.setHighGear(drivePower.getHighGear());
+        driveTrain.setVelocityClosedLoop(drivePower.getLeft(), drivePower.getRight());
     }
 
     @Override

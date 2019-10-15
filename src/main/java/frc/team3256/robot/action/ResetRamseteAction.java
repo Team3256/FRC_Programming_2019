@@ -1,6 +1,7 @@
 package frc.team3256.robot.action;
 
-import odometry.PoseEstimator;
+import frc.team3256.robot.DriveTrain;
+import frc.team3256.robot.odometry.PoseEstimator;
 
 /**
  * Resets drive train and pose estimator
@@ -8,8 +9,8 @@ import odometry.PoseEstimator;
 public class ResetRamseteAction extends RunOnceAction {
     @Override
     public void runOnce() {
-        //DriveTrain.getInstance().resetEncoders();
-        //DriveTrain.getInstance().resetGyro();
+        DriveTrain.getInstance().resetEncoders();
+        DriveTrain.getInstance().resetGyro();
         PoseEstimator.getInstance().reset();
     }
 }

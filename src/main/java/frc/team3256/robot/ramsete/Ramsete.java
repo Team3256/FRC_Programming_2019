@@ -1,6 +1,6 @@
 package frc.team3256.robot.ramsete;
 
-import path.Waypoint;
+import frc.team3256.robot.path.Waypoint;
 
 public class Ramsete {
 

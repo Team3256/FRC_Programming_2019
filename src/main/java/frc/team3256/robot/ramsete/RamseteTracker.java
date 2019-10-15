@@ -1,10 +1,13 @@
 package frc.team3256.robot.ramsete;
 
-import control.DrivePower;
-import operations.Constants;
-import path.Waypoint;
+import frc.team3256.robot.control.DrivePower;
+import frc.team3256.robot.operations.Constants;
+import frc.team3256.robot.operations.Constants;
+import frc.team3256.robot.path.Waypoint;
 
 import java.util.ArrayList;
+
+import static java.awt.SystemColor.control;
 
 public class RamseteTracker {
 
