@@ -26,7 +26,7 @@ public class PathGenerator {
                     else {
                         heading = Math.toDegrees(Double.valueOf(pathInfo[7]));
                     }
-                    waypoints.add(new Waypoint(Double.valueOf(pathInfo[0]), Double.valueOf(pathInfo[1]), Double.valueOf(pathInfo[2]), Double.valueOf(pathInfo[4]), heading));
+                    waypoints.add(new Waypoint(Double.valueOf(pathInfo[0]), Double.valueOf(pathInfo[2]), Double.valueOf(pathInfo[1]), Double.valueOf(pathInfo[4]), heading));
                 }
             }
             waypoints.get(0).setAngularVelocity(0);

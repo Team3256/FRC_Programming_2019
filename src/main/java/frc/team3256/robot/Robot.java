@@ -1,6 +1,7 @@
 package frc.team3256.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import frc.team3256.robot.action.RamseteTestAutoMode;
 import frc.team3256.robot.teleop.TeleopUpdater;
 import frc.team3256.warriorlib.auto.AutoModeExecuter;
 import frc.team3256.warriorlib.auto.purepursuit.PoseEstimator;
@@ -12,10 +13,13 @@ import java.io.PrintStream;
 
 public class Robot extends TimedRobot {
 
+	private AutoModeExecuter autoModeExecuter;
+
 //	// Subsystems
 	private DriveTrain driveTrain = DriveTrain.getInstance();
 	// Loopers
-	private Looper teleopLooper;
+	private Looper teleopLooper, poseLooper;
+	private PoseEstimator poseEstimator;
 	private TeleopUpdater teleopUpdater;
 
 
@@ -29,9 +33,12 @@ public class Robot extends TimedRobot {
 //		camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 640, 360, 15);
 		DriveTrainBase.setDriveTrain(driveTrain);
 
+		poseLooper = new Looper(1/50D);
 		teleopLooper = new Looper(1 / 200D);
 		teleopLooper.addLoops(driveTrain);
 		teleopUpdater = TeleopUpdater.getInstance();
+		poseEstimator = PoseEstimator.getInstance();
+		poseLooper.addLoops(poseEstimator);
 	}
 
 	/**
@@ -59,6 +66,12 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		poseLooper.start();
+		poseEstimator.reset();
+		autoModeExecuter = new AutoModeExecuter();
+		autoModeExecuter.setAutoMode(new RamseteTestAutoMode());
+		autoModeExecuter.start();
+
 	}
 
 	/**
@@ -80,7 +93,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		teleopUpdater.update();
+//		teleopUpdater.update();
 
 	}
 

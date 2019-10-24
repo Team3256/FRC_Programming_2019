@@ -5,6 +5,7 @@ import frc.team3256.robot.control.DrivePower;
 import frc.team3256.robot.odometry.PoseEstimator;
 import frc.team3256.robot.path.PathGenerator;
 import frc.team3256.robot.ramsete.RamseteTracker;
+import frc.team3256.warriorlib.auto.action.Action;
 
 public class RamseteAction implements Action {
 

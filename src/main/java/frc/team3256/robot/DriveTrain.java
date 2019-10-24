@@ -241,6 +241,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     @Override
     public void update(double timestamp) {
         this.outputToDashboard();
+
     }
 
     @Override
@@ -342,6 +343,8 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         double rightOutput = rightVelocityPIDController.calculatePID(rightVelInchesPerSec, getRightVelocity());
         leftMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(leftOutput));
         rightMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(rightOutput));*/
+
+        System.out.println("left vel"+leftVelInchesPerSec);
 
         leftPIDController.setReference(inchesPerSecToRPM(leftVelInchesPerSec) * kGearRatio, ControlType.kVelocity, kVelocityHighGearSlot);
         rightPIDController.setReference(inchesPerSecToRPM(rightVelInchesPerSec) * kGearRatio, ControlType.kVelocity, kVelocityHighGearSlot);
