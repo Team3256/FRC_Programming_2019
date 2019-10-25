@@ -3,13 +3,14 @@ package frc.team3256.robot.odometry;
 
 import frc.team3256.robot.DriveTrain;
 import frc.team3256.robot.math.*;
+import frc.team3256.warriorlib.loop.Loop;
 
 /**
     This class should implement Loop and be added to the loops in Robot.java in the robot code so that the pose updates
     at the same time interval as the rest of the subsystems.
  */
 
-public class PoseEstimator {
+public class PoseEstimatorDeprecated implements Loop {
     private Twist velocity;
     private RigidTransform pose;
     private RigidTransform prevPose;
@@ -17,14 +18,14 @@ public class PoseEstimator {
     private double prevRightDist = 0;
     private DriveTrain driveTrain = DriveTrain.getInstance();
 
-    private static PoseEstimator instance;
+    private static PoseEstimatorDeprecated instance;
 
-    private PoseEstimator() {
+    private PoseEstimatorDeprecated() {
         reset();
     }
 
-    public static PoseEstimator getInstance() {
-        return instance == null ? instance = new PoseEstimator() : instance;
+    public static PoseEstimatorDeprecated getInstance() {
+        return instance == null ? instance = new PoseEstimatorDeprecated() : instance;
     }
 
     public double getPoseX() {
@@ -67,6 +68,7 @@ public class PoseEstimator {
         prevRightDist = 0;
     }
 
+    @Override
     public void init(double timestamp) {
         reset();
     }
@@ -102,9 +104,10 @@ public class PoseEstimator {
           }
 
      */
+    @Override
     public void update(double timestamp) {
-        double leftDist = 0; //driveTrain.getLeftDistance()
-        double rightDist = 0; //driveTrain.getRightDistance()
+        double leftDist = driveTrain.getLeftDistance(); //driveTrain.getLeftDistance()
+        double rightDist = driveTrain.getRightDistance(); //driveTrain.getRightDistance()
         double deltaLeftDist = leftDist - prevLeftDist;
         double deltaRightDist = rightDist - prevRightDist;
         //the creation of a new Rotation below is a place holder - refer to implementation above
@@ -119,6 +122,7 @@ public class PoseEstimator {
         prevPose = pose;
     }
 
+    @Override
     public void end(double timestamp) {
 
     }

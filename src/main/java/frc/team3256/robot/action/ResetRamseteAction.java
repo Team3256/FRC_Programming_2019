@@ -1,7 +1,7 @@
 package frc.team3256.robot.action;
 
 import frc.team3256.robot.DriveTrain;
-import frc.team3256.robot.odometry.PoseEstimator;
+import frc.team3256.robot.odometry.PoseEstimatorRamsete;
 import frc.team3256.warriorlib.auto.action.RunOnceAction;
 
 /**
@@ -12,6 +12,6 @@ public class ResetRamseteAction extends RunOnceAction {
     public void runOnce() {
         DriveTrain.getInstance().resetEncoders();
         DriveTrain.getInstance().resetGyro();
-        PoseEstimator.getInstance().reset();
+        PoseEstimatorRamsete.getInstance().reset();
     }
 }

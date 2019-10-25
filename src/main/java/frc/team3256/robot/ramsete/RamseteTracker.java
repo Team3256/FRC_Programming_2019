@@ -2,12 +2,9 @@ package frc.team3256.robot.ramsete;
 
 import frc.team3256.robot.control.DrivePower;
 import frc.team3256.robot.operations.Constants;
-import frc.team3256.robot.operations.Constants;
 import frc.team3256.robot.path.Waypoint;
 
 import java.util.ArrayList;
-
-import static java.awt.SystemColor.control;
 
 public class RamseteTracker {
 
@@ -40,10 +37,14 @@ public class RamseteTracker {
     public DrivePower update(double poseX, double poseY, double poseTheta, double b, double g) {
         waypointIndex++;
         Waypoint waypoint = waypoints.get(waypointIndex);
+        System.out.println("Pose: " + poseX + "," + poseY + "," + poseTheta);
         double velocity = ramsete.calculateVelocity(poseX, poseY, poseTheta, waypoint, b, g);
+        //System.out.println("vel: " + velocity);
         double angularVelocity = ramsete.calculateAngularVelocity(poseX, poseY, poseTheta, waypoint, b, g);
         double leftVelocity = velocity + ((angularVelocity * robotTrack)/2);
         double rightVelocity = velocity - ((angularVelocity * robotTrack)/2);
+//        System.out.println("left vel: " + leftVelocity);
+//        System.out.println("right vel: " + rightVelocity);
         return new DrivePower(leftVelocity, rightVelocity, true);
     }
 

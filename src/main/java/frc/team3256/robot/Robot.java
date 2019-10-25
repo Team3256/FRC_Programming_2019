@@ -2,14 +2,11 @@ package frc.team3256.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3256.robot.action.RamseteTestAutoMode;
+import frc.team3256.robot.odometry.PoseEstimatorRamsete;
 import frc.team3256.robot.teleop.TeleopUpdater;
 import frc.team3256.warriorlib.auto.AutoModeExecuter;
-import frc.team3256.warriorlib.auto.purepursuit.PoseEstimator;
-import frc.team3256.warriorlib.auto.purepursuit.PurePursuitTracker;
 import frc.team3256.warriorlib.loop.Looper;
 import frc.team3256.warriorlib.subsystem.DriveTrainBase;
-
-import java.io.PrintStream;
 
 public class Robot extends TimedRobot {
 
@@ -19,7 +16,7 @@ public class Robot extends TimedRobot {
 	private DriveTrain driveTrain = DriveTrain.getInstance();
 	// Loopers
 	private Looper teleopLooper, poseLooper;
-	private PoseEstimator poseEstimator;
+	private PoseEstimatorRamsete poseEstimator;
 	private TeleopUpdater teleopUpdater;
 
 
@@ -33,12 +30,16 @@ public class Robot extends TimedRobot {
 //		camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 640, 360, 15);
 		DriveTrainBase.setDriveTrain(driveTrain);
 
-		poseLooper = new Looper(1/50D);
+		poseLooper = new Looper(1/200D);
 		teleopLooper = new Looper(1 / 200D);
 		teleopLooper.addLoops(driveTrain);
 		teleopUpdater = TeleopUpdater.getInstance();
-		poseEstimator = PoseEstimator.getInstance();
+		poseEstimator = PoseEstimatorRamsete.getInstance();
 		poseLooper.addLoops(poseEstimator);
+		poseLooper.start();
+		poseEstimator.reset();
+		driveTrain.resetEncoders();
+		driveTrain.resetGyro();
 	}
 
 	/**
@@ -93,8 +94,10 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-//		teleopUpdater.update();
-
+		teleopUpdater.update();
+//		System.out.println("Left dist: " + driveTrain.getLeftDistance());
+//		System.out.println("Right dist: " + driveTrain.getRightDistance());
+		//System.out.println("Pose: " + poseEstimator.getPoseX()+", "+poseEstimator.getPoseY());
 	}
 
 	/**
@@ -106,5 +109,8 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void disabledPeriodic() {
+//		System.out.println("x: " + poseEstimator.getPoseX());
+//		System.out.println("y: " + poseEstimator.getPoseY());
+//		System.out.println("Angle: " + poseEstimator.getPoseTheta());
 	}
 }

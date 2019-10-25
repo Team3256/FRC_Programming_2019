@@ -10,7 +10,7 @@ import frc.team3256.robot.constants.Constants;
 import frc.team3256.warriorlib.hardware.SparkMAXUtil;
 
 public class TeleopUpdater {
-//    private DriveTrain driveTrain = DriveTrain.getInstance();
+    private DriveTrain driveTrain = DriveTrain.getInstance();
 //    private Solenoid leftShoot, rightShoot;
 //    private DoubleSolenoid leftPop, rightPop, leftEject, rightEject ;
 //
@@ -28,17 +28,17 @@ public class TeleopUpdater {
         driver = new Joystick(0);
     }
 
-//    public double deadband(double x, double min) {
-//        if (Math.abs(x) < min) {
-//            return 0;
-//        } else {
-//            return x;
-//        }
-//    }
+    public double deadband(double x, double min) {
+        if (Math.abs(x) < min) {
+            return 0;
+        } else {
+            return x;
+        }
+    }
 //
 //
-//    public void handleDrive() {
-//        driveTrain.setPowerOpenLoop(deadband(-driver.getRawAxis(5), 0.1)*0.5, deadband(-driver.getRawAxis(1), 0.1)*0.5);
+    public void handleDrive() {
+        driveTrain.setPowerOpenLoop(deadband(-driver.getRawAxis(1), 0.1)*0.5, deadband(-driver.getRawAxis(5), 0.1)*0.5);
 //        if (driver.getPOV() == 0) {
 //            System.out.println(pivot.getBusVoltage());
 //            pivot.set(-0.6);
@@ -48,12 +48,12 @@ public class TeleopUpdater {
 //        else {
 //            pivot.set(0.0);
 //        }
-//}
+    }
 //
-//    public void update() {
-//        handleDrive();
-//        handlePneumatics();
-//    }
+    public void update() {
+        handleDrive();
+        //handlePneumatics();
+    }
 //
 //    public void handlePneumatics() {
 //        if (driver.getRawAxis(2) > 0.25) {

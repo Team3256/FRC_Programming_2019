@@ -14,6 +14,9 @@ public class Ramsete {
         double k = (2*g)*(Math.sqrt((Math.pow(waypoint.getAngularVelocity(), 2) + (b*Math.pow(waypoint.getVelocity(), 2)))));
         double sinc = (Math.sin(waypoint.getHeading()-theta))/(waypoint.getHeading()-theta);
         double w = (waypoint.getAngularVelocity()) + (b*waypoint.getVelocity()*sinc*(((waypoint.getY()-y) * Math.cos(theta)) - ((waypoint.getX()-x) * Math.sin(theta)))) + (k*(waypoint.getHeading()-theta));
+        if (Double.isNaN(w)) {
+            return 0.0;
+        }
         return w;
     }
 }

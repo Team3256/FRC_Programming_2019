@@ -321,7 +321,10 @@ public class DriveTrain extends DriveTrainBase implements Loop {
     }
 
     public Rotation getRotationAngleUpdated() {
-        return Rotation.fromDegrees(getAngle() + 90);
+        if (Math.abs(getAngle()) < 0.5) {
+            return Rotation.fromDegrees(0);
+        }
+        return Rotation.fromDegrees(getAngle()); //Rotation.fromDegrees(getAngle()+90)
     }
 
     public void resetGyro() {
@@ -344,7 +347,8 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         leftMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(leftOutput));
         rightMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(rightOutput));*/
 
-        System.out.println("left vel"+leftVelInchesPerSec);
+        System.out.println("right vel per sec: " + rightVelInchesPerSec);
+        System.out.println("left vel per sec: "+ leftVelInchesPerSec);
 
         leftPIDController.setReference(inchesPerSecToRPM(leftVelInchesPerSec) * kGearRatio, ControlType.kVelocity, kVelocityHighGearSlot);
         rightPIDController.setReference(inchesPerSecToRPM(rightVelInchesPerSec) * kGearRatio, ControlType.kVelocity, kVelocityHighGearSlot);

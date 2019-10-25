@@ -3,10 +3,10 @@ package frc.team3256.robot.constants;
 public class Constants {
 
     //PWM
-    public static final int kLeftDriveMaster = 0;
-    public static final int kLeftDriveSlave = 1;
-    public static final int kRightDriveMaster = 3;
-    public static final int kRightDriveSlave = 4;
+    public static final int kLeftDriveMaster = 3; //0
+    public static final int kLeftDriveSlave = 4; //1
+    public static final int kRightDriveMaster = 5; //3
+    public static final int kRightDriveSlave = 6; //4
 
     public static final int kPivot = 7;
 

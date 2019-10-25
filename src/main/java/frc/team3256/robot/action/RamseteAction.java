@@ -2,7 +2,7 @@ package frc.team3256.robot.action;
 
 import frc.team3256.robot.DriveTrain;
 import frc.team3256.robot.control.DrivePower;
-import frc.team3256.robot.odometry.PoseEstimator;
+import frc.team3256.robot.odometry.PoseEstimatorRamsete;
 import frc.team3256.robot.path.PathGenerator;
 import frc.team3256.robot.ramsete.RamseteTracker;
 import frc.team3256.warriorlib.auto.action.Action;
@@ -10,7 +10,7 @@ import frc.team3256.warriorlib.auto.action.Action;
 public class RamseteAction implements Action {
 
     private RamseteTracker ramseteTracker = new RamseteTracker();
-    private PoseEstimator poseEstimator = PoseEstimator.getInstance();
+    private PoseEstimatorRamsete poseEstimator = PoseEstimatorRamsete.getInstance();
     private PathGenerator pathGenerator;
     private String pathCSV;
     private double b, g;
@@ -30,9 +30,11 @@ public class RamseteAction implements Action {
 
     @Override
     public void update() {
-        DrivePower drivePower = ramseteTracker.update(poseEstimator.getPoseX(), poseEstimator.getPoseY(), poseEstimator.getPoseTheta(), b, g);
+        DrivePower drivePower = ramseteTracker.update(poseEstimator.getPoseX(), poseEstimator.getPoseY(), poseEstimator.getTheta(), b, g);
         driveTrain.setHighGear(drivePower.getHighGear());
-        driveTrain.setVelocityClosedLoop(drivePower.getLeft(), drivePower.getRight());
+        System.out.println("left target vel: " + drivePower.getLeft());
+        System.out.println("right target vel: " + drivePower.getRight());
+        //driveTrain.setVelocityClosedLoop(drivePower.getLeft() , drivePower.getRight());
     }
 
     @Override
