@@ -34,10 +34,11 @@ public class RamseteTracker {
      the angular velocity, and T is the robot track.
      */
 
-    public DrivePower update(double poseX, double poseY, double poseTheta, double b, double g) {
-        waypointIndex++;
-        Waypoint waypoint = waypoints.get(waypointIndex);
-        System.out.println("Pose: " + poseX + "," + poseY + "," + poseTheta);
+        public DrivePower update(double poseX, double poseY, double poseTheta, double b, double g) {
+            waypointIndex++;
+            Waypoint waypoint = waypoints.get(waypointIndex);
+//            System.out.println("Pose: " + poseX + "," + poseY + "," + poseTheta);
+            System.out.println(waypoint);
         double velocity = ramsete.calculateVelocity(poseX, poseY, poseTheta, waypoint, b, g);
         //System.out.println("vel: " + velocity);
         double angularVelocity = ramsete.calculateAngularVelocity(poseX, poseY, poseTheta, waypoint, b, g);
@@ -45,7 +46,8 @@ public class RamseteTracker {
         double rightVelocity = velocity - ((angularVelocity * robotTrack)/2);
 //        System.out.println("left vel: " + leftVelocity);
 //        System.out.println("right vel: " + rightVelocity);
-        return new DrivePower(leftVelocity, rightVelocity, true);
+//        return new DrivePower(leftVelocity/2.0, rightVelocity/2.0, true);
+            return new DrivePower(waypoint.getVelocity(), waypoint.getVelocity(), true);
     }
 
     public void reset() {

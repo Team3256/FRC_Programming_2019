@@ -34,8 +34,12 @@ public class PoseEstimatorRamsete implements Loop {
         return pose.getTranslation().getY();
     }
 
-    public double getTheta() {
+    public double getThetaDegrees() {
         return pose.getRotation().degrees();
+    }
+
+    public double getTheta() {
+        return pose.getRotation().radians();
     }
 
     public Twist getVelocity() {
@@ -77,8 +81,8 @@ public class PoseEstimatorRamsete implements Loop {
         double rightDist = driveTrain.getRightDistance();
         double deltaLeftDist = leftDist - prevLeftDist;
         double deltaRightDist = rightDist - prevRightDist;
-        System.out.println("deltaLeft: "+deltaLeftDist);
-        System.out.println("deltaRight: "+deltaRightDist);
+//        System.out.println("deltaLeft: "+deltaLeftDist);
+//        System.out.println("deltaRight: "+deltaRightDist);
         Rotation deltaHeading = prevPose.getRotation().inverse().rotate(driveTrain.getRotationAngleUpdated());
         //Use encoders + gyro to determine our velocity
         velocity = Kinematics.forwardKinematics(deltaLeftDist, deltaRightDist, deltaHeading.radians());

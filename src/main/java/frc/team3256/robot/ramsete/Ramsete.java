@@ -19,4 +19,10 @@ public class Ramsete {
         }
         return w;
     }
+
+    public static void main(String args[]) {
+        Ramsete r = new Ramsete();
+
+    }
 }
+

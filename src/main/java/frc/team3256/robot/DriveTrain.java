@@ -48,7 +48,7 @@ public class DriveTrain extends DriveTrainBase implements Loop {
             overPower = 1.0;
             angularPower = turn/kAngularPowerScalar;
             if (Math.abs(turn - prevTurn) > kQuickTurnDeltaLimit) {
-                //System.out.println("TURN: " + turn);
+                //out.println("TURN: " + turn);
                 //System.out.println("PREVIOUS TURN: " + prevTurn);
                 if (turn > 0) {
                     angularPower = prevTurn + kQuickTurnDeltaLimit;
@@ -347,8 +347,8 @@ public class DriveTrain extends DriveTrainBase implements Loop {
         leftMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(leftOutput));
         rightMaster.set(ControlMode.Velocity,inchesPerSecToSensorUnits(rightOutput));*/
 
-        System.out.println("right vel per sec: " + rightVelInchesPerSec);
-        System.out.println("left vel per sec: "+ leftVelInchesPerSec);
+//        System.out.println("target right vel per sec: " + rightVelInchesPerSec);
+//        System.out.println("target left vel per sec: "+ leftVelInchesPerSec);
 
         leftPIDController.setReference(inchesPerSecToRPM(leftVelInchesPerSec) * kGearRatio, ControlType.kVelocity, kVelocityHighGearSlot);
         rightPIDController.setReference(inchesPerSecToRPM(rightVelInchesPerSec) * kGearRatio, ControlType.kVelocity, kVelocityHighGearSlot);

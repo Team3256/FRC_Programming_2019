@@ -15,9 +15,11 @@ public class Robot extends TimedRobot {
 //	// Subsystems
 	private DriveTrain driveTrain = DriveTrain.getInstance();
 	// Loopers
-	private Looper teleopLooper, poseLooper;
+	private Looper driveTrainLooper, poseLooper;
 	private PoseEstimatorRamsete poseEstimator;
 	private TeleopUpdater teleopUpdater;
+
+	private RamseteTestAutoMode r;
 
 
 	/**
@@ -30,9 +32,9 @@ public class Robot extends TimedRobot {
 //		camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 640, 360, 15);
 		DriveTrainBase.setDriveTrain(driveTrain);
 
-		poseLooper = new Looper(1/200D);
-		teleopLooper = new Looper(1 / 200D);
-		teleopLooper.addLoops(driveTrain);
+		poseLooper = new Looper(1/50D);
+		driveTrainLooper = new Looper(1 / 300D);
+		driveTrainLooper.addLoops(driveTrain);
 		teleopUpdater = TeleopUpdater.getInstance();
 		poseEstimator = PoseEstimatorRamsete.getInstance();
 		poseLooper.addLoops(poseEstimator);
@@ -40,6 +42,9 @@ public class Robot extends TimedRobot {
 		poseEstimator.reset();
 		driveTrain.resetEncoders();
 		driveTrain.resetGyro();
+
+
+		r = new RamseteTestAutoMode();
 	}
 
 	/**
@@ -47,7 +52,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
-		teleopLooper.stop();
+		driveTrainLooper.stop();
+
 	}
 
 	/**
@@ -70,7 +76,7 @@ public class Robot extends TimedRobot {
 		poseLooper.start();
 		poseEstimator.reset();
 		autoModeExecuter = new AutoModeExecuter();
-		autoModeExecuter.setAutoMode(new RamseteTestAutoMode());
+		autoModeExecuter.setAutoMode(r);
 		autoModeExecuter.start();
 
 	}
@@ -97,7 +103,8 @@ public class Robot extends TimedRobot {
 		teleopUpdater.update();
 //		System.out.println("Left dist: " + driveTrain.getLeftDistance());
 //		System.out.println("Right dist: " + driveTrain.getRightDistance());
-		//System.out.println("Pose: " + poseEstimator.getPoseX()+", "+poseEstimator.getPoseY());
+		System.out.println("left encoder: "+driveTrain);
+//		System.out.println("Pose: " + poseEstimator.getPoseX()+", "+poseEstimator.getPoseY());
 	}
 
 	/**
@@ -112,5 +119,6 @@ public class Robot extends TimedRobot {
 //		System.out.println("x: " + poseEstimator.getPoseX());
 //		System.out.println("y: " + poseEstimator.getPoseY());
 //		System.out.println("Angle: " + poseEstimator.getPoseTheta());
+
 	}
 }

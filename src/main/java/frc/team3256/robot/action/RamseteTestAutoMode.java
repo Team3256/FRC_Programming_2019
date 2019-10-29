@@ -8,6 +8,6 @@ public class RamseteTestAutoMode extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
         runAction(new ResetRamseteAction());
-        runAction(new RamseteAction("/home/admin/Straight.pf1.csv", 2.0, .7));
+        runAction(new RamseteAction("/home/lvuser/path120.pf1.csv", 2.0, .7));
     }
 }
