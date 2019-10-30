@@ -41,7 +41,7 @@ public class RamseteAction implements Action {
 //        System.out.println("right target vel: " + drivePower.getRight());
         System.out.println("distance: "+driveTrain.getLeftDistance()+"   "+driveTrain.getRightDistance());
         System.out.println("velocity: "+driveTrain.getLeftVelocity()+"   "+driveTrain.getRightVelocity());
-        System.out.println("pose: "+poseEstimator.getPoseX());
+        System.out.println("pose: "+poseEstimator.getPoseX()+", " + poseEstimator.getPoseY());
         driveTrain.setVelocityClosedLoop(drivePower.getLeft() , drivePower.getRight());
         loopCounter++;
     }
