@@ -39,9 +39,9 @@ public class RamseteAction implements Action {
         driveTrain.setHighGear(drivePower.getHighGear());
 //        System.out.println("left target vel: " + drivePower.getLeft());
 //        System.out.println("right target vel: " + drivePower.getRight());
-        System.out.println("distance: "+driveTrain.getLeftDistance()+"   "+driveTrain.getRightDistance());
-        System.out.println("velocity: "+driveTrain.getLeftVelocity()+"   "+driveTrain.getRightVelocity());
-        System.out.println("pose: "+poseEstimator.getPoseX()+", " + poseEstimator.getPoseY());
+//        System.out.println("distance: "+driveTrain.getLeftDistance()+"   "+driveTrain.getRightDistance());
+//        System.out.println("velocity: "+driveTrain.getLeftVelocity()+"   "+driveTrain.getRightVelocity());
+//        System.out.println("pose: "+poseEstimator.getPoseX()+", " + poseEstimator.getPoseY());
         driveTrain.setVelocityClosedLoop(drivePower.getLeft() , drivePower.getRight());
         loopCounter++;
     }
@@ -50,6 +50,7 @@ public class RamseteAction implements Action {
     public void done() {
         //driveTrain.setVelocityClosedLoop(0, 0);
         ramseteTracker.reset();
+        driveTrain.setPowerOpenLoop(0,0);
         System.out.println("PATH TIME: " + (Timer.getFPGATimestamp() - starttime));
         System.out.println("LOOP: "+loopCounter);
     }

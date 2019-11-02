@@ -1,5 +1,7 @@
 package frc.team3256.robot.path;
 
+import org.opencv.core.Mat;
+
 public class Waypoint {
     private double dt;
     private double x;

@@ -20,12 +20,12 @@ public class PathGenerator {
                 else {
                     String[] pathInfo = line.split(splitBy);
                     double heading;
-                    if (360 - Math.toDegrees(Double.valueOf(pathInfo[7])) < 1) {
-                        heading = 360 - Math.toDegrees(Double.valueOf(pathInfo[7]));
-                    }
-                    else {
-                        heading = Math.toDegrees(Double.valueOf(pathInfo[7]));
-                    }
+//                    if (360 - Math.toDegrees(Double.valueOf(pathInfo[7])) < 3) {
+//                        heading = 360 - Math.toDegrees(Double.valueOf(pathInfo[7]));
+//                    }
+//                    else {
+                    heading = Double.valueOf(pathInfo[7]);
+//                    }
                     waypoints.add(new Waypoint(Double.valueOf(pathInfo[0]), Double.valueOf(pathInfo[2]), Double.valueOf(pathInfo[1]), Double.valueOf(pathInfo[4]), heading));
                 }
             }

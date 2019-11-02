@@ -37,18 +37,21 @@ public class RamseteTracker {
         public DrivePower update(double poseX, double poseY, double poseTheta, double b, double g) {
             waypointIndex++;
             Waypoint waypoint = waypoints.get(waypointIndex);
-//            System.out.println("Pose: " + poseX + "," + poseY + "," + poseTheta);
-            System.out.println(waypoint);
+            System.out.println("Pose: " + poseX + "," + poseY + "," + poseTheta);
+            //System.out.println(waypoint);
         double velocity = ramsete.calculateVelocity(poseX, poseY, poseTheta, waypoint, b, g);
-        //System.out.println("vel: " + velocity);
-        double angularVelocity = ramsete.calculateAngularVelocity(poseX, poseY, poseTheta, waypoint, b, g);
-        double leftVelocity = velocity + ((angularVelocity * robotTrack)/2);
-        double rightVelocity = velocity - ((angularVelocity * robotTrack)/2);
-//        System.out.println("left vel: " + leftVelocity);
-//        System.out.println("right vel: " + rightVelocity);
-        return new DrivePower(leftVelocity, rightVelocity, true);
+            System.out.println("pose x: " + poseX + ", pose y: "+ poseY + ", pose theta: "+poseTheta+", "+waypointIndex);
+            System.out.println("linear vel: " + velocity);
+            //System.out.println("vel: " + velocity);
+            double angularVelocity = ramsete.calculateAngularVelocity(poseX, poseY, poseTheta, waypoint, b, g);
+            System.out.println("angular vel: " + angularVelocity);
+//            double leftVelocity = velocity + ((angularVelocity * robotTrack)/2);
+//            double rightVelocity = velocity - ((angularVelocity * robotTrack)/2);
+            double leftVelocity = velocity  + angularVelocity;
+            double rightVelocity = velocity - angularVelocity;
+            return new DrivePower(leftVelocity, rightVelocity, true);
 //            return new DrivePower(waypoint.getVelocity(), waypoint.getVelocity(), true);
-    }
+}
 
     public void reset() {
         waypointIndex = -1;
