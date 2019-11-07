@@ -1,6 +1,7 @@
 package frc.team3256.robot.ramsete;
 
 import frc.team3256.robot.path.Waypoint;
+import org.opencv.core.Mat;
 
 public class Ramsete {
 
@@ -12,20 +13,30 @@ public class Ramsete {
 
     public double calculateAngularVelocity(double x, double y, double theta, Waypoint waypoint, double b, double g) {
 
+        double v = waypoint.getVelocity();
+        double angV = waypoint.getAngularVelocity();
+        double eAngle = waypoint.getHeading() - theta;
+        System.out.println("waypoint: " + waypoint);
+
         double k = (2*g)*(Math.sqrt((Math.pow(waypoint.getAngularVelocity(), 2) + (b*Math.pow(waypoint.getVelocity(), 2)))));
-        double sinc = (Math.sin(waypoint.getHeading()-theta))/(waypoint.getHeading()-theta);
-        double w = (waypoint.getAngularVelocity()) + (b*waypoint.getVelocity()*sinc*(((waypoint.getY()-y) * Math.cos(theta)) - ((waypoint.getX()-x) * Math.sin(theta)))) + (k*(waypoint.getHeading()-theta));
+        double sinc = (Math.sin(eAngle))/(eAngle);
+        if (eAngle == 0.0) {
+            sinc = 1;
+        }
+        double w = angV + b*v*sinc*((waypoint.getY() - y) * Math.cos(theta) - (waypoint.getX() - x) * Math.sin(theta)) + k*(eAngle);
         if (Double.isNaN(w)) {
             return 0.0;
         }
         return w;
     }
+
     public static void main(String args[]) {
 
         Ramsete r = new Ramsete();
-        Waypoint wp = new Waypoint(.02, .745, 9.956, 22.34, .1515);    // 216
-        double angvel = r.calculateAngularVelocity(.68, 9.519, .144, wp,2.2,.55);
-        double linvel = r.calculateVelocity(.68, 9.519, .144, wp,2.2,.55);
+        Waypoint wp = new Waypoint(.02, .745, 9.956, 22.34, 0.0);    // 216
+        wp.setAngularVelocity(0.0);
+        double angvel = r.calculateAngularVelocity(.68, 9.519, 0.0, wp,0.0508,.55);
+        double linvel = r.calculateVelocity(.68, 9.519, 0.0, wp,0.0508,.55);
         System.out.println("ang vel: "+angvel);
         System.out.println("lin vel: "+linvel);
         double leftvel = linvel + (angvel * 27.0 / 2.0);

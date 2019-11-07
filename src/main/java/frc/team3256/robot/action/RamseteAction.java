@@ -35,13 +35,14 @@ public class RamseteAction implements Action {
 
     @Override
     public void update() {
-        DrivePower drivePower = ramseteTracker.update(poseEstimator.getPoseY(), poseEstimator.getPoseX(), poseEstimator.getTheta(), b, g);
+        DrivePower drivePower = ramseteTracker.update(poseEstimator.getPoseY(), poseEstimator.getPoseX(), -poseEstimator.getTheta(), b, g);
         driveTrain.setHighGear(drivePower.getHighGear());
 //        System.out.println("left target vel: " + drivePower.getLeft());
 //        System.out.println("right target vel: " + drivePower.getRight());
 //        System.out.println("distance: "+driveTrain.getLeftDistance()+"   "+driveTrain.getRightDistance());
 //        System.out.println("velocity: "+driveTrain.getLeftVelocity()+"   "+driveTrain.getRightVelocity());
 //        System.out.println("pose: "+poseEstimator.getPoseX()+", " + poseEstimator.getPoseY());
+//        driveTrain.setVelocityClosedLoop(drivePower.getLeft() , drivePower.getRight());
         driveTrain.setVelocityClosedLoop(drivePower.getLeft() , drivePower.getRight());
         loopCounter++;
     }
