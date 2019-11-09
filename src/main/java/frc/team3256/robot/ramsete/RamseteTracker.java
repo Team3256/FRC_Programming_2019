@@ -37,7 +37,7 @@ public class RamseteTracker {
         public DrivePower update(double poseX, double poseY, double poseTheta, double b, double g) {
             waypointIndex++;
             Waypoint waypoint = waypoints.get(waypointIndex);
-            System.out.println("Pose: " + poseX + "," + poseY + "," + poseTheta);
+            //System.out.println("Pose: " + poseX + "," + poseY + "," + poseTheta);
             //System.out.println(waypoint);
         double velocity = ramsete.calculateVelocity(poseX, poseY, poseTheta, waypoint, b, g);
             System.out.println("pose x: " + poseX + ", pose y: "+ poseY + ", pose theta: "+poseTheta+", "+waypointIndex);
