@@ -19,13 +19,20 @@ public class Ramsete {
         System.out.println("waypoint: " + waypoint);
 
         double k = (2*g)*(Math.sqrt((Math.pow(waypoint.getAngularVelocity(), 2) + (b*Math.pow(waypoint.getVelocity(), 2)))));
+        System.out.println("eAngle = "+eAngle);
         double sinc = (Math.sin(eAngle))/(eAngle);
         if (eAngle == 0.0) {
             sinc = 1;
         }
-        double w = angV + b*v*sinc*((waypoint.getY() - y) * Math.cos(theta) - (waypoint.getX() - x) * Math.sin(theta)) + k*(eAngle);
+        double w = angV + b*v*sinc*((waypoint.getX() - x) * Math.cos(theta) - (waypoint.getY() - y) * Math.sin(theta)) + (k*eAngle);
         if (Double.isNaN(w)) {
             return 0.0;
+        }
+        double sgn = Math.signum(w);
+        w = Math.abs(w) % (2* Math.PI);
+        w = sgn * w;
+        if (w > Math.PI) {
+            w -= 2*Math.PI;
         }
         return w;
     }
@@ -33,10 +40,10 @@ public class Ramsete {
     public static void main(String args[]) {
 
         Ramsete r = new Ramsete();
-        Waypoint wp = new Waypoint(.02, .745, 9.956, 22.34, 0.0);    // 216
+        Waypoint wp = new Waypoint(.02, .745, 9.019, 22.34, 0.0);    // 216
         wp.setAngularVelocity(0.0);
-        double angvel = r.calculateAngularVelocity(.68, 9.519, 0.0, wp,0.0508,.55);
-        double linvel = r.calculateVelocity(.68, 9.519, 0.0, wp,0.0508,.55);
+        double angvel = r.calculateAngularVelocity(.68, 9.519, 0.0, wp,0.0508,1.3);
+        double linvel = r.calculateVelocity(.68, 9.519, 0.0, wp,0.0508,1.3);
         System.out.println("ang vel: "+angvel);
         System.out.println("lin vel: "+linvel);
         double leftvel = linvel + (angvel * 27.0 / 2.0);
