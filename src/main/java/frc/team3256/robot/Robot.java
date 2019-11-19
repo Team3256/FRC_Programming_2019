@@ -120,6 +120,7 @@ public class Robot extends TimedRobot {
 //		System.out.println("x: " + poseEstimator.getPoseX());
 //		System.out.println("y: " + poseEstimator.getPoseY());
 //		System.out.println("Angle: " + poseEstimator.getPoseTheta());
+		driveTrain.setCoastMode();
 
 	}
 }

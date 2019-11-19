@@ -9,7 +9,7 @@ public class RamseteTestAutoMode extends AutoModeBase {
     protected void routine() throws AutoModeEndedException {
         runAction(new ResetRamseteAction());
         //b is like proportional gain...g is like dampening gain
-//        runAction(new RamseteAction("/home/lvuser/RightSpline.pf1.csv",0.0508, 0.01397));
-        runAction(new RamseteAction("/home/lvuser/path120.pf1.csv", 0.0508, 0.01397));
+        runAction(new RamseteAction("/home/lvuser/RightSpline.pf1.csv",0.018, 0.48));
+//        runAction(new RamseteAction("/home/lvuser/path120.pf1.csv", 0.0515, 0.2));
     }
 }

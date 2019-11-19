@@ -24,7 +24,7 @@ public class Ramsete {
         if (eAngle == 0.0) {
             sinc = 1;
         }
-        double w = angV + b*v*sinc*((waypoint.getX() - x) * Math.cos(theta) - (waypoint.getY() - y) * Math.sin(theta)) + (k*eAngle);
+        double w = angV + b*v*sinc*((waypoint.getY() - y) * Math.cos(theta) - (waypoint.getX() - x) * Math.sin(theta)) + (k*eAngle);
         if (Double.isNaN(w)) {
             return 0.0;
         }

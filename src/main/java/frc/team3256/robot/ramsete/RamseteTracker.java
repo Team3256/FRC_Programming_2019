@@ -45,8 +45,8 @@ public class RamseteTracker {
             //System.out.println("vel: " + velocity);
             double angularVelocity = ramsete.calculateAngularVelocity(poseX, poseY, poseTheta, waypoint, b, g);
             System.out.println("angular vel: " + angularVelocity);
-            double leftVelocity = velocity + ((angularVelocity * robotTrack)/2);
-            double rightVelocity = velocity - ((angularVelocity * robotTrack)/2);
+            double leftVelocity = velocity - ((angularVelocity * robotTrack)/2);
+            double rightVelocity = velocity + ((angularVelocity * robotTrack)/2);
 //            double leftVelocity = velocity  + angularVelocity;
 //            double rightVelocity = velocity - angularVelocity;
             return new DrivePower(leftVelocity, rightVelocity, true);
